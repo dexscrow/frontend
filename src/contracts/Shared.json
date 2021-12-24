@@ -18,7 +18,7 @@
         275
       ],
       "IBEP20": [
-        376
+        532
       ],
       "Shared": [
         14
@@ -46,7 +46,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 276,
-        "sourceUnit": 377,
+        "sourceUnit": 533,
         "src": "60:22:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -756,10 +756,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "684:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -774,7 +774,7 @@
                         "src": "684:14:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -785,7 +785,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "684:27:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -1544,10 +1544,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "1064:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -1562,7 +1562,7 @@
                         "src": "1064:16:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -1573,7 +1573,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "1064:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -2382,10 +2382,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "1515:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -2400,7 +2400,7 @@
                         "src": "1515:16:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -2411,7 +2411,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "1515:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -3117,10 +3117,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "1963:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -3135,7 +3135,7 @@
                         "src": "1963:16:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -3146,7 +3146,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "1963:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -3630,7 +3630,7 @@
         275
       ],
       "IBEP20": [
-        376
+        532
       ],
       "Shared": [
         14
@@ -3658,7 +3658,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 276,
-        "sourceUnit": 377,
+        "sourceUnit": 533,
         "src": "60:22:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4368,10 +4368,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "684:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -4386,7 +4386,7 @@
                         "src": "684:14:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -4397,7 +4397,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "684:27:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -5156,10 +5156,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "1064:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -5174,7 +5174,7 @@
                         "src": "1064:16:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -5185,7 +5185,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "1064:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -5994,10 +5994,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "1515:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -6012,7 +6012,7 @@
                         "src": "1515:16:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -6023,7 +6023,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "1515:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -6729,10 +6729,10 @@
                           "name": "IBEP20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 376,
+                          "referencedDeclaration": 532,
                           "src": "1963:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$376_$",
+                            "typeIdentifier": "t_type$_t_contract$_IBEP20_$532_$",
                             "typeString": "type(contract IBEP20)"
                           }
                         },
@@ -6747,7 +6747,7 @@
                         "src": "1963:16:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IBEP20_$376",
+                          "typeIdentifier": "t_contract$_IBEP20_$532",
                           "typeString": "contract IBEP20"
                         }
                       },
@@ -6758,7 +6758,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 357,
+                      "referencedDeclaration": 513,
                       "src": "1963:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -7241,7 +7241,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2021-12-19T10:03:11.480Z",
+  "updatedAt": "2021-12-20T17:01:59.822Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
