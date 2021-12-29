@@ -2,9 +2,8 @@ import {useState,useEffect} from "react";
 import axios from "axios";
 
  const useFetch = (url,auth,handler)=>{
-    const [error,setError] = useState("");
+    const [error,setError] = useState(null);
     const [isLoading,setIsLoading] = useState(true);
-    // const [data,setData] = useState(null);
 
     useEffect(()=>{
         const run = async ()=>{

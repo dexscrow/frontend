@@ -15,10 +15,13 @@ export const getBlockchain = async ()=>{
 
 
 export const setMetamaskConnection = async ()=>{
+  const provider = window.ethereum;
+  if(!provider) throw new Error("install metamask");
 
-  if(!window.ethereum) throw new Error("install metamask");
-
-  await window.ethereum.request({method:"eth_requestAccounts"});
+  await provider.request({method:"eth_requestAccounts"});
+  if(provider.networkVersion !== "56"){
+    throw new Error("please select binance smart chain network");
+  }
 
 }
 

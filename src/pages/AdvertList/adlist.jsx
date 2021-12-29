@@ -1,0 +1,211 @@
+import React,{useContext,useState,useEffect} from 'react'
+import Header from '../Landing/components/header'
+import AccountContext from '../../contexts/account';
+import Sidebar from '../Landing/components/sidebar';
+import axios from "axios";
+
+
+const URL = 'http://localhost:8000/advert'
+export default function Adlist() {
+    const [account,_] = useContext(AccountContext);
+    const [ads,setAds] = useState([]);
+    const [error,setError] = useState("");
+    const token = localStorage.getItem("authToken");
+    console.log(token);
+
+    useEffect(()=>{
+        const run = async()=>{
+            try{
+                const {data:response} = await axios.get(URL,{
+                    headers:{
+                        "Authorization":`Bearer ${token}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.success){
+                    setError(response.message)
+                }
+
+                setAds(response.data);
+                console.log(response.data)
+            }catch(err){
+                setError(err.message)
+            }
+            
+        }
+        run();
+    },[]);
+
+    return (
+        <>
+        <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
+    <div className="modal-dialog modal-sm">
+      <div className="modal-content" style={{background:"#ccc"}}>
+        <div className="modal-header">
+          <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
+          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div className="modal-body">
+          <div className="row mb-20">
+            <div className="col col-12 col-xs-12">
+              Once taken offline, the Ad will not be able to take in orders from users.
+            </div>
+          </div>
+
+          <div className="row form-row mb-20">     
+            <div className="col col-xs-12 text-end">
+            <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            <button className="btn-dex-small btn-dex-default">Confirm</button>
+            </div>
+        </div> 
+
+        </div>
+      </div>
+    </div>
+</div>
+
+    <div className="container-fluid body">
+        <div className="row flex-nowrap">
+            <Sidebar/>
+            <div className="col py-3 main">
+                  <div className="row p-20">
+                    <Header account={account}/>
+                    </div>
+                   <div className="row">
+                    <div className="col col-12">
+                       <h3 className="page-title">Wallet & Account</h3>
+                    </div>
+                   </div>
+                   <div className="row">
+                    <div className="col col-12 col-xs-12">
+                     <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                         <li className="active">Balance & Rating</li>
+                         <li>Transactions History </li>
+                         <li>Ad Lists</li>
+                         <li>Fiat Payment Methods </li>
+                     </ul>
+                     </div>
+                   </div>
+
+                   <form>
+                   <div className="row">
+                    <div className="col col-xs-6 col-sm-2">
+                        <label>Asset</label>
+                        <select className="form-control no-radius">
+                            <option value="all">All Asset</option>
+                            <option value="btc">BTC</option>
+                            <option value="usdt">USDT</option>
+                        </select>
+                    </div>
+
+                    <div className="col col-xs-6 col-sm-2">
+                        <label>Order Type</label>
+                        <select className="form-control no-radius">
+                            <option value="all">Buy/Sell</option>
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                        </select>
+                    </div>
+
+                    <div className="col col-xs-6 col-sm-2">
+                        <label>Status</label>
+                        <select className="form-control no-radius">
+                            <option value="unpaid">Unpaid</option>
+                            <option value="paid">Paid</option>
+                            <option value="completed">Completed</option>
+                            <option value="canceled">Canceled</option>
+                            <option value="disputed">Disputed</option>
+                        </select>
+                    </div>
+
+                    <div className="col col-xs-6 col-sm-3">
+                        <div className="col col-12"><label>Date</label> </div>
+                        <div className="col col-12 d-flex"><input type="date" /><input type="date" /></div>  
+                    </div>
+
+                    <div className="col col-xs-6 col-sm-2">
+                      <br/>
+                      Reset Filter
+                    </div>
+                  </div>
+                </form>
+
+
+                <div className="row">
+                    <div className="trade-record-card pt-10 pb-20">
+                     <div className="row">
+                        <div className="col col-6 col-xs-6 col-sm-2">
+                           <b>Buy</b><br/>
+                           <b><u>#4747474748383</u></b><br/>
+                           <span className="label">Asset</span><br/>
+                           <span className="value"> USDT/NGN</span>
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-3">
+                            <span className="label">Amount</span><br/>
+                            <span className="value">100 USDT</span><br/>
+                            <span className="label">Limit</span><br/>
+                            <span className="value">50,000 - 1,000,0000 NGN</span>
+                        </div>
+
+                        <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
+                            <span className="label">Price</span><br/>
+                            <span className="value">411.87 USDT</span>
+                        </div>
+
+                        <div className="col col-6 col-xs-6  col-sm-2">
+                            <br/><span className="label">Bank Transfer</span>
+                            <br/><span className="label">Paypal</span><br/>
+                        </div>
+
+                        <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
+                            <span className="label">Status</span><br/>
+                            <span className="value" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">Published</span><br/><br/>
+                        </div>
+
+                        <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
+                            <img src="images/delete.svg" style={{width:"20px", height:"20px"}}/>
+                             &nbsp;&nbsp;
+                            <img src="images/edit.svg" style={{width:"20px", height:"20px"}}/>
+                        </div>
+
+                    </div>
+                 </div>
+              </div>
+            </div>
+           </div>
+     </div>
+       
+
+      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style={{background:"#ccc"}}>
+        <div className="row p-0">
+            <div className="col-5 col-xs-5 d-flex align-items-center align-middle p-0">
+
+                <ul className="nav nav-pills">
+                    <li className="nav-item text-center">
+                        <a href="#" className="nav-link align-middle px-0">
+                            <img src="images/buy_sell.svg"/><br/>
+                             <span className="ms-1 d-none d-sm-inline">Buy/Sell</span>
+                        </a>
+                    </li>
+
+                    <li className="nav-item text-center">
+                        <a href="#" className="nav-link align-middle px-0">
+                            <img src="images/create.svg"/><br/>
+                            <span className="ms-1 d-none d-sm-inline">Ad Center</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+            
+            <div className="col-7 col-xs-7 account float-end pt-10">
+                <img src="images/avatar.png" alt="hugenerd" width="60" height="60" className="rounded-circle"/>
+            </div>
+        </div>
+     </nav>
+        </>
+    )
+}

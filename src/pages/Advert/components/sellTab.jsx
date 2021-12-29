@@ -1,5 +1,4 @@
-import React,{useState,useContext} from 'react'
-import AuthContext from "../../../contexts/auth";
+import React,{memo} from 'react'
 import { calculateFactor, calculatePrice } from '../../../helpers/utils';
 import Misc from './misc'
 
@@ -7,21 +6,10 @@ import useFetch from "../../../hooks/useFetch";
 
 const END_POINT = 'http://localhost:8000/assets'
 
-export default function SellTab() {
-    const [token,setAuthToken] = useContext(AuthContext);
-    const [priceType,setPriceType] = useState("floating");
-    const [factor,setFactor] = useState(100);
-    const [assets,setAssets] = useState([]);
-    const [asset,setAsset] = useState("usdt");
-    const [currency,setCurrency] = useState({name:"nigeria",currency:"naira",symbol:"NGN",rateToDollar:412.2765,shortCode:"ngn"});
-    const [currencyRate,setCurrencyRate] = useState(411.3);
-    const [assetPrice,setAssetPrice] = useState(0);
-    const [step,setStep] = useState(1);
-    const [price,setPrice] = useState(0);
-    const [currencies,setCurrencies] = useState([]);
-
-    const fetchAssets = useFetch(END_POINT,"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWMzOWZiZjRjOTk5NmQwNDQ3MTAwNGYiLCJyb2xlIjoidXNlciIsImlhdCI6MTY0MDI2NjM2MywiZXhwIjoyMjQ1MDY2MzYzfQ.nw5OK8whJ4_WZjn49XsyMlmXQHb_Z-WczES_kncFxCI",setAssets);
-    const fetchCountries = useFetch('http://localhost:8000/countries',"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWMzOWZiZjRjOTk5NmQwNDQ3MTAwNGYiLCJyb2xlIjoidXNlciIsImlhdCI6MTY0MDI2NjM2MywiZXhwIjoyMjQ1MDY2MzYzfQ.nw5OK8whJ4_WZjn49XsyMlmXQHb_Z-WczES_kncFxCI",setCurrencies);
+const SellTab = memo(({
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset
+}) =>{
+ 
     return (
         <>
              <div className="tab-pane fade" id="sell" role="tabpanel" aria-labelledby="sell-tab">
@@ -34,7 +22,11 @@ export default function SellTab() {
                                    {
                                       assets && assets.map((asset)=>(
                                            <>
-                                           <input type="radio" name="asset" value={asset.symbol} key={asset._id} onClick={(e)=>setAsset(e.target.value)} />
+                                           <input type="radio" name="asset" value={asset.symbol} key={asset._id} onClick={(e)=>{
+                                               setAsset(e.target.value);
+                                               setAssetPrice(asset.rateToDollar["$numberDecimal"]);
+                                               setPrice(Number(asset.rateToDollar["$numberDecimal"] * currencyRate))
+                                            }} />
                                            {asset.symbol.toUpperCase()} &nbsp;
                                            </>
                                        ))
@@ -50,8 +42,11 @@ export default function SellTab() {
                                     {
                                      currencies &&  currencies.map((currency)=>(
                                            <>
-                                           <input type="radio" name="currency" value={currency} key={currency._id} onClick={(e)=>setCurrency(currency)
-                                               }/>
+                                           <input type="radio" name="currency" value={currency} key={currency._id} onClick={(e)=>{
+                                               setCurrency(currency);
+                                                setPrice(currency.rateToDollar["$numberDecimal"] * assetPrice);
+                                                setCurrencyRate(currency.rateToDollar["$numberDecimal"]);
+                                            }}/>
                                            {currency.symbol} &nbsp;
                                            </>
                                        ))
@@ -63,7 +58,7 @@ export default function SellTab() {
                                 <div className="row form-row buy-step-1">     
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                   <div className="label"><b>Your Price</b></div>
-                                  <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>{currency.rateToDollar["$numberDecimal"]}</h4></div>
+                                  <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>{price}</h4></div>
                                 </div>
                                 
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster d-none mb-20">
@@ -74,42 +69,46 @@ export default function SellTab() {
                                     <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                         <div className="label"><b>Price Type</b></div>
                                         <div>
-                                        <input type="radio" name="asset" onChange={()=>{
+                                        <input type="radio" name="priceType" onChange={()=>{
                                             setFactor(100);
                                             setPriceType("fixed");
                                         }
-                                        }/>Fixed &nbsp;
-                                         <input type="radio" name="asset" onChange={()=>{
+                                        } checked={priceType === "fixed"}/>Fixed &nbsp;
+                                         <input type="radio" name="priceType" onChange={()=>{
                                              setFactor(0);
                                              setPriceType("floating")
-                                         }} />Floating &nbsp;
+                                         }} checked={priceType === "floating"} />Floating &nbsp;
                                     </div>
                                     </div>
     
-                                    <div className={`col ${priceType =="fixed" ? "d-none" :""} col-xs-12 col-sm-12 col-md-3 form-cluster mb-20`}>
-                                  <div className="label"><b>Floating Price Margin</b></div>
+                                    <div className={`col col-xs-12 col-sm-12 col-md-3 form-cluster mb-20`}>
+                                  
+                                  <div className={`${priceType === "fixed" ? "d-none":""}`}>
+                                      <div className="label"><b>Floating Price Margin</b></div>
                                   <div>
                                     <div className="value-button" id="decrease" value="Decrease Value">-</div>
                                     <input type="number" id="number" onChange={(e)=>{
                                         setFactor(Number(e.target.value));
-                                        setPrice(calculatePrice(currency.rateToDollar["$numberDecimal"],e.target.value));
+                                        let factorPrice = calculatePrice(currencyRate,e.target.value);
+                                        setPrice(Number(assetPrice * factorPrice));
                                     }}/>
                                     <div className="value-button" id="increase" value="Increase Value">+</div>
 
                                     <div className="pricing-formula"> <span>Pricing Formula</span> &nbsp;  {currencyRate} * {factor}% = <b> {currency.symbol} {price} </b> </div>
                                   </div>
     
-                                  <div>
-                                    <div className="value-button" id="decrease"value="Decrease Value">-</div>
+                                  <div className={`${priceType === "floating" ? "d-none":""}`}>
+                                  <div className={`value-button`} id="decrease"value="Decrease Value">-</div>
                                     <input type="number" id="number" onChange={(e)=>{
-                                        setPrice(e.target.value);
+                                        setCurrencyRate(e.target.value);
                                         setFactor(calculateFactor(e.target.value,currency.rateToDollar["$numberDecimal"]));
+                                        
                                     }} />
                                     <div className="value-button" id="increase"value="Increase Value">+</div>
                                   </div>
                                 </div>
                                   </div>  
-    
+                                    </div>
     
                                   <div className={`row buy-step-2 ${step <2 ? "d-none":""} `}>     
                                 <div className="col col-12 col-xs-12 col-sm-6">
@@ -117,10 +116,14 @@ export default function SellTab() {
                                         <div className="col col-12 col-xs-12 col-sm-8">
                                             <label>Total Amount</label>
                                             <div className="input-group mb-3">
-                                                <input type="text" className="form-control" aria-label="" required/>
+                                                <input type="text" className="form-control" aria-label="" 
+                                                name="totalAsset" value={totalAsset} required onChange={(e)=>{
+                                                    setTotalAsset(e.target.value);
+                                                    setPrice(Number((e.target.value * assetPrice) * currencyRate))
+                                                }}/>
                                                 <span className="input-group-text"> <b>{(asset).toUpperCase()}</b></span>
                                             </div>
-                                            <span className="rate-info float-end"> = 1000 {currency.symbol}</span>
+                                            <span className="rate-info float-end"> = {price} {currency.symbol}</span>
                                         </div>
 
                                      </div>
@@ -130,10 +133,10 @@ export default function SellTab() {
                                             <div className="col col-xs-5 col-sm-5 mt-10">
                                                 <label>Order Limit</label>
                                                 <div className="input-group mb-3">
-                                                <input type="text" className="form-control" aria-label=""/>
+                                                <input type="text" className="form-control" aria-label="" value={lowerLimit} onChange={(e)=>setLowerLimit(e.target.value)}/>
                                                 <span className="input-group-text">{currency.symbol}</span>
                                             </div>
-                                            <span className="rate-info"> Min limit should be less than 100</span>
+                                            <span className="rate-info"> Min limit must not be 0</span>
                                         </div>
     
                                             <div className="col col-xs-2 col-sm-2 mt-10 text-center">
@@ -144,10 +147,10 @@ export default function SellTab() {
                                             <div className="col col-xs-5 col-sm-5 mt-10">
                                             <label>&nbsp;</label>
                                             <div className="input-group mb-3">
-                                                <input type="text" className="form-control" aria-label="Amount (to the nearest dollar)"/>
+                                                <input type="text" className="form-control" aria-label="Amount (to the nearest dollar)" value={upperLimit} onChange={(e)=>setUpperLimit(e.target.value)}/>
                                                 <span className="input-group-text">{currency.symbol}</span>
                                             </div>
-                                            <span className="rate-info"> = 1000 {currency.symbol}</span>
+                                            <span className="rate-info"> = {lowerLimit} {currency.symbol}</span>
                                         </div>
                                      </div>
                
@@ -262,17 +265,19 @@ export default function SellTab() {
                                     <div className="col col-xs-12 text-end">
                                     <button className="btn-dex btn-dex-primary buy-step1-next" onClick={(e)=>{
                                         e.preventDefault();
-                                        step === 0 ? setStep(0) : setStep(step-1)
+                                        step === 1 ? setStep(1) : setStep(step-1)
                                         }}>Prev</button>
                                     <button className={`btn-dex ${step === 3 ? "d-none" : ""} btn-dex-default buy-step1-next`} onClick={(e)=>{
                                         e.preventDefault();
                                        step ===3 ? setStep(3) : setStep(step+1)}
                                     }>Next</button>
-                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true}>Submit</button>
+                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>e.preventDefault()}>Submit</button>
                                 </div>
                                 </div> 
                               </form>
                           </div>
         </>
     )
-}
+})
+
+export default SellTab;

@@ -4,6 +4,8 @@ import AccountContext from "./contexts/account";
 import AuthContext from "./contexts/auth";
 import Landing from "./pages/Landing/landing";
 import CreateAd from "./pages/Advert/createAd";
+import Wallet from "./pages/wallets/wallet";
+import Adlist from "./pages/AdvertList/adlist";
 import "./styles.css";
 
  function App() {
@@ -23,6 +25,8 @@ import "./styles.css";
           <Routes>
           <Route path="/" element={<Landing/>}/>
           <Route path="/ad/create" element={<CreateAd/>}/>
+          <Route path="/wallet" element={<Wallet/>}/>
+          <Route path="/ad/list" element={<Adlist/>}/>
           </Routes>
       </Router>
       </AccountContext.Provider>

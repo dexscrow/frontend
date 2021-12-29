@@ -1,4 +1,4 @@
-import React ,{useContext,useState} from 'react'
+import React ,{useContext,useState,memo,useEffect} from 'react'
 import Sidebar from '../Landing/components/sidebar'
 import Header from '../Landing/components/header'
 import AccountContext from '../../contexts/account'
@@ -7,15 +7,86 @@ import Progressbar from './components/progressbar'
 import BuyTab from './components/buyTab'
 import SellTab from './components/sellTab'
 import ConfirmAd from './components/confirmAd'
+import useFetch from "../../hooks/useFetch";
+import axios from 'axios'
 
-export default function CreateAd() {
+const COUNTRIES_URL='http://localhost:8000/countries';
+const ASSETS_URL = 'http://localhost:8000/countries';
+
+const CreateAd = memo(() => {
     const [account,_] = useContext(AccountContext);
-    const [asset,setAsset] = useState("");
     const [type,setType] = useState("buy");
+    const [step,setStep] = useState(1);
+    const [priceType,setPriceType] = useState("floating");
+    const [factor,setFactor] = useState(100);
+    const [assets,setAssets] = useState([]);
+    const [asset,setAsset] = useState("usdt");
+    const [currency,setCurrency] = useState({name:"nigeria",currency:"naira",symbol:"NGN",rateToDollar:{$numberDecimal:412.2765},shortCode:"ngn"});
+    const [currencyRate,setCurrencyRate] = useState(1);
+    const [assetPrice,setAssetPrice] = useState(1);
+    const [price,setPrice] = useState(0);
+    const [currencies,setCurrencies] = useState([]);
+    const [upperLimit, setUpperLimit] = useState(0);
+    const [lowerLimit,setLowerLimit] = useState(0);
+    const [totalAsset,setTotalAsset] = useState(0);
+    const [error,setError] = useState("");
+    const authToken = localStorage.getItem("authToken");
+    console.log("auth",authToken)
 
+    const advertDetails = {
+        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset
+    }
+
+    const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}
+    console.log("createAd");
+    
+    useEffect(()=>{
+        const fetchCountries = async ()=>{
+            try{
+                const {data:response} = await axios.get(COUNTRIES_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.status){
+                    setError(response.message);
+                }
+                setCurrencies(response.data);
+            }catch(error){
+                setError(error.message)
+            }
+        }
+        const fetchAssets = async ()=>{
+            try{
+                const {data:response} = await axios.get(ASSETS_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.status){
+                    setError(response.message);
+                }
+                console.log(response)
+                setAssets(response.data);
+                
+            }catch(error){
+                setError(error.message)
+            }
+        }
+        fetchAssets();
+        fetchCountries();
+       
+    },[]);
     
     return (
         <>
+        {error && console.log(error)}
         <PaymentModal />
         <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog">
@@ -109,7 +180,7 @@ export default function CreateAd() {
                 </div>
             </div>
         </div>
-        <ConfirmAd />
+        <ConfirmAd {...confirmDetails}/>
         <div className="container-fluid body">
                 <div className="row flex-nowrap">
                     {account && <Sidebar />}
@@ -119,7 +190,7 @@ export default function CreateAd() {
                             <div className="col col-12">
                                 <h3 className="page-title">Create Ad</h3>
                             </div>
-                            <Progressbar />
+                            <Progressbar step={step} />
                             <div className="col col-12">
                                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                                     <li className="nav-item" role="presentation" style={{ width: "50%" }}>
@@ -130,8 +201,8 @@ export default function CreateAd() {
                                     </li>
                                 </ul>
                                 <div className="tab-content" id="myTabContent">
-                                    <BuyTab />
-                                    <SellTab />
+                                    <BuyTab {...advertDetails}/>
+                                    <SellTab {...advertDetails}/>
                                 </div>
                             </div>
                         </div>
@@ -139,4 +210,6 @@ export default function CreateAd() {
                 </div>
             </div></>
     )
-}
+})
+
+export default CreateAd;

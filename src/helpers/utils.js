@@ -13,3 +13,7 @@ export const calculateFactor = (price,rate)=>{
     return Number(ratio * 100);
 }
 
+
+export const calculateAssetPrice = (assetRate=1,currencyRate=1)=>{
+    return Number(assetRate * currencyRate);
+}

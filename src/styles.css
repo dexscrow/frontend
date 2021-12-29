@@ -52,9 +52,6 @@ span{
     color: #000000;
     opacity: 0.72;
   }
-/* .modal .form-row{
-
-} */
 
 .modal .label{
     font-size:11px;
@@ -93,7 +90,10 @@ span{
     opacity: 0.72;  
 }
 
-.dim{ opacity: 0.50; }
+.dim{ opacity:0.50; }
+
+.no-radius{ border-radius:0px; }
+
 
 /* Start Side Nav*/
 .side{border-right:1px solid #ccc; text-align:center}
@@ -716,13 +716,14 @@ width:100px;
     font-size:13px
   }
 
-.main form select{
+.main form select, .main form input[type=date]{
     background:transparent;
     font-size:13px;
     border: 1px solid #747171; 
     background:transparent;
     border-radius: 100px;
     opacity: 1;
+    min-height:30px;
   }
 .main form textarea{
     background:transparent;
@@ -744,6 +745,36 @@ width:100px;
     opacity: 0.47;
 }
 /*End Form*/
+.main .trade-record-card{
+    background: #CCCCCC 0% 0% no-repeat padding-box;
+    border: 1px solid #A5A5A5;
+    border-radius: 6px;
+    opacity: 1;
+    font-size:13px;
+}
+.main .trade-record-card .label{
+    opacity: 0.45;
+    font-size:13px;
+}
+.main .trade-record-card .value{
+   font-weight:bold
+}
+
+.inner-nav {
+  font-size:13px;
+  border-bottom:1px solid #ccc;
+  width:100%;
+  letter-spacing: 1.1px;
+}
+.inner-nav li{
+    padding:5px;
+    margin-right:13px;
+    margin-bottom:-10px;
+  }
+.inner-nav li.active{
+    font-weight:bold;
+    border-bottom:3px solid #0381FF
+  }
 
 
 .payment-method-card{

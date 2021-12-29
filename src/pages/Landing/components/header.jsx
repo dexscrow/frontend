@@ -1,13 +1,11 @@
-import React,{useEffect,useContext,useState} from 'react'
-import AuthContext from '../../../contexts/auth';
+import React,{useState} from 'react'
 import { trimText } from '../../../helpers/utils';
 import { setMetamaskConnection } from '../../../helpers/scrow';
 import useLogin from '../../../hooks/useLogin';
 
 export default function Header({account}) {
-    const [token,setAuthToken] = useContext(AuthContext);
     const [error,setError] = useState(null)
-    const login = useLogin(account,localStorage.getItem("authToken"),setError);
+    // const login = useLogin(account,localStorage.getItem("authToken"),setError);
    
     return (
         <>
@@ -22,7 +20,7 @@ export default function Header({account}) {
                           <div className="col col-12">
                           <button className="btn-connect" onClick={()=>{
                               setMetamaskConnection();
-                                login();
+                                // login();
                               }}><img src="/images/wallet.png"/> &nbsp; Connect Wallet</button> 
                        </div>
                        
