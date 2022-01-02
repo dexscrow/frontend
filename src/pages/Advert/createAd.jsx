@@ -11,7 +11,7 @@ import useFetch from "../../hooks/useFetch";
 import axios from 'axios'
 
 const COUNTRIES_URL='http://localhost:8000/countries';
-const ASSETS_URL = 'http://localhost:8000/countries';
+const ASSETS_URL = 'http://localhost:8000/assets';
 
 const CreateAd = memo(() => {
     const [account,_] = useContext(AccountContext);

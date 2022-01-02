@@ -4,14 +4,12 @@ import AccountContext from '../../contexts/account';
 import Sidebar from '../Landing/components/sidebar';
 import axios from "axios";
 
-
-const URL = 'http://localhost:8000/advert'
+const URL = 'http://localhost:8000/adverts'
 export default function Adlist() {
     const [account,_] = useContext(AccountContext);
     const [ads,setAds] = useState([]);
     const [error,setError] = useState("");
     const token = localStorage.getItem("authToken");
-    console.log(token);
 
     useEffect(()=>{
         const run = async()=>{
@@ -29,13 +27,12 @@ export default function Adlist() {
                 }
 
                 setAds(response.data);
-                console.log(response.data)
             }catch(err){
                 setError(err.message)
             }
             
         }
-        run();
+       run();
     },[]);
 
     return (
@@ -135,18 +132,21 @@ export default function Adlist() {
 
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20">
+                    {
+                        ads && ads.map((advert)=>(
+                             <>
                      <div className="row">
                         <div className="col col-6 col-xs-6 col-sm-2">
-                           <b>Buy</b><br/>
-                           <b><u>#4747474748383</u></b><br/>
+                           <b>{advert.priceType}</b><br/>
+                           <b><u>{advert._id}</u></b><br/>
                            <span className="label">Asset</span><br/>
-                           <span className="value"> USDT/NGN</span>
+                           <span className="value"> {advert.asset}/{advert.currency}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
                             <span className="label">Amount</span><br/>
-                            <span className="value">100 USDT</span><br/>
+                            <span className="value">{advert.amount} {advert.currency}</span><br/>
                             <span className="label">Limit</span><br/>
-                            <span className="value">50,000 - 1,000,0000 NGN</span>
+                            <span className="value">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
@@ -155,13 +155,13 @@ export default function Adlist() {
                         </div>
 
                         <div className="col col-6 col-xs-6  col-sm-2">
-                            <br/><span className="label">Bank Transfer</span>
-                            <br/><span className="label">Paypal</span><br/>
+                            <br/><span className="label">{advert.paymentMethod.name}</span>
+                            {/* <br/><span className="label">Paypal</span><br/> */}
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
                             <span className="label">Status</span><br/>
-                            <span className="value" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">Published</span><br/><br/>
+                            <span className="value" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">{advert.status}</span><br/><br/>
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
@@ -169,8 +169,10 @@ export default function Adlist() {
                              &nbsp;&nbsp;
                             <img src="images/edit.svg" style={{width:"20px", height:"20px"}}/>
                         </div>
-
+ 
                     </div>
+                    </>
+                        ))}
                  </div>
               </div>
             </div>
