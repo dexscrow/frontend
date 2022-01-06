@@ -28,7 +28,7 @@ import "./styles.css";
           <Route path="/ad/create" element={<CreateAd/>}/>
           <Route path="/wallet" element={<Wallet/>}/>
           <Route path="/ad/list" element={<Adlist/>}/>
-          <Route path="/trades/" element={<Trades/>}/>
+          <Route path="/trades" element={<Trades/>}/>
           </Routes>
       </Router>
       </AccountContext.Provider>
