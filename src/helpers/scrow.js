@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {Contract,ethers} from "ethers";
 import advert from "../contracts/Advert.json";
 import trade from "../contracts/Trade.json";
