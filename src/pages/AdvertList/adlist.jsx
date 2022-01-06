@@ -138,7 +138,7 @@ export default function Adlist() {
                      <div className="row">
                         <div className="col col-6 col-xs-6 col-sm-2">
                            <b>{advert.priceType}</b><br/>
-                           <b><u>{advert._id}</u></b><br/>
+                           <b><u>{advert.uid}</u></b><br/>
                            <span className="label">Asset</span><br/>
                            <span className="value"> {advert.asset}/{advert.currency}</span>
                         </div>
