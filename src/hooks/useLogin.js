@@ -1,13 +1,11 @@
-import {useState,useEffect,useContext} from "react";
+import {useEffect,useContext} from "react";
 import axios from "axios";
 import AuthContext from "../contexts/auth";
 
 
 const SERVER_URL = process.env.SERVER_URL||"http://localhost:8000";
 
-
 const useLogin = (walletAddress,prevToken,setError)=>{
-    // const [error,setError] = useState(null);
     const [_,setAuthToken] = useContext(AuthContext);
 
     useEffect(()=>{
