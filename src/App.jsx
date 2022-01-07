@@ -8,6 +8,9 @@ import Wallet from "./pages/wallets/wallet";
 import Adlist from "./pages/AdvertList/adlist";
 import Trades from "./pages/Trades/trades";
 import "./styles.css";
+import SellAd from "./pages/Advert/sellAd";
+import BuyAd from "./pages/Advert/buyAd";
+import Trade from "./pages/Trade/trade";
 
  function App() {
    const [account,setAccount] = useState(null);
@@ -29,6 +32,9 @@ import "./styles.css";
           <Route path="/wallet" element={<Wallet/>}/>
           <Route path="/ad/list" element={<Adlist/>}/>
           <Route path="/trades" element={<Trades/>}/>
+          <Route path="/ad/sell" element={<SellAd/>}/>
+          <Route path="/ad/buy" element={<BuyAd/>}/>
+          <Route path="/trade" element={<Trade/>}/>
           </Routes>
       </Router>
       </AccountContext.Provider>
