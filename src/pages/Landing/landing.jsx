@@ -38,8 +38,8 @@ export default function Landing() {
 
                  <div className="row">
                     <div className="col col-12 d-flex">
-                        <a href="" className="btn-dex btn-dex-default">BUY & SELL</a>  &nbsp; &nbsp; 
-                        <Link to="/ad/create" className="btn-dex btn-dex-bordered">CREATE ADVERT</Link>
+                        <Link to="/trade" className="btn-dex btn-dex-default">P2P</Link>  &nbsp; &nbsp; 
+                        <Link to="/ad/create" className="btn-dex btn-dex-bordered">staking</Link>
                     </div>
                  </div>
 
@@ -86,15 +86,15 @@ export default function Landing() {
                 <ul className="nav nav-pills">
                     <li className="nav-item text-center">
                         <a href="#" className="nav-link align-middle px-0">
-                            <img src="/images/buy_sell.svg"/><br/>
-                             <span className="ms-1 d-none d-sm-inline">Buy/Sell</span>
+                            <img src="images/p2p.svg"/><br/>
+                             <span className="ms-1 d-none d-sm-inline">P2P Trading</span>
                         </a>
                     </li>
 
                     <li className="nav-item text-center">
                         <a href="#" className="nav-link align-middle px-0">
-                            <img src="/images/create.svg"/><br/>
-                            <span className="ms-1 d-none d-sm-inline">Ad Management</span>
+                            <img src="images/add.svg"/><br/>
+                            <span className="ms-1 d-none d-sm-inline">Staking</span>
                         </a>
                     </li>
 

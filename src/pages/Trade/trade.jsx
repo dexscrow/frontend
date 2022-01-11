@@ -1,11 +1,10 @@
 import React,{useContext} from 'react'
-import Sidebar from "../Landing/components/Sidebar";
+import Sidebar from "../Landing/components/sidebar";
 import AccountContext from '../../contexts/account';
-
 import Header from "../Landing/components/header";
-const [account,_] = useContext(AccountContext);
 
 export default function Trade() {
+  const [account,_] = useContext(AccountContext);
     return (
         <>
          <div className="container-fluid body">
