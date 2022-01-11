@@ -11,6 +11,7 @@ import "./styles.css";
 import SellAd from "./pages/Advert/sellAd";
 import BuyAd from "./pages/Advert/buyAd";
 import Trade from "./pages/Trade/trade";
+import AddPaymentMethod from "./pages/paymentMethod/addPaymentMethod";
 
  function App() {
    const [account,setAccount] = useState(null);
@@ -35,6 +36,7 @@ import Trade from "./pages/Trade/trade";
           <Route path="/ad/sell" element={<SellAd/>}/>
           <Route path="/ad/buy" element={<BuyAd/>}/>
           <Route path="/trade" element={<Trade/>}/>
+          <Route path = "/methods/payment/new" element={<AddPaymentMethod />}/>
           </Routes>
       </Router>
       </AccountContext.Provider>
