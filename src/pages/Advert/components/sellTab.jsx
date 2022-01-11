@@ -181,7 +181,7 @@ const SellTab = memo(({
                                            <small> Select Up To 5 Methods </small> 
                                         </div>
                                         <div className="col col-6 col-xs-6">
-                                            <span className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal">+ ADD</span>
+                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal">+ ADD</button>
                                         </div>
 
                                         <div className="col col-xs-12 col-sm-12 p-20">
@@ -220,43 +220,6 @@ const SellTab = memo(({
                                                 </div>
                                              </div>
                                             </div>
-                             
-                                            <div className="card payment-method-card">
-                                             <div className="row">
-                                              <div className="col col-6 col-xs-6 text-start">
-                                                <span className="btn-dex-small btn-dex-primary"> Bank Transfer</span>
-                                              </div>
-                                              <div className="col col-6 col-xs-6 text-end">
-                                                 X
-                                              </div>
-                                             </div>
-                                             <div className="row">
-                                              <div className="col col-6 col-xs-6 label dim text-end">
-                                                  NAME
-                                              </div>
-                                              <div className="col col-6 col-xs-6 value">
-                                                 Ola  Fashade
-                                             </div>
-                                             </div>
-                                             <div className="row">
-                                                 <div className="col col-6 col-xs-6 label dim text-end">
-                                                     BANK ACCOUNT NUMBER 
-                                                 </div>
-                                                 <div className="col col-6 col-xs-6 value">
-                                                    0043320734
-                                                </div>
-                                             </div>
-                             
-                                             <div className="row">
-                                                 <div className="col col-6 col-xs-6 label dim text-end">
-                                                     BANK NAME
-                                                 </div>
-                                                 <div className="col col-6 col-xs-6 value">
-                                                    Access Bank
-                                                </div>
-                                             </div>
-                                            </div>
-                             
                                          </div>
                                     </div>
                                 </div>  
