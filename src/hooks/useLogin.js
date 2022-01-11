@@ -5,14 +5,14 @@ import AuthContext from "../contexts/auth";
 
 const SERVER_URL = process.env.SERVER_URL||"http://localhost:8000";
 
-const useLogin = (walletAddress,prevToken,setError)=>{
+const useLogin = (walletAddress,prevToken)=>{
     const [_,setAuthToken] = useContext(AuthContext);
 
     useEffect(()=>{
         if(prevToken) {
             setAuthToken(prevToken);
             localStorage.setItem("authToken",prevToken);
-            setError(null);
+            // setError(null);
         }
         const run = async ()=>{
             try{
@@ -20,23 +20,22 @@ const useLogin = (walletAddress,prevToken,setError)=>{
                 if(response.data.error){
                     setAuthToken(null);
                     localStorage.setItem("authToken",null);
-                    setError(response.error);
+                    // setError(response.error);
                 }
                 if(!response.data.success){
                     setAuthToken(null);
                     localStorage.setItem("authToken",null);
-                    setError(response.message);
+                    // setError(response.message);
                 }
                 setAuthToken(response.data.token);
                 localStorage.setItem("authToken",response.data.token);
-                setError(null)
+                // setError(null)
             }catch(error){
                 setAuthToken(null);
-                setError(error.message);
+                // setError(error.message);
             }
         }
         run();
-
     },[walletAddress,prevToken]);
 }
 
