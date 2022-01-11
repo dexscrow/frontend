@@ -1,11 +1,14 @@
-import React,{useState} from 'react'
+import React from 'react';
 import { trimText } from '../../../helpers/utils';
-import { setMetamaskConnection,setBinanceWalletConnection } from '../../../helpers/scrow';
 import useLogin from '../../../hooks/useLogin';
+import Logo from "../../../assets/logo-long.png";
+import { setMetamaskConnection,setBinanceWalletConnection } from '../../../helpers/scrow';
+const authToken = localStorage.getItem("authToken")
 
 export default function Header({account}) {
-    const [error,setError] = useState(null)
-    // const login = useLogin(account,localStorage.getItem("authToken"),setError);
+      useLogin(account,authToken)
+    //  useEffect(()=>{
+    //  },[account])
    
     return (
         <>
@@ -38,7 +41,7 @@ export default function Header({account}) {
         <div className="col col-12 header">
                      <div className="row">
                       <div className="col-5 col-xs-5">
-                       <div className="logo"> <img src="/images/logo-long.svg" /></div>
+                       <div className="logo"> <img src={Logo} /></div>
                       </div>
                       <div className="col-7 col-xs-7 text-end">
                           {!account?
@@ -52,7 +55,7 @@ export default function Header({account}) {
                       </div>
                       </>
                        :
-                           <div>{trimText(account)}</div>
+                           <div> <b>{trimText(account)}</b></div>
                         }
                       </div>
                      </div>
