@@ -21,27 +21,30 @@ export default function AddPaymentMethod(){
 
     const handleSubmit = (event) =>{
         event.preventDefault();
-        const data = new FormData(event.target)
+        const data = new FormData(event.target);
+        data.append("paymentMethod",currentMethod._id);
         addPaymentMethod(data)
     }
 
 
     const addPaymentMethod = (formdata)=>{
         const run = async ()=>{
-            const {data:response} = await axios.post(ADD_PAYMENT_METHOD_URL,{...formdata},{
+            const req = new Request(ADD_PAYMENT_METHOD_URL,{
+                body:formdata,
+                method:"POST",
                 headers:{
-                    "Authorization":`Bearer ${token}`
+                    "Authorization":`Bearer ${token}`,
                 }
-            });
+            })
+            const response = await fetch(req);
+            console.log(response.body)
             if(response.error){
                 setError(response.error)
             }
-
             if(!response.success){
                 setError(response.message)
             }
-
-            <Navigate to="/trades"/>
+           return response.success && <Navigate to="/" replace/>;
         }
         run();
     }
