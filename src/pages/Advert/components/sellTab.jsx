@@ -181,7 +181,7 @@ const SellTab = memo(({
                                            <small> Select a payment method </small> 
                                         </div>
                                         <div className="col col-6 col-xs-6">
-                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal">+ ADD</button>
+                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal" type="button">+ ADD</button>
                                         </div>
 
                                         <div className="col col-xs-12 col-sm-12 p-20">
