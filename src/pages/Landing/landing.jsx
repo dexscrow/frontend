@@ -25,7 +25,7 @@ export default function Landing() {
         <>
         <div className="container-fluid body">
         <div className="row flex-nowrap">
-            {account && <Sidebar/>}
+            <Sidebar account={account}/>
             <div className="col py-3">
                  <div className="row p-20"> 
                    <Header account={account}/>
