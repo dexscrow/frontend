@@ -1,8 +1,10 @@
-import React from "react";
+import React,{useContext} from "react";
+import AccountContext from "../../contexts/account"
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 
 export default function SellAd(){
+    const [account,_] = useContext(AccountContext);
     return (
         <>
         <div className="modal fade" id="confirmPublishModal" tabindex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
