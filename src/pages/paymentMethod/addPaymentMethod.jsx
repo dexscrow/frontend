@@ -1,14 +1,16 @@
 import React,{useContext,useState,useEffect} from "react";
+import {config} from "dotenv";
 import {Navigate} from "react-router-dom";
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import axios from "axios";
+config();
 const token = localStorage.getItem("authToken");
 
-const PAYMENT_METHODS_URL = "http://localhost:8000/methods/payment/all";
+const PAYMENT_METHODS_URL = process.env.SERVER_URL+"/methods/payment/all";
 
-const ADD_PAYMENT_METHOD_URL = "http://localhost:8000/methods/payment";
+const ADD_PAYMENT_METHOD_URL = process.env.SERVER_URL+"/methods/payment";
 
 
 export default function AddPaymentMethod(){

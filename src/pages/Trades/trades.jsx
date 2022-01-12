@@ -4,7 +4,7 @@ import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import axios from "axios";
 
-const TRADES_URL = "http://localhost:8000/trades"
+const TRADES_URL = process.env.SERVER_URL+"/trades"
 
 export default function Trades(){
     const [account,_] = useContext(AccountContext);

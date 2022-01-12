@@ -1,22 +1,55 @@
 import React,{useContext,useState,useEffect} from 'react'
 import AccountContext from "../../contexts/account";
-import Header from "../Landing/components/landing";
+import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
 import PendingKyc from "./components/pendingKyc";
-import VerifiedKyc from "./components/verified";
+import VerifiedKyc from "./components/verifiedKyc";
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
-const API_URL = "http://localhost:8000/user/me"
+const API_URL = process.env.SERVER_URL+"/user/me"
+const EMAIL_URL = process.env.SERVER_URL+"/user/email"
+const USERNAME_URL = process.env.SERVER_URL+"/user/username"
 
 export default function Profile() {
     const [account,_] = useContext(AccountContext);
     const [user,setUser] = useState(null);
-    const [_,setError] = useState(null);
+    const [username,setUsername] = useState("");
+    const [email,setEmail] = useState("");
+    const [error,setError] = useState(null);
     const [updatedName,setUpdatedName] = useState("");
 
+    const updateUsername = ()=>{
+        const run = async ()=>{
+            try{
+                
+            const {data:response} = await axios.post(USERNAME_URL,{name:username},{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(!response || response.error){
+                setError(response.error)
+            }
+            if(!response.success){
+                setError(response.message)
+            }
+            return;
+
+            }catch(error){
+                
+                setError(error.message)
+            }
+
+        }
+        run();
+    }
+
+
+
     useEffect(()=>{
+        console.log(user)
         const run = async ()=>{
             try{
                 const {data:response} = await axios.get(API_URL,{
@@ -31,6 +64,7 @@ export default function Profile() {
                 if(!response.success){
                     setError(response.message)
                 }
+                console.log(response.data)
                 setUser(response.data);
             }catch(error){
                 setError(error.message)
@@ -67,15 +101,18 @@ export default function Profile() {
                         <div className="col col-6 col-xs-6 col-sm-3 pt-20">
                             <div className="row">
                                 <div className="col col-3 col-xs-3 col-sm-3 text-end">
-                                    <img src="images/avatar.png" style="height:30px; width:30px;"/>
+                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
-                                    <input type="text" className="form-control" aria-label="" value={user.username}/>
+                                    <input type="text" className="form-control" aria-label="" value={username} onChange={(e)=>setUsername(e.target.value)}/>
                                 </div>
                             </div>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center"><br/>
-                            <button ttype="submit" value="Update" className="btn-dex-small btn-dex-primary">Update</button>
+                            <button type="button" value="Update" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                                e.preventDefault();
+                                updateUsername();
+                            }}>Update</button>
                         </div>
                      
                     </div>
@@ -164,7 +201,7 @@ export default function Profile() {
                                       <div className="col col-12 col-xs-12 col-sm-9">
                                           <div className="row">
                                               <div className="col">
-                                                 <img src="images/approved.svg" style="width:40px; height:40px;"/>
+                                                 <img src="images/approved.svg" style={{width:"40px", height:"40px"}}/>
                                              </div>
            
                                              <div className="col">
@@ -200,7 +237,7 @@ export default function Profile() {
 
             </div>
        
-      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style="background:#ccc">
+      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style={{background:"#ccc"}}>
         <div className="row p-0">
             <div className="col-5 col-xs-5 d-flex align-items-center align-middle p-0">
 
