@@ -37,7 +37,7 @@ export default function BuyAd(){
 
     <div className="container-fluid body">
         <div className="row flex-nowrap">
-            {account && <Sidebar/>}
+        <Sidebar account={account}/>
         </div>
     </div>
             <div className="col py-3 main">

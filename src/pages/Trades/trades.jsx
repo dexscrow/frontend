@@ -2,6 +2,7 @@ import{useState,useEffect,useContext} from "react";
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
+import Nav from "../Landing/components/nav"
 import axios from "axios";
 
 const TRADES_URL = process.env.SERVER_URL+"/trades"
@@ -36,7 +37,7 @@ export default function Trades(){
     <>
        <div className="container-fluid body">
         <div className="row flex-nowrap">
-                {account && <Sidebar account={account}/>}
+                <Sidebar account={account}/>
             <div className="col py-3 main">
                   <div className="row p-20">
                     <Header account={account}/>

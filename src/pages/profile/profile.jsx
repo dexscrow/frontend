@@ -77,7 +77,7 @@ export default function Profile() {
         <>
              <div className="container-fluid body">
         <div className="row flex-nowrap">
-            {account && <Sidebar/>}
+        <Sidebar account={account}/>
 
 
 
