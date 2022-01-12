@@ -1,5 +1,6 @@
 import React ,{useContext,useState,memo,useEffect} from 'react'
 import Sidebar from '../Landing/components/sidebar'
+import {Link} from "react-router-dom";
 import Header from '../Landing/components/header'
 import AccountContext from '../../contexts/account'
 import PaymentModal from './components/paymentModal'
@@ -33,6 +34,7 @@ const CreateAd = memo(() => {
     const [error,setError] = useState("");
     const authToken = localStorage.getItem("authToken");
     const [paymentMethods,setPaymentMethods] = useState([]);
+    // const [selectedMethod,setSelectedMethod] = useState({});
     console.log("auth",authToken)
 
     const advertDetails = {
@@ -43,6 +45,7 @@ const CreateAd = memo(() => {
     console.log("createAd");
     
     useEffect(()=>{
+        console.log(paymentMethods)
         const fetchCountries = async ()=>{
             try{
                 const {data:response} = await axios.get(COUNTRIES_URL,{
@@ -120,15 +123,16 @@ const CreateAd = memo(() => {
                     <div className="modal-body">
                         <div className="row">
                             <div className="col col-12 col-xs-12 text-end">
-                                <a href="" className="btn-dex btn-dex-default p-10">+ Add New</a>
+                                <Link to="/methods/payment/new" className="btn-dex btn-dex-default p-10">+ Add New</Link>
                             </div>
                         </div>
                         <div className="row">
                             <div className="card payment-method-card">
                                 {
                                     paymentMethods && paymentMethods.map((method)=>{
+
                                         let det = JSON.parse(method.details);
-                                        <>
+                                       return (<>
                                         <div className="row">
                                     <div className="col col-6 col-xs-6 text-start">
                                         <span className="btn-dex-small btn-dex-primary"> {method.paymentMethod.name}</span>
@@ -143,51 +147,18 @@ const CreateAd = memo(() => {
                                         <>
                                              <div className="row" key={index}>
                                     <div className="col col-6 col-xs-6 label dim text-end">
-                                        {name}
+                                        <b>{name} </b> :
                                     </div>
                                     <div className="col col-6 col-xs-6 value">
-                                        {det[name]}
+                                       <b> {det[name]}</b>
                                     </div>
                                 </div>
                                         </>
                                     ))
                                 }
-                                        </>
+                                        </>)
                                     })
                                 }
-                                {/* <div className="row">
-                                    <div className="col col-6 col-xs-6 text-start">
-                                        <span className="btn-dex-small btn-dex-primary"> Bank Transfer</span>
-                                    </div>
-                                    <div className="col col-6 col-xs-6 text-end">
-                                        X
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col col-6 col-xs-6 label dim text-end">
-                                        NAME
-                                    </div>
-                                    <div className="col col-6 col-xs-6 value">
-                                        Ola  Fashade
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col col-6 col-xs-6 dim text-end label">
-                                        BANK ACCOUNT NUMBER
-                                    </div>
-                                    <div className="col col-6 col-xs-6 value">
-                                        0043320734
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col col-6 col-xs-6 dim text-end label">
-                                        BANK NAME
-                                    </div>
-                                    <div className="col col-6 col-xs-6 value">
-                                        Access Bank
-                    </div>
-                                </div> */}
                             </div>
                         </div>
 
