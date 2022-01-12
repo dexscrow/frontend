@@ -5,7 +5,7 @@ import Sidebar from "../Landing/components/sidebar";
 import Nav from "../Landing/components/nav"
 import axios from "axios";
 
-const TRADES_URL = process.env.SERVER_URL+"/trades"
+const TRADES_URL = process.env.REACT_APP_SERVER_URL+"/trades"
 
 export default function Trades(){
     const [account,_] = useContext(AccountContext);

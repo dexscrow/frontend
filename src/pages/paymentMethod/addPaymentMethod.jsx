@@ -9,9 +9,9 @@ import axios from "axios";
 config();
 const token = localStorage.getItem("authToken");
 
-const PAYMENT_METHODS_URL = process.env.SERVER_URL+"/methods/payment/all";
+const PAYMENT_METHODS_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
 
-const ADD_PAYMENT_METHOD_URL = process.env.SERVER_URL+"/methods/payment";
+const ADD_PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
 
 
 export default function AddPaymentMethod(){

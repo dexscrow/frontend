@@ -9,9 +9,9 @@ import VerifiedKyc from "./components/verifiedKyc";
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
-const API_URL = process.env.SERVER_URL+"/user/me"
-const EMAIL_URL = process.env.SERVER_URL+"/user/email"
-const USERNAME_URL = process.env.SERVER_URL+"/user/username"
+const API_URL = process.env.REACT_APP_SERVER_URL+"/user/me"
+const EMAIL_URL = process.env.REACT_APP_SERVER_URL+"/user/email"
+const USERNAME_URL = process.env.REACT_APP_SERVER_URL+"/user/username"
 
 export default function Profile() {
     const [account,_] = useContext(AccountContext);
