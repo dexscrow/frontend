@@ -7,7 +7,12 @@ import CreateAd from "./pages/Advert/createAd";
 import Wallet from "./pages/wallets/wallet";
 import Adlist from "./pages/AdvertList/adlist";
 import Trades from "./pages/Trades/trades";
+import Profile from "./pages/profile/profile";
 import "./styles.css";
+import SellAd from "./pages/Advert/sellAd";
+import BuyAd from "./pages/Advert/buyAd";
+import Trade from "./pages/Trade/trade";
+import AddPaymentMethod from "./pages/paymentMethod/addPaymentMethod";
 
  function App() {
    const [account,setAccount] = useState(null);
@@ -28,7 +33,12 @@ import "./styles.css";
           <Route path="/ad/create" element={<CreateAd/>}/>
           <Route path="/wallet" element={<Wallet/>}/>
           <Route path="/ad/list" element={<Adlist/>}/>
-          <Route path="/trades/" element={<Trades/>}/>
+          <Route path="/trades" element={<Trades/>}/>
+          <Route path="/ad/sell" element={<SellAd/>}/>
+          <Route path="/ad/buy" element={<BuyAd/>}/>
+          <Route path="/trade" element={<Trade/>}/>
+          <Route path="/profile" element={<Profile/>}/>
+          <Route path = "/methods/payment/new" element={<AddPaymentMethod />}/>
           </Routes>
       </Router>
       </AccountContext.Provider>

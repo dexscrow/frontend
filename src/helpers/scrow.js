@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {Contract,ethers} from "ethers";
 import advert from "../contracts/Advert.json";
 import trade from "../contracts/Trade.json";
@@ -23,6 +22,19 @@ export const setMetamaskConnection = async ()=>{
     throw new Error("please select binance smart chain network");
   }
 
+}
+
+
+export const setBinanceWalletConnection = async ()=>{
+  const provider = window.BinanceChain;
+  if(!provider) throw new Error("you have to install binance wallet");
+
+  await provider.request({
+    method:"eth_requestAccounts"
+  });
+  if(provider.networkVersion !== "56"){
+    throw new Error("please select binance smart chain network")
+  }
 }
 
 export const disconnectWallet = async ()=>{

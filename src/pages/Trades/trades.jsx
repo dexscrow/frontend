@@ -4,7 +4,7 @@ import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import axios from "axios";
 
-const TRADES_URL = "http://localhost:8000/trades"
+const TRADES_URL = process.env.SERVER_URL+"/trades"
 
 export default function Trades(){
     const [account,_] = useContext(AccountContext);
@@ -36,7 +36,7 @@ export default function Trades(){
     <>
        <div className="container-fluid body">
         <div className="row flex-nowrap">
-          <Sidebar account={account}/>
+                {account && <Sidebar account={account}/>}
             <div className="col py-3 main">
                   <div className="row p-20">
                     <Header account={account}/>
@@ -109,7 +109,7 @@ export default function Trades(){
                          
                         <div className="col col-6 col-xs-6 col-sm-2">
                            <b>{trade.advert.priceType}</b> | 2021-12-17 15:11:52
-                           <b><u>#4747474748383</u></b><br/>
+                           <b><u>{trade.uid}</u></b><br/>
                            <span className="label">Asset</span><br/>
                            <span className="value"> {trade.advert.asset}</span>
                         </div>

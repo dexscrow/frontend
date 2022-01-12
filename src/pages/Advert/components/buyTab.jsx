@@ -8,7 +8,7 @@ const END_POINT = 'http://localhost:8000/assets'
 
 
  const BuyTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod
 }) =>{
     
     return (
@@ -158,7 +158,10 @@ const END_POINT = 'http://localhost:8000/assets'
                                      <div className="row form-row">                          
                                         <div className="col col-12 col-xs-12 col-sm-8 mt-20">
                                             <label>Payment Time Limit</label>
-                                            <select className="form-control">
+                                            <select className="form-control" value={deadline} onChange={(e)=>{
+                                                const val = Number(e.target.value);
+                                                setDeadline((1000*60*val));
+                                            }}>
                                                 <option value="15">15 Min</option>
                                                 <option value="30">30 Min</option>
                                                 <option value="45">45 Min</option>
@@ -175,17 +178,76 @@ const END_POINT = 'http://localhost:8000/assets'
                                 </div>
 
                                 <div className="col col-12 col-xs-12 col-sm-6">
-                                    <div className="col col-xs-12 col-sm-12">
-                                        <div className="label"><b>Payment Method</b></div>
+                                        <div className="col col-xs-12 col-sm-12">
+                                            <div className="label"><b>Payment Method</b></div>
+                                        </div>
+                                        <div className="col col-6 col-xs-6">
+                                           <small> Select a payment method </small> 
+                                        </div>
+                                        <div className="col col-6 col-xs-6">
+                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal" type="button">+ ADD</button>
+                                        </div>
+
+                                        <div className="col col-xs-12 col-sm-12 p-20">
+                                            <div className="card payment-method-card">
+                                                {
+                                                    selectedMethod && 
+                                                    console.log(selectedMethod)
+                                            //         (()=>{
+                                            //             let det = JSON.parse(selectedMethod.details);
+                                            //             return (
+                                            //                 <>
+                                            //                  <div className="row">
+                                            //   <div className="col col-6 col-xs-6 text-start">
+                                            //     <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
+                                            //   </div>
+                                            //   <div className="col col-6 col-xs-6 text-end">
+                                            //      X
+                                            //   </div>
+                                            //  </div>
+                                            //  {
+                                            //      Object.entries(det).map(([key,index])=>(
+                                            //         <div className="row" key={index}>
+                                            //   <div className="col col-6 col-xs-6 label dim text-end">
+                                            //       {key} :
+                                            //   </div>
+                                            //   <div className="col col-6 col-xs-6 value">
+                                            //      det[key]
+                                            //  </div>
+                                            //  </div>
+                                            //      ))
+                                            //  }
+                                            //                 </>
+                                            //             )
+                                            //         })()
+                                                }
+                                                {/* {
+                                                    selectedMethod !== {} && (()=>{
+                                                        let det = JSON.parse(selectedMethod.details)
+                                                        return(<>
+                                                        <div className="row">
+                                              <div className="col col-6 col-xs-6 text-start">
+                                                <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
+                                              </div>
+                                              <div className="col col-6 col-xs-6 text-end">
+                                                 X
+                                              </div>
+                                             </div>
+                                            {/* {
+                                                Object.entries(det).map(([key,index])=>(
+                                                    <div className="row" key={index}>
+                                              <div className="col col-6 col-xs-6 label dim text-end">
+                                                  {key} :
+                                              </div>
+                                              <div className="col col-6 col-xs-6 value">
+                                                 det[key]
+                                             </div>
+                                             </div>
+                                                ))
+                                            } */}
+                                            </div>
+                                         </div>
                                     </div>
-                                    <div className="col col-xs-6">
-                                       <small> Select Up To 5 Methods </small> 
-                                    </div>
-                                    <div className="col col-xs-6">
-                                        <span className="btn-dex-small btn-dex-danger">Bank Transfer</span>
-                                        <span className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#paymentMethodModal">+ ADD</span>
-                                    </div>
-                                </div>
                             </div>  
                            <Misc step={step}/>
                             <div className="row form-row">     
