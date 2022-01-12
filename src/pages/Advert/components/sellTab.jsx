@@ -7,7 +7,7 @@ import useFetch from "../../../hooks/useFetch";
 const END_POINT = 'http://localhost:8000/assets'
 
 const SellTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod
 }) =>{
  
     return (
@@ -157,7 +157,10 @@ const SellTab = memo(({
                                          <div className="row form-row">                          
                                             <div className="col col-12 col-xs-12 col-sm-8 mt-20">
                                                 <label>Payment Time Limit</label>
-                                                <select className="form-control">
+                                                <select className="form-control" value={deadline} onChange={(e)=>{
+                                                    const val = Number(e.target.value);
+                                                    setDeadline(1000*60*val);
+                                                }}>
                                                     <option value="15">15 Min</option>
                                                     <option value="30">30 Min</option>
                                                     <option value="45">45 Min</option>
@@ -186,39 +189,61 @@ const SellTab = memo(({
 
                                         <div className="col col-xs-12 col-sm-12 p-20">
                                             <div className="card payment-method-card">
-                                             <div className="row">
+                                                {
+                                                    selectedMethod !== "{}" &&
+                                                    console.log(selectedMethod)
+                                            //          (()=>{
+                                            //             let det = JSON.parse(selectedMethod.details);
+                                            //             return (
+                                            //                 <>
+                                            //                  <div className="row">
+                                            //   <div className="col col-6 col-xs-6 text-start">
+                                            //     <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
+                                            //   </div>
+                                            //   <div className="col col-6 col-xs-6 text-end">
+                                            //      X
+                                            //   </div>
+                                            //  </div>
+                                            //  {
+                                            //      Object.entries(det).map(([key,index])=>(
+                                            //         <div className="row" key={index}>
+                                            //   <div className="col col-6 col-xs-6 label dim text-end">
+                                            //       {key} :
+                                            //   </div>
+                                            //   <div className="col col-6 col-xs-6 value">
+                                            //      det[key]
+                                            //  </div>
+                                            //  </div>
+                                            //      ))
+                                            //  }
+                                            //                 </>
+                                            //             )
+                                            //         })()
+                                                }
+                                                {/* {
+                                                    selectedMethod !== {} && (()=>{
+                                                        let det = JSON.parse(selectedMethod.details)
+                                                        return(<>
+                                                        <div className="row">
                                               <div className="col col-6 col-xs-6 text-start">
-                                                <span className="btn-dex-small btn-dex-primary"> Bank Transfer</span>
+                                                <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
                                               </div>
                                               <div className="col col-6 col-xs-6 text-end">
                                                  X
                                               </div>
                                              </div>
-                                             <div className="row">
+                                            {/* {
+                                                Object.entries(det).map(([key,index])=>(
+                                                    <div className="row" key={index}>
                                               <div className="col col-6 col-xs-6 label dim text-end">
-                                                  NAME
+                                                  {key} :
                                               </div>
                                               <div className="col col-6 col-xs-6 value">
-                                                 Ola  Fashade
+                                                 det[key]
                                              </div>
                                              </div>
-                                             <div className="row">
-                                                 <div className="col col-6 col-xs-6 label dim text-end ">
-                                                     BANK ACCOUNT NUMBER 
-                                                 </div>
-                                                 <div className="col col-6 col-xs-6 value">
-                                                    0043320734
-                                                </div>
-                                             </div>
-                             
-                                             <div className="row">
-                                                 <div className="col col-6 col-xs-6 label dim text-end">
-                                                     BANK NAME
-                                                 </div>
-                                                 <div className="col col-6 col-xs-6 value">
-                                                    Access Bank
-                                                </div>
-                                             </div>
+                                                ))
+                                            } */}
                                             </div>
                                          </div>
                                     </div>

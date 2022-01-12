@@ -25,7 +25,7 @@ export default function Adlist() {
                 if(!response.success){
                     setError(response.message)
                 }
-
+                console.log(response.data)
                 setAds(response.data);
             }catch(err){
                 setError(err.message)

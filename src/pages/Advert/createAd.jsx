@@ -1,6 +1,6 @@
 import React ,{useContext,useState,memo,useEffect} from 'react'
 import Sidebar from '../Landing/components/sidebar'
-import {Link} from "react-router-dom";
+import {Link,Navigate} from "react-router-dom";
 import Header from '../Landing/components/header'
 import AccountContext from '../../contexts/account'
 import PaymentModal from './components/paymentModal'
@@ -8,12 +8,12 @@ import Progressbar from './components/progressbar'
 import BuyTab from './components/buyTab'
 import SellTab from './components/sellTab'
 import ConfirmAd from './components/confirmAd'
-import useFetch from "../../hooks/useFetch";
 import axios from 'axios'
 
 const COUNTRIES_URL='http://localhost:8000/countries';
 const ASSETS_URL = 'http://localhost:8000/assets';
 const PAYMENT_METHOD_URL = 'http://localhost:8000/methods/payment';
+const CREATE_AD_URL = 'http://localhost:8000/advert';
 
 const CreateAd = memo(() => {
     const [account,_] = useContext(AccountContext);
@@ -34,18 +34,63 @@ const CreateAd = memo(() => {
     const [error,setError] = useState("");
     const authToken = localStorage.getItem("authToken");
     const [paymentMethods,setPaymentMethods] = useState([]);
-    // const [selectedMethod,setSelectedMethod] = useState({});
+    const [selectedMethod,setSelectedMethod] = useState({});
+    const [deadline,setDeadline] = useState(0);
     console.log("auth",authToken)
 
-    const advertDetails = {
-        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset
-    }
-
+    
     const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}
     console.log("createAd");
+
+    const createAd = ()=>{
+        const run = async ()=>{
+            try{
+                const {data:response} = await axios.post(CREATE_AD_URL,{
+                    asset:(assets.find((a)=>a.symbol == asset)._id),
+                    paymentMethod:selectedMethod._id,
+                    currency:currency.symbol,
+                    currencyRate,
+                    factor,
+                    priceType,
+                    lowerLimit,
+                    upperLimit,
+                    deadline,
+                    unit:totalAsset,
+                    amount:price,
+                    status: "active",
+                    notes:"todo",
+                    conditions:{
+                        registered:String(new Date()),
+                        baseOwnershipAmount:0,
+                        status:"now"
+                    }
+                },{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.success){
+                    setError(response.message);
+                }
+
+              return  <Navigate to="/ad/list"/>
+            }catch(error){
+                setError(error.message)
+            }
+           
+        };
+        run();
+    }
+
+    const advertDetails = {
+        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createAd,selectedMethod
+    }
+
     
     useEffect(()=>{
-        console.log(paymentMethods)
         const fetchCountries = async ()=>{
             try{
                 const {data:response} = await axios.get(COUNTRIES_URL,{
@@ -107,7 +152,7 @@ const CreateAd = memo(() => {
         fetchAssets();
         fetchCountries();
         fetchPaymentMethods();
-    },[]);
+    },[authToken,paymentMethods]);
     
     return (
         <>
@@ -135,7 +180,8 @@ const CreateAd = memo(() => {
                                        return (<>
                                         <div className="row">
                                     <div className="col col-6 col-xs-6 text-start">
-                                        <span className="btn-dex-small btn-dex-primary"> {method.paymentMethod.name}</span>
+                                        <button className="btn-dex-small btn-dex-primary" onClick={(e)=>{setSelectedMethod(method)
+                                        }} type="button"> {method.paymentMethod.name}</button>
                                     </div>
                                     <div className="col col-6 col-xs-6 text-end">
                                         X
