@@ -1,5 +1,6 @@
 import React,{useContext,useState,useEffect} from 'react'
 import AccountContext from "../../contexts/account";
+import {setBinanceWalletConnection} from "../../helpers/scrow";
 import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
@@ -72,7 +73,14 @@ export default function Profile() {
         }
         run();
     }
-
+    useEffect(()=>{
+        async function request(){ 
+        if(!account){
+            await setBinanceWalletConnection();
+        }
+    }
+    request();
+    },[account])
 
 
     useEffect(()=>{
