@@ -14,7 +14,7 @@ export default function Sidebar({account}) {
                     
                     <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start menu" id="menu">
                         <li className="nav-item text-center" style={{width:"100%"}}>
-                            <Link to="ad/buy" className="nav-link align-middle text-center px-0">
+                            <Link to="/ad/buy" className="nav-link align-middle text-center px-0">
                                 <img src={P2P}/><br/>
                                  <span className="ms-1 d-none d-sm-inline">P2P center</span>
                             </Link>

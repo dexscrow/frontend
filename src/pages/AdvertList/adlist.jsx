@@ -9,6 +9,7 @@ const token = localStorage.getItem("authToken");
 
 const URL = process.env.REACT_APP_SERVER_URL+'/adverts/me';
 const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
+const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 
 export default function Adlist() {
@@ -19,6 +20,7 @@ export default function Adlist() {
     const [status,setStatus] = useState("");
     const [priceType,setPriceType] = useState("");
     const [asset,setAsset] = useState("");
+    const [assets,setAssets] = useState([]);
 
     const runQuery = ()=>{
         const run = async ()=>{
@@ -48,7 +50,9 @@ export default function Adlist() {
           }catch(error){
             setError(error.message)
           }
-        }
+        };
+
+        
         run();
       }
 
@@ -73,7 +77,27 @@ export default function Adlist() {
             }
             
         }
+        const fetchAssets = async ()=>{
+          try{
+            const {data:response} = await axios.get(ASSETS_URL,{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(response.error){
+                setError(response.error)
+            }
+            if(!response.success){
+                setError(response.message)
+            }
+            console.log(response.data)
+            setAssets(response.data);
+        }catch(err){
+            setError(err.message)
+        }
+        }
        run();
+       fetchAssets();
     },[URL]);
 
     return (
@@ -146,12 +170,14 @@ export default function Adlist() {
                     <div className="col col-xs-6 col-sm-2">
                         <label>Asset</label>
                         <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
-                            <option value="">All Asset</option>
-                            <option value="BTCB">BTCB</option>
-                            <option value="ETH">ETH</option>
-                            <option value="SOL">SOL</option>
-                            <option value="BTCB">BNB</option>
-                            <option value="USDT">USDT</option>
+                             <option value="">All Asset</option>
+                            {
+                              assets && assets.map((asset)=>(
+                                <>
+                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                </>
+                              ))
+                            }
                         </select>
                     </div>
 
@@ -196,7 +222,7 @@ export default function Adlist() {
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20">
                     {
-                        ads && ads.map((advert)=>(
+                        ads !== [] ? ads.map((advert)=>(
                              <>
                      <div className="row">
                         <div className="col col-6 col-xs-6 col-sm-2">
@@ -235,7 +261,12 @@ export default function Adlist() {
  
                     </div>
                     </>
-                        ))}
+                        ))
+                      :
+                      <div className='row d-flex justify-content-center align-items-center'>
+                        <span>No Advert</span>
+                      </div>
+                      }
                  </div>
               </div>
             </div>
