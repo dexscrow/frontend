@@ -4,7 +4,7 @@ import AuthContext from "../contexts/auth";
 require("dotenv").config();
 
 
-const SERVER_URL = process.env.SERVER_URL||process.env.SERVER_URL+"";
+const SERVER_URL = process.env.REACT_APP_SERVER_URL||process.env.REACT_APP_SERVER_URL+"";
 
 const useLogin = (walletAddress,prevToken)=>{
     const [_,setAuthToken] = useContext(AuthContext);

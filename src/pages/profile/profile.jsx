@@ -4,13 +4,14 @@ import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
 import PendingKyc from "./components/pendingKyc";
+import Nav from "../Landing/components/nav";
 import VerifiedKyc from "./components/verifiedKyc";
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
-const API_URL = process.env.SERVER_URL+"/user/me"
-const EMAIL_URL = process.env.SERVER_URL+"/user/email"
-const USERNAME_URL = process.env.SERVER_URL+"/user/username"
+const API_URL = process.env.REACT_APP_SERVER_URL+"/user/me"
+const EMAIL_URL = process.env.REACT_APP_SERVER_URL+"/user/email"
+const USERNAME_URL = process.env.REACT_APP_SERVER_URL+"/user/username"
 
 export default function Profile() {
     const [account,_] = useContext(AccountContext);
@@ -18,13 +19,38 @@ export default function Profile() {
     const [username,setUsername] = useState("");
     const [email,setEmail] = useState("");
     const [error,setError] = useState(null);
-    const [updatedName,setUpdatedName] = useState("");
 
     const updateUsername = ()=>{
         const run = async ()=>{
             try{
                 
             const {data:response} = await axios.post(USERNAME_URL,{name:username},{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(!response || response.error){
+                setError(response.error)
+            }
+            if(!response.success){
+                setError(response.message)
+            }
+            return;
+
+            }catch(error){
+                
+                setError(error.message)
+            }
+
+        }
+        run();
+    }
+
+    const updateEmail = ()=>{
+        const run = async ()=>{
+            try{
+                
+            const {data:response} = await axios.post(EMAIL_URL,{email},{
                 headers:{
                     "Authorization":`Bearer ${token}`
                 }
@@ -76,7 +102,7 @@ export default function Profile() {
         <>
              <div className="container-fluid body">
         <div className="row flex-nowrap">
-            {account && <Sidebar/>}
+        <Sidebar account={account}/>
 
 
 
@@ -118,8 +144,37 @@ export default function Profile() {
                     </div>
                     </form>
                     </div>
-
-
+                    <div className="trade-record-card pt-10 pb-20 mb-10 col-sm-12">
+                    <form action="" method="">
+                     <div className="row">
+                        <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+                          <br/>
+                           <b>Email</b> 
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-3">
+                            <span className="label">Your Email address needs to be valid to recieve update</span><br/>
+                        </div>
+            
+                        <div className="col col-6 col-xs-6 col-sm-3 pt-20">
+                            <div className="row">
+                                <div className="col col-3 col-xs-3 col-sm-3 text-end">
+                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
+                                </div>
+                                <div className="col col-9 col-xs-9 col-sm-9">
+                                    <input type="text" className="form-control" aria-label="" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center"><br/>
+                            <button type="button" value="Update" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                                e.preventDefault();
+                                updateEmail();
+                            }}>Update</button>
+                        </div>
+                     
+                    </div>
+                    </form>
+                    </div>
                     <div className="trade-record-card pt-10 pb-20 mb-10">
                          <div className="row">
                             <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
@@ -205,12 +260,12 @@ export default function Profile() {
                                              </div>
            
                                              <div className="col">
-                                                 { user.kycStatus === "pending" ? 
+                                                 { user && (user.kycStatus === "pending" ? 
                                                  <PendingKyc/> :(
                                                      user.kycStatus === "invalid"?
                                                      <InvalidKyc/> :
                                                      <VerifiedKyc/>
-                                                 )
+                                                 ))
                                                 }
                                             </div>
            
@@ -233,36 +288,8 @@ export default function Profile() {
 
 
               </div>
-
-
             </div>
-       
-      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style={{background:"#ccc"}}>
-        <div className="row p-0">
-            <div className="col-5 col-xs-5 d-flex align-items-center align-middle p-0">
-
-                <ul className="nav nav-pills">
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/buy_sell.svg"/><br/>
-                             <span className="ms-1 d-none d-sm-inline">Buy/Sell</span>
-                        </a>
-                    </li>
-
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/create.svg"/><br/>
-                            <span className="ms-1 d-none d-sm-inline">Ad Center</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div className="col-7 col-xs-7 account float-end pt-10">
-                <img src="images/avatar.png" alt="hugenerd" width="60" height="60" className="rounded-circle"/>
-            </div>
-        </div>
-     </nav>
+       <Nav/>
         </>
     )
 }

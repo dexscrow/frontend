@@ -1,13 +1,83 @@
-import React,{useContext} from "react";
-import AccountContext from "../../contexts/account"
+import React,{useContext,useState,useEffect} from "react";
+import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
+import Nav from "../Landing/components/nav";
+import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
+import AccountContext from "../../contexts/account";
+const token = localStorage.getItem("authToken");
+
+const SELL_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=sell";
+const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
 
 export default function SellAd(){
-    const [account,_] = useContext(AccountContext);
+  const [account,_]= useContext(AccountContext);
+  const [ads,setAds] = useState([]);
+  const [error,setError] = useState("");
+  const [currency,setCurrency] = useState("");
+  const [priceType,setPriceType] = useState("");
+  const [asset,setAsset] = useState("");
+
+
+  const runQuery = ()=>{
+    const run = async ()=>{
+      try{
+        
+      const filters = {
+        currency,priceType,asset
+      }
+      Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
+      const q = new URLSearchParams(filters).toString();
+      console.log(q)
+      const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
+      
+      if(response.error){
+        setError(response.error);
+      }
+
+      if(!response.success){
+        setError(response.message);
+      }
+      console.log(response.data);
+      setAds(response.data);
+      }catch(error){
+        setError(error.message)
+      }
+    }
+    run();
+  }
+
+  useEffect(()=>{
+    const fetchAds = async ()=>{
+      try{
+        const {data:response} = await axios.get(SELL_ADS_URL,{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        })
+
+        if(response.error){
+          setError(response.error);
+        }
+
+        if(!response.success){
+          setError(response.message);
+        }
+        console.log(response.data);
+        setAds(response.data);
+      }catch(error){
+        setError(error.message)
+      }
+    }
+    fetchAds();
+  },[token,SELL_ADS_URL])
     return (
         <>
-        <div className="modal fade" id="confirmPublishModal" tabindex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
+        <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
     <div className="modal-dialog modal-sm">
       <div className="modal-content" style={{background:"#ccc"}}>
         <div className="modal-header">
@@ -34,9 +104,9 @@ export default function SellAd(){
   </div>
 
     <div className="container-fluid body">
-        <div className="row flex-nowrap">
-            {account && <Sidebar/>}
-            <div className="col py-3 main">
+    <div className="row flex-nowrap">
+        <Sidebar account={account}/>
+        <div className="col py-3 main">
                   <div className="row p-20">
                     <Header account={account}/>
                     </div>
@@ -51,58 +121,81 @@ export default function SellAd(){
                    <form>
                    <div className="row">
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                       <a href="" className="btn-dex btn-dex-default p-10 pr-30">Buy</a> 
+                       <Link to="/ad/buy" className="btn-dex btn-dex-default p-10 pr-30">Buy</Link> 
                        &nbsp;&nbsp;
-                       <a href="" className="btn-dex btn-dex-primary p-10 pl-30">Sell</a>
+                       <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10 pl-30">Sell</Link>
                     </div>
 
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 dropdown">
+                            <button className="btn btn-light btn-dex dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                              Actions
+                            </button>
+
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                              <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            </ul>
+                    </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius">
-                            <option value="USDT" style={{backgroundImage:'url(images/approved.svg)'}}>USDT</option>
-                            <option value="WBTC">BTCB</option>
-                            <option value="WETH">ETH</option>
-                            <option value="Solana">SOL</option>
+                        <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
+                            <option value="USDT" style={{backgroundImage:"url(images/approved.svg)"}}>USDT</option>
+                            <option value="BTCB">BTCB</option>
+                            <option value="ETH">ETH</option>
+                            <option value="SOL">SOL</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2">
-                        <select className="form-control no-radius">
+                        <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
                             <option value="NGN">NGN</option>
                             <option value="USDT">USDT</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius">
-                            <option value="all">All Payments</option>
+                        <select className="form-control no-radius" value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
+                            <option value="">All Payments</option>
                             <option value="buy">Buy</option>
                             <option value="sell">Sell</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                       Reset Filter
+                      <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
+                        e.preventDefault();
+                        runQuery();
+                      }} >Query Filter</button>
+                    </div>
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
+                      <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
+                        setAsset("");
+                        setCurrency("");
+                        setPriceType("");
+                      }} >Reset Filter</button>
                     </div>
                   </div>
                 </form>
 
-
-                <div className="row">
+                  <div className="row">
                     <div className="trade-record-card pt-10 pb-20 mb-10">
-                       <div className="row">
+                       {
+                         
+                         ads && ads.map((ad)=>(
+                          <>
+                         <div className="row">
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                             <div className="row">
                               <div className="col col-2 col-xs-2">
-                                <img src="images/avatar.png" style={{width:"30px", height:"30px"}}/>
+                                <img src="images/avatar.png" style={{width:"30px", height:"30px"}} />
                               </div>
                               <div className="col col-10 col-xs-10 text-start"> 
                                 <div className="row">
                                     <div className="col col-12 col-xs-12">
-                                        <h4 className="username">Bigfash</h4>
+                                        <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
                                     </div>
                                     <div className="col col-6 col-xs-6 text-end d-flex">
-                                        <span className="value">100</span>
+                                        <span className="value">{ad.unit}</span>
                                         <span className="label">Orders</span>
                                          &nbsp; &nbsp; 
                                         <span className="value">Completion</span>
@@ -116,18 +209,18 @@ export default function SellAd(){
                         <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                           <div className="row">
                             <div className="col col-6 col-xs-6">
-                                <span className="value number">411.87 USDT</span><br/>
+                                <span className="value number">{ad.amount} {ad.currency}</span><br/>
                                 <span className="label">Price</span>
                             </div>
                             <div className="col col-6 col-xs-6">
-                                <span className="value number">10,000 USDT</span><br/>
+                                <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
                                 <span className="label">Amount</span>
                             </div>
                           </div>
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                            <span className="value number">50,000 - 1,000,0000 NGN</span><br/>
+                            <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
                             <span className="label">Limit</span>
                         </div>
 
@@ -136,157 +229,18 @@ export default function SellAd(){
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
-                            <a href="" className="btn-dex-small btn-dex-primary p-10">Sell</a>
+                            <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
                         </div>       
                     </div>
+                    </>
+                    ))
+                    }
                 </div>
-                                    
-                <div className="trade-record-card pt-10 pb-20 mb-10">
-                    <div className="row">
-                       <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
-                         <div className="row">
-                           <div className="col col-2 col-xs-2">
-                             <img src="images/avatar.png" style={{width:"30px", height:"30px"}}/>
-                           </div>
-                           <div className="col col-10 col-xs-10 text-start"> 
-                             <div className="row">
-                                 <div className="col col-12 col-xs-12">
-                                     <h4 className="username">Bigfash</h4>
-                                 </div>
-                                 <div className="col col-6 col-xs-6 text-end d-flex">
-                                     <span className="value">100</span>
-                                     <span className="label">Orders</span>
-                                      &nbsp; &nbsp; 
-                                     <span className="value">Completion</span>
-                                     <span className="label">92%</span>
-                                 </div>
-                             </div>
-                        </div>
-
-                        <div className="col col-12 col-xs-12 text-start"> 
-                            <span className="label">Buyer's Payment Methods</span> <br/><br/>
-                            <span className="btn-dex-small btn-dex-danger">Bank Transfer</span>
-                            <span className="btn-dex-small btn-dex-info">Paypal</span>
-                            <span className="btn-dex-small btn-dex-warning">Go Bank</span>
-                        </div>
-
-                       </div>
-                     </div>
-
-                     <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                       <div className="row">
-                         <div className="col col-12 col-xs-12 mb-10">
-                             <span className="value number">411.87 USDT</span><br/>
-                             <span className="label">Price</span>
-                         </div>
-                         <div className="col col-12 col-xs-12 mb-10">
-                             <span className="value number">10,000 USDT</span><br/>
-                             <span className="label">Available</span>
-                         </div>
-                         <div className="col col-12 col-xs-12 mb-10">
-                            <span className="value number">50,000 - 1,000,0000 NGN</span><br/>
-                            <span className="label">Order Limit</span>
-                         </div>
-                         <div className="col col-12 col-xs-12 mb-10">
-                            <span className="label">Payment Time Limit</span> <span className="value number">15 Minutes</span>
-                         </div>
-
-                       </div>
-                     </div>
-
-                     <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                         <span className="label"> 
-                            <b>Please Read Terms Carefully</b> <br/><br/>
-                            ✔ I change (N100) to cover up for Binance Fees, Bank Charges and VAT. Sorry if I don’t I will I end up all in loose.<br/>
-                            ✔ I pay instantly and expect instantly.<br/> 
-                            ✔ This is based on Mutual Agreement if you accept please just type in that you have accepted it.
-                         </span>
-                     </div>
-
-                     <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                        <form action="" method="">
-                        
-                         <div className="row"> 
-                            <div className="col col-12 col-xs-12 col-sm-12">
-                                <label>I want to sell</label>
-                                <div className="input-group">
-                                    <input type="text" className="form-control" aria-label=""/>
-                                    <span className="input-group-text"><span className="text-primary">All</span> NGN</span>
-                                </div>
-                                <span className="rate-info float-end">&nbsp; </span>
-                            </div>
-                         </div>
-
-                         <div className="row"> 
-                            <div className="col col-12 col-xs-12 col-sm-12">
-                                <label>I will receive</label>
-                                <div className="input-group">
-                                    <input type="text" className="form-control" aria-label="" placeholder="1,000.00 - 3,500.00"/>
-                                    <span className="input-group-text">NGN</span>
-                                </div>
-                                <span className="rate-info float-end"> &nbsp; </span>
-                            </div>
-                         </div>
-
-                         <div className="row"> 
-                            <div className="col col-12 col-xs-12 col-sm-12">
-                               <label className="mb-10"> Payment Method</label>
-                               <select name="paymentmethod" className="form-control">
-                                   <option>Bank Transfer 004332073 </option>
-                                   <option>Paypal olafashade@hotmail.com </option>
-                               </select>
-                                <span className="rate-info float-end"> &nbsp; </span>
-                            </div>
-                         </div>
-
-                         <div className="row form-row"> 
-                            <div className="col col-12 col-xs-12 col-sm-12 d-flex">
-                              <button className="btn-dex-small btn-dex-default">Cancel</button>&nbsp;
-                              <button className="btn-dex-small btn-dex-primary">Sell USDT</button>
-                            </div>
-                         </div>
-
-                        </form>
-
-                     </div>
-                 </div>
               </div>
-
-
-      </div>
-       
-
-      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style={{background:"#ccc"}}>
-        <div className="row p-0">
-            <div className="col-5 col-xs-5 d-flex align-items-center align-middle p-0">
-
-                <ul className="nav nav-pills">
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/buy_sell.svg"/><br/>
-                             <span className="ms-1 d-none d-sm-inline">Buy/Sell</span>
-                        </a>
-                    </li>
-
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/create.svg"/><br/>
-                            <span className="ms-1 d-none d-sm-inline">Ad Center</span>
-                        </a>
-                    </li>
-
-                </ul>
-
-            </div>
-            
-            <div className="col-7 col-xs-7 account float-end pt-10">
-                <img src="images/avatar.png" alt="hugenerd" width="60" height="60" className="rounded-circle"/>
-            </div>
-        </div>
-     </nav>
-        
+              </div>
         </div>
         </div>
-        </div></>
+        <Nav/>
+        </>
     )
 }

@@ -2,9 +2,10 @@ import{useState,useEffect,useContext} from "react";
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
+import Nav from "../Landing/components/nav"
 import axios from "axios";
 
-const TRADES_URL = process.env.SERVER_URL+"/trades"
+const TRADES_URL = process.env.REACT_APP_SERVER_URL+"/trades"
 
 export default function Trades(){
     const [account,_] = useContext(AccountContext);
@@ -36,7 +37,7 @@ export default function Trades(){
     <>
        <div className="container-fluid body">
         <div className="row flex-nowrap">
-                {account && <Sidebar account={account}/>}
+                <Sidebar account={account}/>
             <div className="col py-3 main">
                   <div className="row p-20">
                     <Header account={account}/>
@@ -148,33 +149,7 @@ export default function Trades(){
 
 
         </div>
-       
-      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style={{background:"#ccc"}}>
-        <div className="row p-0">
-            <div className="col-5 col-xs-5 d-flex align-items-center align-middle p-0">
-
-                <ul className="nav nav-pills">
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/buy_sell.svg"/><br/>
-                             <span className="ms-1 d-none d-sm-inline">Buy/Sell</span>
-                        </a>
-                    </li>
-
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/create.svg"/><br/>
-                            <span className="ms-1 d-none d-sm-inline">Ad Center</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div className="col-7 col-xs-7 account float-end pt-10">
-                <img src="images/avatar.png" alt="hugenerd" width="60" height="60" className="rounded-circle"/>
-            </div>
-        </div>
-     </nav>
+       <Nav/>
     </>
     )
 }

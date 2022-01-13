@@ -1,15 +1,24 @@
 import React,{useContext,useState,useEffect} from 'react'
 import Header from '../Landing/components/header'
+import {Link} from "react-router-dom";
+import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account';
 import Sidebar from '../Landing/components/sidebar';
 import axios from "axios";
+const token = localStorage.getItem("authToken");
 
-const URL = 'http://localhost:8000/adverts'
+const URL = process.env.REACT_APP_SERVER_URL+'/adverts/me';
+const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
+
+
 export default function Adlist() {
     const [account,_] = useContext(AccountContext);
     const [ads,setAds] = useState([]);
     const [error,setError] = useState("");
-    const token = localStorage.getItem("authToken");
+    const [date,setDate]= useState("");
+    const [status,setStatus] = useState("");
+    const [priceType,setPriceType] = useState("");
+    const [asset,setAsset] = useState("");
 
     useEffect(()=>{
         const run = async()=>{
@@ -65,23 +74,37 @@ export default function Adlist() {
 
     <div className="container-fluid body">
         <div className="row flex-nowrap">
-            <Sidebar/>
+        <Sidebar account={account}/>
             <div className="col py-3 main">
                   <div className="row p-20">
                     <Header account={account}/>
                     </div>
                    <div className="row">
                     <div className="col col-12">
-                       <h3 className="page-title">Wallet & Account</h3>
+                       <h3 className="page-title">Advert List</h3>
                     </div>
                    </div>
                    <div className="row">
                     <div className="col col-12 col-xs-12">
                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
-                         <li className="active">Balance & Rating</li>
-                         <li>Transactions History </li>
-                         <li>Ad Lists</li>
-                         <li>Fiat Payment Methods </li>
+                         <li >
+                             <Link to="/profile" style={{textDecoration:"none"}}>
+                             profile
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/trades" style={{textDecoration:"none"}}>
+                             Transactions History 
+                              </Link>
+                              </li>
+                         <li className="active">
+                             <Link to="/ad/list" style={{textDecoration:"none"}}>
+                             Ad Lists
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+                              </li>
                      </ul>
                      </div>
                    </div>
@@ -91,9 +114,12 @@ export default function Adlist() {
                     <div className="col col-xs-6 col-sm-2">
                         <label>Asset</label>
                         <select className="form-control no-radius">
-                            <option value="all">All Asset</option>
-                            <option value="btc">BTC</option>
-                            <option value="usdt">USDT</option>
+                            <option value="">All Asset</option>
+                            <option value="BTCB">BTCB</option>
+                            <option value="ETH">ETH</option>
+                            <option value="SOL">SOL</option>
+                            <option value="BTCB">BNB</option>
+                            <option value="USDT">USDT</option>
                         </select>
                     </div>
 
@@ -119,7 +145,7 @@ export default function Adlist() {
 
                     <div className="col col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
-                        <div className="col col-12 d-flex"><input type="date" /><input type="date" /></div>  
+                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>console.log(e.target.value)}/></div>  
                     </div>
 
                     <div className="col col-xs-6 col-sm-2">
@@ -178,36 +204,7 @@ export default function Adlist() {
             </div>
            </div>
      </div>
-       
-
-      <nav className="navbar fixed-bottom navbar-expand-sm d-block d-md-none bottom-nav p-0" style={{background:"#ccc"}}>
-        <div className="row p-0">
-            <div className="col-5 col-xs-5 d-flex align-items-center align-middle p-0">
-
-                <ul className="nav nav-pills">
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/buy_sell.svg"/><br/>
-                             <span className="ms-1 d-none d-sm-inline">Buy/Sell</span>
-                        </a>
-                    </li>
-
-                    <li className="nav-item text-center">
-                        <a href="#" className="nav-link align-middle px-0">
-                            <img src="images/create.svg"/><br/>
-                            <span className="ms-1 d-none d-sm-inline">Ad Center</span>
-                        </a>
-                    </li>
-
-                </ul>
-
-            </div>
-            
-            <div className="col-7 col-xs-7 account float-end pt-10">
-                <img src="images/avatar.png" alt="hugenerd" width="60" height="60" className="rounded-circle"/>
-            </div>
-        </div>
-     </nav>
+     <Nav/>
         </>
     )
 }

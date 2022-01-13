@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="60.426" viewBox="0 0 60 60.426">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Path_17820" data-name="Path 17820" d="M43.8,11.993v10.24H33.677L26.492,29.5l-7.184-7.267H9.184V11.993L2,4.726,9.184-2.541v-10.24H19.308l7.184-7.267,7.184,7.267H43.8v10.24l7.184,7.267Z" transform="translate(-2 20.048)" fill="none"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <path id="Path_17822" data-name="Path 17822" d="M58.387,4.265,52.8-1.378v-8.01a5.48,5.48,0,0,0-5.454-5.505H39.434L33.843-20.4a5.418,5.418,0,0,0-7.69,0l-5.591,5.533H12.626A5.48,5.48,0,0,0,7.172-9.361v7.983L1.718,4.265A5.529,5.529,0,0,0,0,8.146a5.532,5.532,0,0,0,1.582,3.881L7.2,17.671v8.01a5.48,5.48,0,0,0,5.454,5.505h7.909l5.591,5.643a5.429,5.429,0,0,0,7.69,0l5.591-5.671h7.936a5.48,5.48,0,0,0,5.454-5.505V17.671l5.591-5.643a5.542,5.542,0,0,0,0-7.763ZM47.342,15.414v10.24H37.2L30,32.921l-7.2-7.267H12.654V15.414l-7.2-7.267,7.2-7.267V-9.361H22.8L30-16.628l7.2,7.267H47.342V.879l7.2,7.267Z" transform="translate(0 22)" fill="none"/>
+    </clipPath>
+    <clipPath id="clip-path-3">
+      <path id="Path_17824" data-name="Path 17824" d="M16.5-2.8,10.2-9.1,6.29-5.222,16.5,4.991,32.22-10.727l-3.909-3.881L16.5-2.8Z" transform="translate(-6.29 14.608)" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="aprooved" transform="translate(0 22)">
+    <g id="Group_18392" data-name="Group 18392" transform="translate(5.505 -16.628)" clip-path="url(#clip-path)">
+      <path id="Path_17819" data-name="Path 17819" d="M1-21.048H55.428V34.006H1Z" transform="translate(-3.721 18.296)" fill="#98c8ff"/>
+    </g>
+    <g id="Group_18393" data-name="Group 18393" transform="translate(0 -22)" clip-path="url(#clip-path-2)">
+      <path id="Path_17821" data-name="Path 17821" d="M-1-23.194H64.984V43.273H-1Z" transform="translate(-1.728 19.908)" fill="#0045ff"/>
+    </g>
+    <g id="Group_18394" data-name="Group 18394" transform="translate(17.033 -1.653)" clip-path="url(#clip-path-3)">
+      <path id="Path_17823" data-name="Path 17823" d="M5.29-15.608H36.726V9.5H5.29Z" transform="translate(-8.043 12.856)" fill="#0045ff"/>
+    </g>
+  </g>
+</svg>
