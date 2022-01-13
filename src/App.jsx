@@ -31,7 +31,7 @@ import "./styles.css";
           <Routes>
           <Route path="/" element={<Landing/>}/>
           <Route path="/ad/create" element={<CreateAd/>}/>
-          <Route path="/wallet" element={<Wallet/>}/>
+          <Route path="/method/payment" element={<Wallet/>}/>
           <Route path="/ad/list" element={<Adlist/>}/>
           <Route path="/trades" element={<Trades/>}/>
           <Route path="/ad/sell" element={<SellAd/>}/>

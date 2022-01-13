@@ -1,12 +1,43 @@
-import React, {useContext} from 'react'
+import React, {useContext,useState,useEffect} from 'react'
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
+import {Link} from "react-router-dom";
+import axios from "axios";
 import Nav from "../Landing/components/nav";
 import AccountContext from "../../contexts/account";
+const token = localStorage.getItem("authToken");
+
+const URL = process.env.REACT_APP_SERVER_URL+'/';
 
 
 export default function Wallet() {
-    const [account,setAccount] = useContext(AccountContext)
+    const [account,setAccount] = useContext(AccountContext);
+    const [paymentMethods,setPaymentMethods] = useState([]);
+    const [error,setError] = useState("");
+
+    useEffect(()=>{
+        const run = async()=>{
+            try{
+                const {data:response} = await axios.get(URL,{
+                    headers:{
+                        "Authorization":`Bearer ${token}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.success){
+                    setError(response.message)
+                }
+                console.log(response.data)
+                setPaymentMethods(response.data);
+            }catch(err){
+                setError(err.message)
+            }
+            
+        }
+       run();
+    },[])
     return (
             
     <><div className="container-fluid body">
@@ -18,99 +49,66 @@ export default function Wallet() {
                     </div>
                     <div className="row">
                         <div className="col col-12">
-                            <h3 className="page-title">Wallet & Account</h3>
+                            <h3 className="page-title">Payment Methods</h3>
                         </div>
                     </div>
 
 
                     <div className="row">
                         <div className="col col-12 col-xs-12">
-                            <ul className="d-flex inner-nav" style={{ listStyle: "none", padding: "10px" }}>
-                                <li className="active">Balance & Rating</li>
-                                <li>Transactions History </li>
-                                <li>Ad Lists</li>
-                                <li>Fiat Payment Methods </li>
-                            </ul>
+                        <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                         <li >
+                             <Link to="/profile" style={{textDecoration:"none"}}>
+                             Profile
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/trades" style={{textDecoration:"none"}}>
+                             Transactions History 
+                              </Link>
+                              </li>
+                         <li >
+                             <Link to="/ad/list" style={{textDecoration:"none"}}>
+                             Ad Lists
+                             </Link>
+                             </li>
+                         <li className="active">
+                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+                              </li>
+                     </ul>
                         </div>
                     </div>
 
-                    <form>
-                        <div className="row">
-                            <div className="col col-xs-6 col-sm-2">
-                                <label>Asset</label>
-                                <select className="form-control no-radius">
-                                    <option value="all">All Asset</option>
-                                    <option value="btc">BTC</option>
-                                    <option value="usdt">USDT</option>
-                                </select>
-                            </div>
-
-                            <div className="col col-xs-6 col-sm-2">
-                                <label>Order Type</label>
-                                <select className="form-control no-radius">
-                                    <option value="all">Buy/Sell</option>
-                                    <option value="buy">Buy</option>
-                                    <option value="sell">Sell</option>
-                                </select>
-                            </div>
-
-                            <div className="col col-xs-6 col-sm-2">
-                                <label>Status</label>
-                                <select className="form-control no-radius">
-                                    <option value="unpaid">Unpaid</option>
-                                    <option value="paid">Paid</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="canceled">Canceled</option>
-                                    <option value="disputed">Disputed</option>
-                                </select>
-                            </div>
-
-                            <div className="col col-xs-6 col-sm-3">
-                                <div className="col col-12"><label>Date</label> </div>
-                                <div className="col col-12 d-flex"><input type="date" value="" /><input type="date" value="" /></div>
-                            </div>
-
-                            <div className="col col-xs-6 col-sm-2">
-                                <br />
-                                Reset Filter
-                            </div>
-                        </div>
-                    </form>
-
-
                     <div className="row">
                         <div className="trade-record-card pt-10 pb-20">
-                            <div className="row">
-                                <div className="col col-6 col-xs-6 col-sm-2">
-                                    <b>Buy</b> | 2021-12-17 15:11:52
-                                    <b><u>#4747474748383</u></b><br />
-                                    <span className="label">Asset</span><br />
-                                    <span className="value"> USDT</span>
-                                </div>
-                                <div className="col col-6 col-xs-6 col-sm-2"><br /><br />
-                                    <span className="label">Fiat Amount</span><br />
-                                    <span className="value">55,152.56 NGN</span>
-                                </div>
-                                <div className="col col-6 col-xs-6 col-sm-2"><br /><br />
-                                    <span className="label">Price</span><br />
-                                    <span className="value">572.45 NGN</span>
-                                </div>
-                                <div className="col col-6 col-xs-6 col-sm-2"><br /><br />
-                                    <span className="label">Crypto Amount</span><br />
-                                    <span className="value">96.05 USDT</span>
-                                </div>
-                                <div className="col col-6 col-xs-6  col-sm-2"><br /><br />
-                                    <span className="label">Counterparty</span><br />
-                                    <span className="value">Bigfash</span>
-                                </div>
-                                <div className="col  col-6 col-xs-3 col-sm-2"><br /><br />
-                                    <span className="label">Status</span><br />
-                                    <span className="value">Completed</span><br /><br />
+                        {
+                                    paymentMethods && paymentMethods.map((method)=>{
 
-                                    <span className="label">Action</span><br />
-                                    <span className="value">View</span>
+                                        let det = JSON.parse(method.details);
+                                       return (<>
+                                        <div className="row">
+                                    <div className="col col-6 col-xs-6 text-start">
+                                        <button className="btn-dex-small btn-dex-primary"type="button"> {method.paymentMethod?.name}</button>
+                                    </div>
                                 </div>
-                            </div>
+                                {
+                                    
+                                    Object.entries(det).map(([name,index])=>(
+                                        <>
+                                             <div className="row" key={index}>
+                                    <div className="col col-6 col-xs-6 label dim text-end">
+                                        <b>{name} </b> :
+                                    </div>
+                                    <div className="col col-6 col-xs-6 value">
+                                       <b> {det[name]}</b>
+                                    </div>
+                                </div>
+                                        </>
+                                    ))
+                                }
+                                        </>)
+                                    })
+                        }
                         </div>
                     </div>
 
