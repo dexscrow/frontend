@@ -164,9 +164,9 @@ export default function BuyAd(){
                     <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                               Ad Management
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                              <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                              <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                              <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
                             </ul>
                     </div>
                    </div>
@@ -186,11 +186,11 @@ export default function BuyAd(){
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
-                        <option value="">All Asset</option>
-                            {
+                        <option value="">All Assets</option>
+                        {
                               assets && assets.map((asset)=>(
                                 <>
-                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                  <option value={asset.symbol}>{asset.symbol}</option>
                                 </>
                               ))
                             }
@@ -200,10 +200,10 @@ export default function BuyAd(){
                     <div className="col col-6 col-xs-6 col-sm-2">
                         <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
                           <option value="">All Currencies</option>
-                            {
-                              assets && assets.map((asset)=>(
+                          {
+                              currencies && currencies.map((currency)=>(
                                 <>
-                                  <option value={currencies.symbol}>{currencies.symbol}</option>
+                                  <option value={currency.symbol}>{currency.symbol}</option>
                                 </>
                               ))
                             }
