@@ -7,10 +7,11 @@ import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
 
-const SELL_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=sell";
-const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
+const SELL_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=buy";
+const FILTERED_AD_URL = process.env.REACT_APP_SERVER_URL+"/adverts";
 const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
 const CURRENCIES_URL = process.env.REACT_APP_SERVER_URL+"/countries";
+const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
 
 export default function SellAd(){
   const [account,_]= useContext(AccountContext);
@@ -21,6 +22,8 @@ export default function SellAd(){
   const [asset,setAsset] = useState("");
   const [currencies,setCurrencies] = useState([]);
   const [assets,setAssets] = useState([]);
+  const [methods,setMethods] = useState([]);
+  const [method,setMethod] = useState("");
 
 
   const runQuery = ()=>{
@@ -33,7 +36,7 @@ export default function SellAd(){
       Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
       const q = new URLSearchParams(filters).toString();
       console.log(q)
-      const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
+      const {data:response} = await axios.get(FILTERED_AD_URL+"/?"+q,{
         headers:{
           "Authorization":`Bearer ${token}`
         }
@@ -110,15 +113,37 @@ export default function SellAd(){
     if(!response.success){
         setError(response.message)
     }
-    console.log(response.data)
     setCurrencies(response.data);
     }catch(error){
       setError(error.message)
     }
   }
+
+  const fetchMethods = async ()=>{
+    try{
+      const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
+
+      if(response.error){
+        setError(response.error);
+      }
+
+      if(!response.success){
+        setError(response.message);
+      }
+      setMethods(response.data);
+    }catch(error){
+      setError(error.message)
+    }
+  }
+
     fetchAds();
     fetchAssets();
     fetchCurrencies();
+    fetchMethods();
   },[token])
     return (
         <>
@@ -211,10 +236,15 @@ export default function SellAd(){
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius" value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
-                            <option value="">Payment Methods</option>
-                            <option value="buy">Paypal</option>
-                            <option value="sell">Bank Transfer</option>
+                    <select className="form-control no-radius" value={method} onChange={(e)=>setMethod(e.target.value)}>
+                            <option value="">All Payment Methods</option>
+                            {
+                              methods && methods.map((method)=>(
+                                <>
+                                <option value={(method.name).toString()}>{(method.name).toString()}</option>
+                                </>
+                              ))
+                            }
                         </select>
                     </div>
 
@@ -227,7 +257,7 @@ export default function SellAd(){
                       <span onClick={(e)=>{
                         setAsset("");
                         setCurrency("");
-                        setPriceType("");
+                        setMethod("");
                       }} >Reset</span>
                     </div>
 
@@ -241,7 +271,7 @@ export default function SellAd(){
                     <div className="trade-record-card pt-10 pb-20 mb-10">
                     {
                          
-                         ads !== [] ? ads.map((ad)=>(
+                         ads ? ads.map((ad)=>(
                           <>
                          <div className="row">
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
@@ -296,7 +326,7 @@ export default function SellAd(){
                     ))
                     :
                     <div className="row d-flex justify-content-center align-items-center">
-                      <span>
+                      <span className="text-center">
                         No Adverts Available
                       </span>
                     </div>
