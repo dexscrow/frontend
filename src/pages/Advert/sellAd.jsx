@@ -126,6 +126,16 @@ export default function SellAd(){
                        <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10 pl-30">Sell</Link>
                     </div>
 
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 dropdown">
+                            <button className="btn btn-light btn-dex dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                              Actions
+                            </button>
+
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                              <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            </ul>
+                    </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>

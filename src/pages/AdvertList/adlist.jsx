@@ -88,8 +88,8 @@ export default function Adlist() {
                     <div className="col col-12 col-xs-12">
                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
                          <li >
-                             <Link to="/" style={{textDecoration:"none"}}>
-                             change
+                             <Link to="/profile" style={{textDecoration:"none"}}>
+                             profile
                              </Link>
                              </li>
                          <li>
