@@ -69,14 +69,15 @@ export default function AddPaymentMethod(){
                 if(!response.success){
                     setError("cannot make request")
                 }
-                setPaymentMethods(response.data);
                 console.log(response.data)
+                setPaymentMethods(response.data);
+                
             }catch(error){
                 setError(error.message)
             }
-        }
+        };
         getMethods();
-    },[currentMethod])
+    },[account])
 
 
     return (
