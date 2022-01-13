@@ -8,11 +8,11 @@ import Wallet from "./pages/wallets/wallet";
 import Adlist from "./pages/AdvertList/adlist";
 import Trades from "./pages/Trades/trades";
 import Profile from "./pages/profile/profile";
-import "./styles.css";
 import SellAd from "./pages/Advert/sellAd";
 import BuyAd from "./pages/Advert/buyAd";
 import Trade from "./pages/Trade/trade";
 import AddPaymentMethod from "./pages/paymentMethod/addPaymentMethod";
+import "./styles.css";
 
  function App() {
    const [account,setAccount] = useState(null);

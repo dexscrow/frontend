@@ -1,14 +1,14 @@
 import React,{useContext,useState,useEffect} from "react";
 import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
+import Nav from "../Landing/components/nav";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
-import Nav from "../Landing/components/nav";
 const token = localStorage.getItem("authToken");
 
 const BUY_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=buy";
-
+const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
 export default function BuyAd(){
     const [account,_]= useContext(AccountContext);
     const [ads,setAds] = useState([]);
@@ -19,8 +19,34 @@ export default function BuyAd(){
 
     const runQuery = ()=>{
       const run = async ()=>{
+        try{
+          
+        const filters = {
+          currency,priceType,asset
+        }
+        Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
+        const q = new URLSearchParams(filters).toString();
+        console.log(q)
+        const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        })
         
+        if(response.error){
+          setError(response.error);
+        }
+
+        if(!response.success){
+          setError(response.message);
+        }
+        console.log(response.data);
+        setAds(response.data);
+        }catch(error){
+          setError(error.message)
+        }
       }
+      run();
     }
 
 
@@ -47,7 +73,7 @@ export default function BuyAd(){
         }
       }
       fetchAds();
-    },[token])
+    },[token,BUY_ADS_URL])
 
     return (
         <>
@@ -87,7 +113,7 @@ export default function BuyAd(){
 
                    <div className="row">
                     <div className="col col-12">
-                       <h3 className="page-title">Buy Ad</h3>
+                       <h3 className="page-title">Buy Ads</h3>
                     </div>
                    </div>
 
@@ -127,7 +153,8 @@ export default function BuyAd(){
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
                       <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
-                        
+                        e.preventDefault();
+                        runQuery();
                       }} >Query Filter</button>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
@@ -139,7 +166,6 @@ export default function BuyAd(){
                     </div>
                   </div>
                 </form>
-
 
                   <div className="row">
                     <div className="trade-record-card pt-10 pb-20 mb-10">

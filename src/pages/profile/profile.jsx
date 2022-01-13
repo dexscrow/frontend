@@ -19,13 +19,38 @@ export default function Profile() {
     const [username,setUsername] = useState("");
     const [email,setEmail] = useState("");
     const [error,setError] = useState(null);
-    const [updatedName,setUpdatedName] = useState("");
 
     const updateUsername = ()=>{
         const run = async ()=>{
             try{
                 
             const {data:response} = await axios.post(USERNAME_URL,{name:username},{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(!response || response.error){
+                setError(response.error)
+            }
+            if(!response.success){
+                setError(response.message)
+            }
+            return;
+
+            }catch(error){
+                
+                setError(error.message)
+            }
+
+        }
+        run();
+    }
+
+    const updateEmail = ()=>{
+        const run = async ()=>{
+            try{
+                
+            const {data:response} = await axios.post(EMAIL_URL,{email},{
                 headers:{
                     "Authorization":`Bearer ${token}`
                 }
@@ -119,8 +144,37 @@ export default function Profile() {
                     </div>
                     </form>
                     </div>
-
-
+                    <div className="trade-record-card pt-10 pb-20 mb-10 col-sm-12">
+                    <form action="" method="">
+                     <div className="row">
+                        <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+                          <br/>
+                           <b>Email</b> 
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-3">
+                            <span className="label">Your Email address needs to be valid to recieve update</span><br/>
+                        </div>
+            
+                        <div className="col col-6 col-xs-6 col-sm-3 pt-20">
+                            <div className="row">
+                                <div className="col col-3 col-xs-3 col-sm-3 text-end">
+                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
+                                </div>
+                                <div className="col col-9 col-xs-9 col-sm-9">
+                                    <input type="text" className="form-control" aria-label="" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center"><br/>
+                            <button type="button" value="Update" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                                e.preventDefault();
+                                updateEmail();
+                            }}>Update</button>
+                        </div>
+                     
+                    </div>
+                    </form>
+                    </div>
                     <div className="trade-record-card pt-10 pb-20 mb-10">
                          <div className="row">
                             <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
@@ -206,12 +260,12 @@ export default function Profile() {
                                              </div>
            
                                              <div className="col">
-                                                 { user.kycStatus === "pending" ? 
+                                                 { user && (user.kycStatus === "pending" ? 
                                                  <PendingKyc/> :(
                                                      user.kycStatus === "invalid"?
                                                      <InvalidKyc/> :
                                                      <VerifiedKyc/>
-                                                 )
+                                                 ))
                                                 }
                                             </div>
            
@@ -234,8 +288,6 @@ export default function Profile() {
 
 
               </div>
-
-
             </div>
        <Nav/>
         </>
