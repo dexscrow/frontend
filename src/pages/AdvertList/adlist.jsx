@@ -1,16 +1,24 @@
 import React,{useContext,useState,useEffect} from 'react'
 import Header from '../Landing/components/header'
+import {Link} from "react-router-dom";
 import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account';
 import Sidebar from '../Landing/components/sidebar';
 import axios from "axios";
+const token = localStorage.getItem("authToken");
 
-const URL = 'http://localhost:8000/adverts'
+const URL = process.env.REACT_APP_SERVER_URL+'/adverts/me';
+const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
+
+
 export default function Adlist() {
     const [account,_] = useContext(AccountContext);
     const [ads,setAds] = useState([]);
     const [error,setError] = useState("");
-    const token = localStorage.getItem("authToken");
+    const [date,setDate]= useState("");
+    const [status,setStatus] = useState("");
+    const [priceType,setPriceType] = useState("");
+    const [asset,setAsset] = useState("");
 
     useEffect(()=>{
         const run = async()=>{
@@ -79,10 +87,24 @@ export default function Adlist() {
                    <div className="row">
                     <div className="col col-12 col-xs-12">
                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
-                         <li className="active">Balance & Rating</li>
-                         <li>Transactions History </li>
-                         <li>Ad Lists</li>
-                         <li>Fiat Payment Methods </li>
+                         <li >
+                             <Link to="/" style={{textDecoration:"none"}}>
+                             change
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/trades" style={{textDecoration:"none"}}>
+                             Transactions History 
+                              </Link>
+                              </li>
+                         <li className="active">
+                             <Link to="/ad/list" style={{textDecoration:"none"}}>
+                             Ad Lists
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+                              </li>
                      </ul>
                      </div>
                    </div>
@@ -92,9 +114,12 @@ export default function Adlist() {
                     <div className="col col-xs-6 col-sm-2">
                         <label>Asset</label>
                         <select className="form-control no-radius">
-                            <option value="all">All Asset</option>
-                            <option value="btc">BTC</option>
-                            <option value="usdt">USDT</option>
+                            <option value="">All Asset</option>
+                            <option value="BTCB">BTCB</option>
+                            <option value="ETH">ETH</option>
+                            <option value="SOL">SOL</option>
+                            <option value="BTCB">BNB</option>
+                            <option value="USDT">USDT</option>
                         </select>
                     </div>
 
@@ -120,7 +145,7 @@ export default function Adlist() {
 
                     <div className="col col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
-                        <div className="col col-12 d-flex"><input type="date" /><input type="date" /></div>  
+                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>console.log(e.target.value)}/></div>  
                     </div>
 
                     <div className="col col-xs-6 col-sm-2">

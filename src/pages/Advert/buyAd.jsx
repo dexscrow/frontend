@@ -126,10 +126,20 @@ export default function BuyAd(){
                        <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10 pl-30">Sell</Link>
                     </div>
 
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 dropdown">
+                            <button className="btn btn-light btn-dex dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                              Actions
+                            </button>
 
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                              <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            </ul>
+                    </div>
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
                             <option value="USDT" style={{backgroundImage:"url(images/approved.svg)"}}>USDT</option>
+                            <option value="">All Asset</option>
                             <option value="BTCB">BTCB</option>
                             <option value="ETH">ETH</option>
                             <option value="SOL">SOL</option>
@@ -152,13 +162,13 @@ export default function BuyAd(){
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
+                      <button type="button" className="btn-dex btn-dex-primary " onClick={(e)=>{
                         e.preventDefault();
                         runQuery();
                       }} >Query Filter</button>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      <button type="button" className="btn btn-small btn-dex btn-dex-default" onClick={(e)=>{
+                      <button type="button" className="btn-dex btn-dex-primary" onClick={(e)=>{
                         setAsset("");
                         setCurrency("");
                         setPriceType("");
