@@ -47,13 +47,14 @@ export default function AddPaymentMethod(){
             if(!response.success){
                 setError(response.message)
             }
-           return response.success && <Navigate to="/" replace/>;
+           return <Navigate to="/" replace/>;
         }
         run();
     }
  
 
     useEffect(()=>{
+        
         const getMethods = async ()=>{
             try{
                 
@@ -68,14 +69,15 @@ export default function AddPaymentMethod(){
                 if(!response.success){
                     setError("cannot make request")
                 }
+                console.log(response.data)
                 setPaymentMethods(response.data);
+                
             }catch(error){
                 setError(error.message)
             }
-        }
-
+        };
         getMethods();
-    },[currentMethod])
+    },[account])
 
 
     return (

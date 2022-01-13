@@ -9,6 +9,7 @@ const token = localStorage.getItem("authToken");
 
 const URL = process.env.REACT_APP_SERVER_URL+'/adverts/me';
 const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
+const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 
 export default function Adlist() {
@@ -19,6 +20,41 @@ export default function Adlist() {
     const [status,setStatus] = useState("");
     const [priceType,setPriceType] = useState("");
     const [asset,setAsset] = useState("");
+    const [assets,setAssets] = useState([]);
+
+    const runQuery = ()=>{
+        const run = async ()=>{
+          try{
+            
+          const filters = {
+            createdAt:date,status,priceType,asset
+          }
+          Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
+          const q = new URLSearchParams(filters).toString();
+          console.log(q)
+          const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
+            headers:{
+              "Authorization":`Bearer ${token}`
+            }
+          })
+          
+          if(response.error){
+            setError(response.error);
+          }
+  
+          if(!response.success){
+            setError(response.message);
+          }
+          console.log(response.data);
+          setAds(response.data);
+          }catch(error){
+            setError(error.message)
+          }
+        };
+
+        
+        run();
+      }
 
     useEffect(()=>{
         const run = async()=>{
@@ -41,8 +77,28 @@ export default function Adlist() {
             }
             
         }
+        const fetchAssets = async ()=>{
+          try{
+            const {data:response} = await axios.get(ASSETS_URL,{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(response.error){
+                setError(response.error)
+            }
+            if(!response.success){
+                setError(response.message)
+            }
+            console.log(response.data)
+            setAssets(response.data);
+        }catch(err){
+            setError(err.message)
+        }
+        }
        run();
-    },[]);
+       fetchAssets();
+    },[URL]);
 
     return (
         <>
@@ -100,7 +156,7 @@ export default function Adlist() {
                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
                          <li >
                              <Link to="/profile" style={{textDecoration:"none"}}>
-                                Profile
+                             Profile
                              </Link>
                              </li>
                          <li>
@@ -120,20 +176,22 @@ export default function Adlist() {
                    <div className="row mb-20 mt-20">
                     <div className="col col-xs-6 col-sm-2">
                         <label>Asset</label>
-                        <select className="form-control no-radius">
-                            <option value="">All Asset</option>
-                            <option value="BTCB">BTCB</option>
-                            <option value="ETH">ETH</option>
-                            <option value="SOL">SOL</option>
-                            <option value="BTCB">BNB</option>
-                            <option value="USDT">USDT</option>
+                        <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
+                             <option value="">All Asset</option>
+                            {
+                              assets && assets.map((asset)=>(
+                                <>
+                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                </>
+                              ))
+                            }
                         </select>
                     </div>
 
                     <div className="col col-xs-6 col-sm-2">
                         <label>Order Type</label>
-                        <select className="form-control no-radius">
-                            <option value="all">Buy/Sell</option>
+                        <select className="form-control no-radius"  value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
+                            <option value="">All</option>
                             <option value="buy">Buy</option>
                             <option value="sell">Sell</option>
                         </select>
@@ -141,32 +199,37 @@ export default function Adlist() {
 
                     <div className="col col-xs-6 col-sm-2">
                         <label>Status</label>
-                        <select className="form-control no-radius">
-                            <option value="unpaid">Unpaid</option>
-                            <option value="paid">Paid</option>
-                            <option value="completed">Completed</option>
-                            <option value="canceled">Canceled</option>
-                            <option value="disputed">Disputed</option>
+                        <select className="form-control no-radius"  value={status} onChange={(e)=>setStatus(e.target.value)}>
+                            <option value="active">Active</option>
+                            <option value="closed">Closed</option>
                         </select>
                     </div>
 
                     <div className="col col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
-                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>console.log(e.target.value)}/></div>  
+                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>setDate(new Date(e.target.value).toISOString())}/></div>  
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
-                      <br/>
-                      Reset &nbsp; &nbsp; Filter
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        e.preventDefault();
+                        runQuery();
+                        }}> Run Query</button>
+                    </div>
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        setDate("");
+                        setStatus("");
+                        setPriceType("");
+                        setAsset("");
+                      }}> Reset Filter </button>
                     </div>
                   </div>
                 </form>
-
-
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20">
                     {
-                        ads && ads.map((advert)=>(
+                        ads !== [] ? ads.map((advert)=>(
                              <>
                      <div className="row">
                         <div className="col col-6 col-xs-6 col-sm-2">
@@ -205,7 +268,12 @@ export default function Adlist() {
  
                     </div>
                     </>
-                        ))}
+                        ))
+                      :
+                      <div className='row d-flex justify-content-center align-items-center'>
+                        <span>No Advert</span>
+                      </div>
+                      }
                  </div>
               </div>
             </div>

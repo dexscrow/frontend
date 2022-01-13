@@ -2,8 +2,6 @@ import React,{memo} from 'react'
 import { calculateFactor, calculatePrice } from '../../../helpers/utils';
 import Misc from './misc'
 
-import useFetch from "../../../hooks/useFetch";
-
 const END_POINT = 'http://localhost:8000/assets'
 
 const SellTab = memo(({
@@ -14,7 +12,7 @@ const SellTab = memo(({
         <>
              <div className="tab-pane fade" id="sell" role="tabpanel" aria-labelledby="sell-tab">
                             <form action="" method="">
-                                <div className="row form-row sell-step-1">     
+                                <div className={`row form-row sell-step-1 ${step !== 1 ? "d-none":""}`}>     
                                     <div className="col col-12 col-xs-12 col-sm-12">
                                     <div className="label"><b>Assets</b></div>
                                 </div>
@@ -34,7 +32,7 @@ const SellTab = memo(({
                                 </div>
                                 </div>  
     
-                                <div className="row form-row sell-step-1">     
+                                <div className={`row form-row sell-step-1 ${step !== 1 ? "d-none":""}`}>     
                                     <div className="col col-12 col-xs-12 col-sm-12">
                                         <div className="label"><b>With Cash</b></div>
                                     </div>
@@ -55,7 +53,7 @@ const SellTab = memo(({
                                 </div>  
     
     
-                                <div className="row form-row buy-step-1">     
+                                <div className={`row form-row sell-step-1 ${step !== 1 ? "d-none":""}`}>     
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                   <div className="label"><b>Your Price</b></div>
                                   <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>{price}</h4></div>
@@ -110,7 +108,7 @@ const SellTab = memo(({
                                   </div>  
                                     </div>
     
-                                  <div className={`row buy-step-2 ${step <2 ? "d-none":""} `}>     
+                                  <div className={`row buy-step-2 ${step !== 2 ? "d-none":""} `}>     
                                 <div className="col col-12 col-xs-12 col-sm-6">
                                     <div className="row form-row"> 
                                         <div className="col col-12 col-xs-12 col-sm-8">

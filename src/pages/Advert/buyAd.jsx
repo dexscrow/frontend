@@ -9,6 +9,9 @@ const token = localStorage.getItem("authToken");
 
 const BUY_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=buy";
 const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
+const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
+const CURRENCIES_URL = process.env.REACT_APP_SERVER_URL+"/countries";
+
 export default function BuyAd(){
     const [account,_]= useContext(AccountContext);
     const [ads,setAds] = useState([]);
@@ -16,6 +19,8 @@ export default function BuyAd(){
     const [currency,setCurrency] = useState("");
     const [priceType,setPriceType] = useState("");
     const [asset,setAsset] = useState("");
+    const [currencies,setCurrencies] = useState([]);
+    const [assets,setAssets] = useState([]);
 
     const runQuery = ()=>{
       const run = async ()=>{
@@ -72,7 +77,47 @@ export default function BuyAd(){
           setError(error.message)
         }
       }
+      const fetchAssets = async ()=>{
+        try{
+          const {data:response} = await axios.get(ASSETS_URL,{
+              headers:{
+                  "Authorization":`Bearer ${token}`
+              }
+          });
+          if(response.error){
+              setError(response.error)
+          }
+          if(!response.success){
+              setError(response.message)
+          }
+          setAssets(response.data);
+      }catch(err){
+          setError(err.message)
+      }
+    }
+
+    const fetchCurrencies = async ()=>{
+      try{
+        const {data:response} = await axios.get(CURRENCIES_URL,{
+          headers:{
+              "Authorization":`Bearer ${token}`
+          }
+      });
+      if(response.error){
+          setError(response.error)
+      }
+      if(!response.success){
+          setError(response.message)
+      }
+      setCurrencies(response.data);
+      }catch(error){
+        setError(error.message)
+      }
+    }
+
       fetchAds();
+      fetchAssets();
+      fetchCurrencies();
     },[token,BUY_ADS_URL])
 
     return (
@@ -141,19 +186,27 @@ export default function BuyAd(){
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
-                            <option value="USDT" style={{backgroundImage:"url(images/approved.svg)"}}>USDT</option>
-                            <option value="">All Asset</option>
-                            <option value="BTCB">BTCB</option>
-                            <option value="ETH">ETH</option>
-                            <option value="SOL">SOL</option>
+                        <option value="">All Asset</option>
+                            {
+                              assets && assets.map((asset)=>(
+                                <>
+                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                </>
+                              ))
+                            }
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2">
                         <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
-                            <option value="">Currency</option>
-                            <option value="NGN">NGN</option>
-                            <option value="USDT">USDT</option>
+                          <option value="">All Currencies</option>
+                            {
+                              assets && assets.map((asset)=>(
+                                <>
+                                  <option value={currencies.symbol}>{currencies.symbol}</option>
+                                </>
+                              ))
+                            }
                         </select>
                     </div>
 
@@ -188,7 +241,7 @@ export default function BuyAd(){
                     <div className="trade-record-card pt-10 pb-20 mb-10">
                        {
                          
-                         ads && ads.map((ad)=>(
+                         ads !== [] ? ads.map((ad)=>(
                           <>
                          <div className="row">
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
@@ -241,6 +294,12 @@ export default function BuyAd(){
                     </div>
                     </>
                     ))
+                    :
+                    <div className="row d-flex justify-content-center align-items-center">
+                      <span>
+                        No Adverts Available
+                      </span>
+                    </div>
                     }
                 </div>
               </div>

@@ -7,13 +7,50 @@ import Nav from "../Landing/components/nav"
 import axios from "axios";
 
 const TRADES_URL = process.env.REACT_APP_SERVER_URL+"/trades"
+const FILTERED_TRADE_URL = `${process.env.REACT_APP_SEREVER_URL}/trades`
 
 export default function Trades(){
     const [account,_] = useContext(AccountContext);
     const [trades,setTrades] = useState([]);
-    const [error,setError] = useState("")
-    const [isLoading,setIsLoading] = useState(true);
+    const [error,setError] = useState("");
+    const [date,setDate]= useState("");
+    const [status,setStatus] = useState("");
+    const [priceType,setPriceType] = useState("");
+    const [asset,setAsset] = useState("");
     const token = localStorage.getItem("authToken");
+
+    const runQuery = ()=>{
+        const run = async ()=>{
+          try{
+            
+          const filters = {
+            createdAt:date,status,priceType,asset
+          }
+          Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
+          const q = new URLSearchParams(filters).toString();
+          console.log(q)
+          const {data:response} = await axios.get(`${FILTERED_TRADE_URL}/?${q}`,{
+            headers:{
+              "Authorization":`Bearer ${token}`
+            }
+          })
+          
+          if(response.error){
+            setError(response.error);
+          }
+  
+          if(!response.success){
+            setError(response.message);
+          }
+          console.log(response.data);
+          setTrades(response.data);
+          }catch(error){
+            setError(error.message)
+          }
+        }
+        run();
+      }
+
     useEffect(()=>{
         const run = async ()=>{
             const {data:response} = await axios.get(TRADES_URL,{
@@ -22,14 +59,11 @@ export default function Trades(){
                 }
             });
             if(response.error){
-                setIsLoading(false);
                 setError(response.error)
             }
             if(!response.success){
-                setIsLoading(false);
                 setError(response.message)
             }
-            setIsLoading(false);
             setTrades(response.data);
         }
         run();
@@ -43,10 +77,9 @@ export default function Trades(){
                   <div className="row p-20">
                     <Header account={account}/>
                     </div>
-                  
-                    <div className="row mb-30 mt-20">
-                    <div className="col col-6 col-xs-6 col-sm-6">
-                        <h3 className="page-title">Advert List</h3>
+                   <div className="row">
+                    <div className="col col-12">
+                       <h3 className="page-title">Trades</h3>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-6 text-end">
                         <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -65,9 +98,9 @@ export default function Trades(){
                     <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
                          <li >
                              <Link to="/profile" style={{textDecoration:"none"}}>
-                                Profile
+                             Profile
                              </Link>
-                             </li>
+                        </li>
                          <li className="active">
                              <Link to="/trades" style={{textDecoration:"none"}}>
                                Trade History 
@@ -83,19 +116,23 @@ export default function Trades(){
 
                    <form>
                    <div className="row mb-20 mt-20">
+
                     <div className="col col-xs-6 col-sm-2">
                         <label>Asset</label>
-                        <select className="form-control no-radius">
-                            <option value="all">All Asset</option>
-                            <option value="btc">BTC</option>
-                            <option value="usdt">USDT</option>
+                        <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
+                            <option value="">All Asset</option>
+                            <option value="BTCB">BTCB</option>
+                            <option value="ETH">ETH</option>
+                            <option value="SOL">SOL</option>
+                            <option value="BTCB">BNB</option>
+                            <option value="USDT">USDT</option>
                         </select>
                     </div>
 
                     <div className="col col-xs-6 col-sm-2">
                         <label>Order Type</label>
-                        <select className="form-control no-radius">
-                            <option value="all">Buy/Sell</option>
+                        <select className="form-control no-radius"  value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
+                            <option value="">All</option>
                             <option value="buy">Buy</option>
                             <option value="sell">Sell</option>
                         </select>
@@ -103,23 +140,30 @@ export default function Trades(){
 
                     <div className="col col-xs-6 col-sm-2">
                         <label>Status</label>
-                        <select className="form-control no-radius">
-                            <option value="unpaid">Unpaid</option>
-                            <option value="paid">Paid</option>
-                            <option value="completed">Completed</option>
-                            <option value="canceled">Canceled</option>
-                            <option value="disputed">Disputed</option>
+                        <select className="form-control no-radius"  value={status} onChange={(e)=>setStatus(e.target.value)}>
+                            <option value="active">Active</option>
+                            <option value="closed">Closed</option>
                         </select>
                     </div>
 
                     <div className="col col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
-                        <div className="col col-12 d-flex"><input type="date" value="" /><input type="date" value="" /></div>  
+                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>setDate(new Date(e.target.value).toISOString())}/></div>  
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
-                      <br/>
-                      Reset &nbsp; &nbsp; Filter
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        e.preventDefault();
+                        runQuery();
+                        }}> Run Query</button>
+                    </div>
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        setDate("");
+                        setStatus("");
+                        setPriceType("");
+                        setAsset("");
+                      }}> Reset Filter </button>
                     </div>
                   </div>
                 </form>

@@ -1,5 +1,7 @@
 import React,{useContext,useState,useEffect} from 'react'
 import AccountContext from "../../contexts/account";
+import {setBinanceWalletConnection} from "../../helpers/scrow";
+import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
@@ -71,7 +73,14 @@ export default function Profile() {
         }
         run();
     }
-
+    useEffect(()=>{
+        async function request(){ 
+        if(!account){
+            await setBinanceWalletConnection();
+        }
+    }
+    request();
+    },[account])
 
 
     useEffect(()=>{
@@ -109,7 +118,30 @@ export default function Profile() {
             <div className="col py-3 main">
                   <div className="row p-20">
                    <Header account={account}/>
-   
+                    </div>
+                    <div className="row">
+                        <div className="col col-12 col-xs-12">
+                        <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                         <li  className="active">
+                             <Link to="/profile" style={{textDecoration:"none"}}>
+                             Profile
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/trades" style={{textDecoration:"none"}}>
+                             Transactions History 
+                              </Link>
+                              </li>
+                         <li >
+                             <Link to="/ad/list" style={{textDecoration:"none"}}>
+                             Ad Lists
+                             </Link>
+                             </li>
+                         <li>
+                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+                              </li>
+                     </ul>
+                        </div>
                     </div>
 
                 <div className="row">

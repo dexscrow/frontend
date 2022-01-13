@@ -15,7 +15,7 @@ const END_POINT = 'http://localhost:8000/assets'
         <>
             <div className="tab-pane fade show active" id="buy" role="tabpanel" aria-labelledby="buy-tab">
                           <form>
-                            <div className="row form-row buy-step-1">     
+                            <div className={`row form-row ${step !== 1 ? "d-none":""} buy-step-1`}>     
                                 <div className="col col-12 col-xs-12 col-sm-12">
                                     <div className="label"><b>Assets</b></div>
                                 </div>
@@ -36,7 +36,7 @@ const END_POINT = 'http://localhost:8000/assets'
                                 </div>
                             </div>  
 
-                            <div className="row form-row buy-step-1">     
+                            <div className={`row form-row ${step !== 1 ? "d-none":""} buy-step-1`}>     
                                 <div className="col col-12 col-xs-12 col-sm-12">
                                     <div className="label"><b>With Cash</b></div>
                                 </div>
@@ -58,7 +58,7 @@ const END_POINT = 'http://localhost:8000/assets'
                             </div>  
 
 
-                            <div className="row form-row buy-step-1">     
+                            <div className={`row form-row ${step !== 1 ? "d-none":""} buy-step-1`}>     
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                   <div className="label"><b>Your Price</b></div>
                                   <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>{price}</h4></div>
@@ -112,7 +112,7 @@ const END_POINT = 'http://localhost:8000/assets'
                               </div>  
 
 
-                              <div className={`row buy-step-2 ${step <2 ? "d-none":""} `}>     
+                              <div className={`row buy-step-2 ${step !== 2 ? "d-none":""} `}>     
                                 <div className="col col-12 col-xs-12 col-sm-6">
                                     <div className="row form-row"> 
                                         <div className="col col-12 col-xs-12 col-sm-8">
