@@ -158,7 +158,7 @@ export default function BuyAd(){
                       }} >Query Filter</button>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
+                      <button type="button" className="btn btn-small btn-dex btn-dex-default" onClick={(e)=>{
                         setAsset("");
                         setCurrency("");
                         setPriceType("");

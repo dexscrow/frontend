@@ -1,4 +1,7 @@
 import {Link} from "react-router-dom";
+import Add from "../../../assets/add.svg";
+import Avatar from "../../../assets/avatar.png";
+import P2P from "../../../assets/p2p.svg";
 
 export default function Nav(){
     return (
@@ -9,14 +12,14 @@ export default function Nav(){
               <ul className="nav nav-pills">
                   <li className="nav-item text-center">
                       <Link to="/ad/buy" className="nav-link align-middle px-0">
-                          <img src="images/p2p.svg"/><br/>
+                          <img src={P2P} /><br/>
                            <span className="ms-1 d-sm-inline">P2P Trading</span>
                       </Link>
                   </li>
 
                   <li className="nav-item text-center">
                       <Link to="/" className="nav-link align-middle px-0">
-                          <img src="images/add.svg"/><br/>
+                          <img src={Add}/><br/>
                           <span className="ms-1 d-sm-inline">Staking</span>
                       </Link>
                   </li>
@@ -26,7 +29,9 @@ export default function Nav(){
           </div>
           
           <div className="col-7 col-xs-7 account float-end pt-10">
-              <img src="images/avatar.png" alt="hugenerd" width="60" height="60" className="rounded-circle"/>
+              <Link to="/profile">
+              <img src={Avatar} alt="hugenerd" width="60" height="60" className="rounded-circle"/>
+              </Link>
           </div>
       </div>
    </nav>

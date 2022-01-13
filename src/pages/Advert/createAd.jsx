@@ -2,6 +2,7 @@ import React ,{useContext,useState,memo,useEffect} from 'react'
 import Sidebar from '../Landing/components/sidebar'
 import {Link,Navigate} from "react-router-dom";
 import Header from '../Landing/components/header'
+import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account'
 import PaymentModal from './components/paymentModal'
 import Progressbar from './components/progressbar'
@@ -181,7 +182,7 @@ const CreateAd = memo(() => {
                                         <div className="row">
                                     <div className="col col-6 col-xs-6 text-start">
                                         <button className="btn-dex-small btn-dex-primary" onClick={(e)=>{setSelectedMethod(method)
-                                        }} type="button"> {method.paymentMethod.name}</button>
+                                        }} type="button"> {method.paymentMethod?.name}</button>
                                     </div>
                                     <div className="col col-6 col-xs-6 text-end">
                                         X
@@ -240,7 +241,9 @@ const CreateAd = memo(() => {
                         </div>
                     </div>
                 </div>
-            </div></>
+            </div>
+            <Nav/>
+            </>
     )
 })
 
