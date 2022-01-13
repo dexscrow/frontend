@@ -220,9 +220,22 @@ const CreateAd = memo(() => {
                     <div className="col py-3 main">
                         <div className="row p-20">
                             <Header account={account} />
-                            <div className="col col-12">
+
+                            <div className="row mb-30 mt-20">
+                            <div className="col col-6 col-xs-6 col-sm-6">
                                 <h3 className="page-title">Create Ad</h3>
                             </div>
+                            <div className="col col-6 col-xs-6 col-sm-6 text-end">
+                                <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Ad Management
+                                        </span>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                                        <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                                        </ul>
+                            </div>
+                            </div>
+
                             <Progressbar step={step} />
                             <div className="col col-12">
                                 <ul className="nav nav-tabs" id="myTab" role="tablist">

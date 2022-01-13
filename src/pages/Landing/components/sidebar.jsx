@@ -9,14 +9,14 @@ export default function Sidebar({account}) {
              <div className="col-auto col-md-1 col-xl-1 px-sm-2 px-0 align-items-center side d-none d-md-block">
                 <div className="d-flex flex-column align-items-center px-3 pt-2 text-white min-vh-100">
                     <Link to="/" className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span className="fs-5 d-none d-sm-inline">Dexscrow</span>
+                        <span className="fs-5 d-none d-sm-inline">&nbsp;</span>
                     </Link>
                     
                     <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start menu" id="menu">
                         <li className="nav-item text-center" style={{width:"100%"}}>
                             <Link to="ad/buy" className="nav-link align-middle text-center px-0">
                                 <img src={P2P}/><br/>
-                                 <span className="ms-1 d-none d-sm-inline">P2P center</span>
+                                 <span className="ms-1 d-none d-sm-inline">P2P Trade</span>
                             </Link>
                         </li>
 

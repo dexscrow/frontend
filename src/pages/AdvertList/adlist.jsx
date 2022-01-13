@@ -79,38 +79,45 @@ export default function Adlist() {
                   <div className="row p-20">
                     <Header account={account}/>
                     </div>
-                   <div className="row">
-                    <div className="col col-12">
-                       <h3 className="page-title">Advert List</h3>
+
+                    <div className="row mb-30 mt-20">
+                    <div className="col col-6 col-xs-6 col-sm-6">
+                        <h3 className="page-title">Advert List</h3>
                     </div>
-                   </div>
+                    <div className="col col-6 col-xs-6 col-sm-6 text-end">
+                        <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                Ad Management
+                                </span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                                <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                                </ul>
+                    </div>
+                    </div>
+
                    <div className="row">
                     <div className="col col-12 col-xs-12">
                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
                          <li >
                              <Link to="/profile" style={{textDecoration:"none"}}>
-                             profile
+                                Profile
                              </Link>
                              </li>
                          <li>
                              <Link to="/trades" style={{textDecoration:"none"}}>
-                             Transactions History 
+                               Trade History 
                               </Link>
-                              </li>
-                         <li className="active">
-                             <Link to="/ad/list" style={{textDecoration:"none"}}>
-                             Ad Lists
-                             </Link>
-                             </li>
+                         </li>
+                         
                          <li>
                              <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
-                              </li>
+                         </li>
                      </ul>
                      </div>
                    </div>
 
                    <form>
-                   <div className="row">
+                   <div className="row mb-20 mt-20">
                     <div className="col col-xs-6 col-sm-2">
                         <label>Asset</label>
                         <select className="form-control no-radius">
@@ -150,7 +157,7 @@ export default function Adlist() {
 
                     <div className="col col-xs-6 col-sm-2">
                       <br/>
-                      Reset Filter
+                      Reset &nbsp; &nbsp; Filter
                     </div>
                   </div>
                 </form>

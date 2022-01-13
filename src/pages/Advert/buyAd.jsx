@@ -111,9 +111,18 @@ export default function BuyAd(){
                     <Header account={account}/>
                     </div>
 
-                   <div className="row">
-                    <div className="col col-12">
+                   <div className="row mb-30 mt-20">
+                    <div className="col col-6 col-xs-6 col-sm-6">
                        <h3 className="page-title">Buy Ads</h3>
+                    </div>
+                    <div className="col col-6 col-xs-6 col-sm-6 text-end">
+                    <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                              Ad Management
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                              <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            </ul>
                     </div>
                    </div>
 
@@ -126,16 +135,10 @@ export default function BuyAd(){
                        <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10 pl-30">Sell</Link>
                     </div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 dropdown">
-                            <button className="btn btn-light btn-dex dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                              Actions
-                            </button>
-
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                              <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                              <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
-                            </ul>
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
+                           
                     </div>
+
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
                             <option value="USDT" style={{backgroundImage:"url(images/approved.svg)"}}>USDT</option>
@@ -148,6 +151,7 @@ export default function BuyAd(){
 
                     <div className="col col-6 col-xs-6 col-sm-2">
                         <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
+                            <option value="">Currency</option>
                             <option value="NGN">NGN</option>
                             <option value="USDT">USDT</option>
                         </select>
@@ -155,24 +159,27 @@ export default function BuyAd(){
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
-                            <option value="">All Payments</option>
-                            <option value="buy">Buy</option>
-                            <option value="sell">Sell</option>
+                            <option value="">Payment Methods</option>
+                            <option value="paypal">Paypal</option>
+                            <option value="banktransfer">Bank Transfer</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      <button type="button" className="btn-dex btn-dex-primary " onClick={(e)=>{
+                      <span  onClick={(e)=>{
                         e.preventDefault();
                         runQuery();
-                      }} >Query Filter</button>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      <button type="button" className="btn-dex btn-dex-primary" onClick={(e)=>{
+                      }} >Filter</span>
+                       &nbsp;&nbsp;
+                      <span onClick={(e)=>{
                         setAsset("");
                         setCurrency("");
                         setPriceType("");
-                      }} >Reset Filter</button>
+                      }} >Reset</span>
+                    </div>
+
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
+                      
                     </div>
                   </div>
                 </form>

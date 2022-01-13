@@ -13,7 +13,7 @@ export default function Nav(){
                   <li className="nav-item text-center">
                       <Link to="/ad/buy" className="nav-link align-middle px-0">
                           <img src={P2P} /><br/>
-                           <span className="ms-1 d-sm-inline">P2P Trading</span>
+                           <span className="ms-1 d-sm-inline">P2P Trade</span>
                       </Link>
                   </li>
 

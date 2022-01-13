@@ -30,16 +30,16 @@ export default function Landing() {
                  <div className="row p-20"> 
                    <Header account={account}/>
 
-                   <div className="col col-12 header-banner">
+                   <div class="col col-12 header-banner mt-20 mb-20">
                      <h3>Buy & Sell Crypto in minutes with Cash but without Control</h3>
-                     <h2>Join the world's hottest P2P DEX Exchange</h2>
+                     <h2>Join the world’s hottest P2P DEX Exchange</h2>
                    </div>
 
                  </div>
 
                  <div className="row">
-                    <div className="col col-12 d-flex">
-                        <Link to="/ad/buy" className="btn-dex btn-dex-default">P2P</Link>  &nbsp; &nbsp; 
+                    <div className="col col-12 d-flex header-button">
+                        <Link to="/ad/buy" className="btn-dex btn-dex-default">P2P Trade</Link>  &nbsp; &nbsp; 
                         <Link to="/" className="btn-dex btn-dex-bordered">staking</Link>
                     </div>
                  </div>
