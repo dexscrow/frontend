@@ -1,5 +1,3 @@
-// import {config} from "dotenv";
-// config();
 import React,{useContext,useState,useEffect} from "react";
 import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
@@ -15,6 +13,15 @@ export default function BuyAd(){
     const [account,_]= useContext(AccountContext);
     const [ads,setAds] = useState([]);
     const [error,setError] = useState("");
+    const [currency,setCurrency] = useState("");
+    const [priceType,setPriceType] = useState("");
+    const [asset,setAsset] = useState("");
+
+    const runQuery = ()=>{
+      const run = async ()=>{
+        
+      }
+    }
 
 
     useEffect(()=>{
@@ -95,31 +102,40 @@ export default function BuyAd(){
 
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius">
+                        <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
                             <option value="USDT" style={{backgroundImage:"url(images/approved.svg)"}}>USDT</option>
-                            <option value="WBTC">BTCB</option>
-                            <option value="WETH">ETH</option>
-                            <option value="Solana">SOL</option>
+                            <option value="BTCB">BTCB</option>
+                            <option value="ETH">ETH</option>
+                            <option value="SOL">SOL</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2">
-                        <select className="form-control no-radius">
+                        <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
                             <option value="NGN">NGN</option>
                             <option value="USDT">USDT</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius">
-                            <option value="all">All Payments</option>
+                        <select className="form-control no-radius" value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
+                            <option value="">All Payments</option>
                             <option value="buy">Buy</option>
                             <option value="sell">Sell</option>
                         </select>
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                       Reset Filter
+                      <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
+                        
+                      }} >Query Filter</button>
+                    </div>
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
+                      <button type="button" className="btn-dex btn-dex-default" onClick={(e)=>{
+                        setAsset("");
+                        setCurrency("");
+                        setPriceType("");
+                      }} >Reset Filter</button>
                     </div>
                   </div>
                 </form>
@@ -127,7 +143,11 @@ export default function BuyAd(){
 
                   <div className="row">
                     <div className="trade-record-card pt-10 pb-20 mb-10">
-                       <div className="row">
+                       {
+                         
+                         ads && ads.map((ad)=>(
+                          <>
+                         <div className="row">
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                             <div className="row">
                               <div className="col col-2 col-xs-2">
@@ -136,10 +156,10 @@ export default function BuyAd(){
                               <div className="col col-10 col-xs-10 text-start"> 
                                 <div className="row">
                                     <div className="col col-12 col-xs-12">
-                                        <h4 className="username">Bigfash</h4>
+                                        <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
                                     </div>
                                     <div className="col col-6 col-xs-6 text-end d-flex">
-                                        <span className="value">100</span>
+                                        <span className="value">{ad.unit}</span>
                                         <span className="label">Orders</span>
                                          &nbsp; &nbsp; 
                                         <span className="value">Completion</span>
@@ -153,18 +173,18 @@ export default function BuyAd(){
                         <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                           <div className="row">
                             <div className="col col-6 col-xs-6">
-                                <span className="value number">411.87 USDT</span><br/>
+                                <span className="value number">{ad.amount} {ad.currency}</span><br/>
                                 <span className="label">Price</span>
                             </div>
                             <div className="col col-6 col-xs-6">
-                                <span className="value number">10,000 USDT</span><br/>
+                                <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
                                 <span className="label">Amount</span>
                             </div>
                           </div>
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                            <span className="value number">50,000 - 1,000,0000 NGN</span><br/>
+                            <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
                             <span className="label">Limit</span>
                         </div>
 
@@ -173,12 +193,13 @@ export default function BuyAd(){
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
-                            <a href="" className="btn-dex-small btn-dex-primary p-10">Sell</a>
+                            <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
                         </div>       
                     </div>
+                    </>
+                    ))
+                    }
                 </div>
-                                    
-                /
               </div>
               </div>
         </div>

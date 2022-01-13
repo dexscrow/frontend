@@ -73,7 +73,7 @@ export default function Adlist() {
                     </div>
                    <div className="row">
                     <div className="col col-12">
-                       <h3 className="page-title">Wallet & Account</h3>
+                       <h3 className="page-title">Advert List</h3>
                     </div>
                    </div>
                    <div className="row">

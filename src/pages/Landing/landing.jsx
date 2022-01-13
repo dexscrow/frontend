@@ -39,7 +39,7 @@ export default function Landing() {
 
                  <div className="row">
                     <div className="col col-12 d-flex">
-                        <Link to="/ad/list" className="btn-dex btn-dex-default">P2P</Link>  &nbsp; &nbsp; 
+                        <Link to="/ad/buy" className="btn-dex btn-dex-default">P2P</Link>  &nbsp; &nbsp; 
                         <Link to="/" className="btn-dex btn-dex-bordered">staking</Link>
                     </div>
                  </div>

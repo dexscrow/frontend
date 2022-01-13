@@ -8,7 +8,7 @@ export default function Nav(){
 
               <ul className="nav nav-pills">
                   <li className="nav-item text-center">
-                      <Link to="/ad/list" className="nav-link align-middle px-0">
+                      <Link to="/ad/buy" className="nav-link align-middle px-0">
                           <img src="images/p2p.svg"/><br/>
                            <span className="ms-1 d-sm-inline">P2P Trading</span>
                       </Link>
