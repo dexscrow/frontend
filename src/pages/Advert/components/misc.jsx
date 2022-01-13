@@ -3,7 +3,7 @@ import React from 'react'
 export default function Misc({step,notes,setNotes}) {
     return (
         <>
-             <div className={`row buy-step-3 ${step < 3 ? "d-none":""}`}>     
+             <div className={`row buy-step-3 ${step !== 3 ? "d-none":""}`}>     
                                 <div className="col col-12 col-xs-12 col-sm-6 col-md-6 form-cluster mb-20">
                                     <div className="label"><b>Remarks (Optional) </b></div>
                                     <div className="d-flex">
