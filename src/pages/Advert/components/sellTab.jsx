@@ -185,14 +185,14 @@ const SellTab = memo(({
                                             <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal" type="button">+ ADD</button>
                                         </div>
 
-                                        <div className="col col-xs-12 col-sm-12 p-20">
-                                            <div className="card payment-method-card">
                                             {
-                                                    selectedMethod && 
+                                                    selectedMethod.details && 
                                                     (()=>{
                                                         let det = JSON.parse(selectedMethod.details);
                                                         return (
                                                             <>
+                                        <div className="col col-xs-12 col-sm-12 p-20">
+                                            <div className="card payment-method-card">
                                                              <div className="row">
                                               <div className="col col-6 col-xs-6 text-start">
                                                 <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
@@ -214,13 +214,14 @@ const SellTab = memo(({
                                              </div>
                                                  ))
                                              }
+                                             
+                                            </div>
+                                         </div>
                                                             </>
                                                         )
                                                     })()
                                                 }
                                                 
-                                            </div>
-                                         </div>
                                     </div>
                                 </div>  
                                 <Misc step={step}/>

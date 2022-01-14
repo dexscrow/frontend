@@ -19,12 +19,14 @@ export default function SellAd(){
   const [ads,setAds] = useState([]);
   const [error,setError] = useState("");
   const [currency,setCurrency] = useState("");
-  const [priceType,setPriceType] = useState("");
+  const [amount,setAmount]= useState(0);
   const [asset,setAsset] = useState("");
   const [currencies,setCurrencies] = useState([]);
   const [assets,setAssets] = useState([]);
   const [methods,setMethods] = useState([]);
   const [method,setMethod] = useState("");
+  const [unit,setUnit] = useState(0);
+
 
 
   const runQuery = ()=>{
@@ -269,11 +271,14 @@ export default function SellAd(){
                 </form>
 
                   <div className="row">
-                    <div className="trade-record-card pt-10 pb-20 mb-10">
                     {
                          
-                         ads ? ads.map((ad)=>(
+                         ads ? ads.map((ad)=>{
+                           let clicked = false;
+                           return (
                           <>
+                          
+                    <div className="trade-record-card pt-10 pb-20 mb-10">
                          <div className="row">
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                             <div className="row">
@@ -294,23 +299,48 @@ export default function SellAd(){
                                     </div>
                                 </div>
                            </div>
+                           {
+                             clicked && (
+                               <>
+                                            <div class="col col-12 col-xs-12 text-start"> 
+                            <span class="label"> Payment Method</span> <br/><br/>
+                            <span class="btn-dex-small btn-dex-danger">{ad.paymentMethod.paymentMethod.name}</span>
+                        </div>
+                               </>
+                             )
+                           }
                           </div>
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                           <div className="row">
-                            <div className="col col-6 col-xs-6">
+                          <div className={`col ${!clicked ? " col-6 col-xs-6":"col col-12 col-xs-12 mb-10"}`}>
                                 <span className="value number">{ad.amount} {ad.currency}</span><br/>
                                 <span className="label">Price</span>
                             </div>
-                            <div className="col col-6 col-xs-6">
+                            <div className={`col ${!clicked ? " col-6 col-xs-6":"col col-12 col-xs-12 mb-10"}`}>
                                 <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
                                 <span className="label">Amount</span>
                             </div>
+                            {
+                                  clicked && (
+                                    <>
+                                    <div class="col col-12 col-xs-12 mb-10">
+                            <span class="value number">{ad.lowerLimit}{ad.currency} - {ad.upperLimit} {ad.currency}</span><br/>
+                            <span class="label">Limit</span>
+                         </div>
+                         <div class="col col-12 col-xs-12 mb-10">
+                            <span class="label">Payment Time</span> <span class="value number">{ad.deadline} Minutes</span>
+                         </div>
+                                    </>
+                                  )
+                                }
                           </div>
                         </div>
-
-                        <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                        {
+                          !clicked ? (
+                            <>
+                                                   <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                             <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
                             <span className="label">Limit</span>
                         </div>
@@ -321,10 +351,56 @@ export default function SellAd(){
 
                         <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
                             <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
-                        </div>       
+                        </div> 
+                            </>
+                          ):(
+                            <>
+                            <div class="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                         <span class="label"> 
+                            <b>Please Read Terms Carefully</b> <br/><br/>
+                            ✔ {ad.notes}
+                         </span>
+                     </div>
+                     <div class="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                        <form >
+                         <div class="row"> 
+                            <div class="col col-12 col-xs-12 col-sm-12">
+                                <label>I want to pay</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>setAmount(e.target.value)}/>
+                                    <span class="input-group-text"><span class="text-primary" onClick={(e)=>setAmount(ad.balance)}>All</span> {ad.currency}</span>
+                                </div>
+                                <span class="rate-info float-end">&nbsp; </span>
+                            </div>
+                         </div>
+
+                         <div class="row"> 
+                            <div class="col col-12 col-xs-12 col-sm-12">
+                                <label>I will receive</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>setUnit(e.target.value)}/>
+                                    <span class="input-group-text">{ad.asset.symbol}</span>
+                                </div>
+                                <span class="rate-info float-end"> &nbsp; </span>
+                            </div>
+                         </div>
+
+                         <div class="row form-row"> 
+                            <div class="col col-12 col-xs-12 col-sm-12 d-flex">
+                              <button class="btn-dex-small btn-dex-default" type="button" onClick={(e)=>clicked = false}>Cancel</button>&nbsp;
+                              <button class="btn-dex-small btn-dex-primary" type="button">Sell {ad.asset.symbol}</button>
+                            </div>
+                         </div>
+                        </form>
+                     </div>
+                            </>
+                          )
+                        }
+                      </div>
                     </div>
                     </>
-                    ))
+                           )
+})
                     :
                     <div className="row d-flex justify-content-center align-items-center">
                       <span className="text-center">
@@ -332,7 +408,7 @@ export default function SellAd(){
                       </span>
                     </div>
                     }
-                </div>
+                
               </div>
               </div>
         </div>

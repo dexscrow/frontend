@@ -11,12 +11,12 @@ import SellTab from './components/sellTab'
 import ConfirmAd from './components/confirmAd'
 import axios from 'axios'
 
-const COUNTRIES_URL='http://localhost:8000/countries';
-const ASSETS_URL = 'http://localhost:8000/assets';
-const PAYMENT_METHOD_URL = 'http://localhost:8000/methods/payment';
-const CREATE_AD_URL = 'http://localhost:8000/advert';
+const COUNTRIES_URL=process.env.REACT_APP_SERVER_URL+"/countries";
+const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
+const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
+const CREATE_AD_URL = process.env.REACT_APP_SERVER_URL+"/advert";
 
-const CreateAd = memo(() => {
+const CreateAd = () => {
     const [account,_] = useContext(AccountContext);
     const [type,setType] = useState("buy");
     const [step,setStep] = useState(1);
@@ -37,13 +37,13 @@ const CreateAd = memo(() => {
     const [paymentMethods,setPaymentMethods] = useState([]);
     const [selectedMethod,setSelectedMethod] = useState({});
     const [deadline,setDeadline] = useState(0);
-    console.log("auth",authToken)
-
+    const [notes,setNotes] = useState("");
     
     const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}
-    console.log("createAd");
+  
 
     const createAd = ()=>{
+        console.log("here")
         const run = async ()=>{
             try{
                 const {data:response} = await axios.post(CREATE_AD_URL,{
@@ -229,9 +229,9 @@ const CreateAd = memo(() => {
                                 <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                         Ad Management
                                         </span>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                                        <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                                        <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
                                         </ul>
                             </div>
                             </div>
@@ -258,6 +258,6 @@ const CreateAd = memo(() => {
             <Nav/>
             </>
     )
-})
+}
 
 export default CreateAd;
