@@ -8,7 +8,7 @@ const END_POINT = 'http://localhost:8000/assets'
 
 
  const BuyTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod
 }) =>{
     
     return (
@@ -192,59 +192,35 @@ const END_POINT = 'http://localhost:8000/assets'
                                             <div className="card payment-method-card">
                                                 {
                                                     selectedMethod && 
-                                                    console.log(selectedMethod)
-                                            //         (()=>{
-                                            //             let det = JSON.parse(selectedMethod.details);
-                                            //             return (
-                                            //                 <>
-                                            //                  <div className="row">
-                                            //   <div className="col col-6 col-xs-6 text-start">
-                                            //     <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
-                                            //   </div>
-                                            //   <div className="col col-6 col-xs-6 text-end">
-                                            //      X
-                                            //   </div>
-                                            //  </div>
-                                            //  {
-                                            //      Object.entries(det).map(([key,index])=>(
-                                            //         <div className="row" key={index}>
-                                            //   <div className="col col-6 col-xs-6 label dim text-end">
-                                            //       {key} :
-                                            //   </div>
-                                            //   <div className="col col-6 col-xs-6 value">
-                                            //      det[key]
-                                            //  </div>
-                                            //  </div>
-                                            //      ))
-                                            //  }
-                                            //                 </>
-                                            //             )
-                                            //         })()
-                                                }
-                                                {/* {
-                                                    selectedMethod !== {} && (()=>{
-                                                        let det = JSON.parse(selectedMethod.details)
-                                                        return(<>
-                                                        <div className="row">
+                                                    (()=>{
+                                                        let det = JSON.parse(selectedMethod.details);
+                                                        return (
+                                                            <>
+                                                             <div className="row">
                                               <div className="col col-6 col-xs-6 text-start">
                                                 <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
                                               </div>
-                                              <div className="col col-6 col-xs-6 text-end">
+                                              <div className="col col-6 col-xs-6 text-end"
+                                              onClick={(e)=>setSelectedMethod({})}>
                                                  X
                                               </div>
                                              </div>
-                                            {/* {
-                                                Object.entries(det).map(([key,index])=>(
+                                             {
+                                                 Object.entries(det).map(([key,index])=>(
                                                     <div className="row" key={index}>
                                               <div className="col col-6 col-xs-6 label dim text-end">
                                                   {key} :
                                               </div>
                                               <div className="col col-6 col-xs-6 value">
-                                                 det[key]
+                                                 {det[key]}
                                              </div>
                                              </div>
-                                                ))
-                                            } */}
+                                                 ))
+                                             }
+                                                            </>
+                                                        )
+                                                    })()
+                                                }
                                             </div>
                                          </div>
                                     </div>

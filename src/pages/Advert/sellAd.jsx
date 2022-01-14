@@ -1,6 +1,7 @@
 import React,{useContext,useState,useEffect} from "react";
 import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
+import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
@@ -31,12 +32,12 @@ export default function SellAd(){
       try{
         
       const filters = {
-        currency,priceType,asset
+        currency,paymentMethod:method,asset
       }
       Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
       const q = new URLSearchParams(filters).toString();
       console.log(q)
-      const {data:response} = await axios.get(FILTERED_AD_URL+"/?"+q,{
+      const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
         headers:{
           "Authorization":`Bearer ${token}`
         }
@@ -277,7 +278,7 @@ export default function SellAd(){
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                             <div className="row">
                               <div className="col col-2 col-xs-2">
-                                <img src="images/avatar.png" style={{width:"30px", height:"30px"}} />
+                                <img src={Avatar} style={{width:"30px", height:"30px"}} />
                               </div>
                               <div className="col col-10 col-xs-10 text-start"> 
                                 <div className="row">
