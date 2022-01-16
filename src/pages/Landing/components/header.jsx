@@ -1,6 +1,7 @@
 import React from 'react';
 import { trimText } from '../../../helpers/utils';
 import useLogin from '../../../hooks/useLogin';
+import {Link,Navigate,useNavigate} from "react-router-dom";
 import Logo from "../../../assets/logo-long.png";
 import { setMetamaskConnection,setBinanceWalletConnection,  disconnectWallet} from '../../../helpers/scrow';
 const authToken = localStorage.getItem("authToken")
@@ -41,7 +42,7 @@ export default function Header({account}) {
         <div className="col col-12 header">
                      <div className="row">
                       <div className="col-5 col-xs-5">
-                       <div className="logo"> <img src={Logo} /></div>
+                       <div className="logo">  <Link to="/"> <img src={Logo} /> </Link> </div>
                       </div>
                       <div className="col-7 col-xs-7 text-end">
                           {!account?
