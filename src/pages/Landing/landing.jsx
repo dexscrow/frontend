@@ -11,11 +11,16 @@ export default function Landing() {
 
     // setErrors(error);
     useEffect(()=>{
-        if(!window.ethereum) alert("install metamask");
-
         window.ethereum.on("accountsChanged",()=>{
             setAccount(window.ethereum.selectedAddress);
             localStorage.setItem("account",window.ethereum.selectedAddress);
+            window.location.reload();
+        });
+        window.BinanceChain.on('accountsChanged',async()=>{
+          const account = await window.BinanceChain.request({method:"eth_accounts"});
+          setAccount(account);
+          localStorage.setItem("account",account);
+          window.location.reload();
         });
 
     },[account]);
@@ -29,7 +34,7 @@ export default function Landing() {
             <div className="col py-3">
                  <div className="row p-20"> 
                    <Header account={account}/>
-
+                     
                    <div class="col col-12 header-banner mt-20 mb-20">
                      <h3>Buy & Sell Crypto in minutes with Cash but without Control</h3>
                      <h2>Join the world’s hottest P2P DEX Exchange</h2>

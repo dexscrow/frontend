@@ -123,39 +123,38 @@ export default function BuyAd(){
     return (
         <>
         <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
-    <div className="modal-dialog modal-sm">
-      <div className="modal-content" style={{background:"#ccc"}}>
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-20">
-            <div className="col col-12 col-xs-12">
-              Once taken offline, the Ad will not be able to take in orders from users.
+          <div className="modal-dialog modal-sm">
+            <div className="modal-content" style={{background:"#ccc"}}>
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                <div className="row mb-20">
+                  <div className="col col-12 col-xs-12">
+                    Once taken offline, the Ad will not be able to take in orders from users.
+                  </div>
+                </div>
+
+                <div className="row form-row mb-20">     
+                  <div className="col col-xs-12 text-end">
+                  <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                  <button className="btn-dex-small btn-dex-default">Confirm</button>
+                  </div>
+              </div> 
+
+              </div>
             </div>
           </div>
-
-          <div className="row form-row mb-20">     
-            <div className="col col-xs-12 text-end">
-            <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            <button className="btn-dex-small btn-dex-default">Confirm</button>
-            </div>
-        </div> 
-
         </div>
-      </div>
-    </div>
-  </div>
 
     <div className="container-fluid body">
         <div className="row flex-nowrap">
         <Sidebar account={account}/>
         <div className="col py-3 main">
-                  <div className="row p-20">
+                  <div className="row p-0">
                     <Header account={account}/>
-                    </div>
-
+                   </div>
                    <div className="row mb-30 mt-20">
                     <div className="col col-6 col-xs-6 col-sm-6">
                        <h3 className="page-title">Buy Ads</h3>
@@ -190,7 +189,7 @@ export default function BuyAd(){
                             {
                               assets && assets.map((asset)=>(
                                 <>
-                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                  <option value={asset.symbol}>{asset.symbol}</option>
                                 </>
                               ))
                             }
@@ -201,9 +200,9 @@ export default function BuyAd(){
                         <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
                           <option value="">All Currencies</option>
                             {
-                              assets && assets.map((asset)=>(
+                               currencies && currencies.map((currency)=>(
                                 <>
-                                  <option value={currencies.symbol}>{currencies.symbol}</option>
+                                  <option value={currency.symbol}>{currency.symbol}</option>
                                 </>
                               ))
                             }
@@ -237,75 +236,78 @@ export default function BuyAd(){
                   </div>
                 </form>
 
-                  <div className="row">
-                    <div className="trade-record-card pt-10 pb-20 mb-10">
+                  <div className="row" style={{minHeight:"200px"}}>
                        {
-                         
-                         ads !== [] ? ads.map((ad)=>(
+                         ads.length>0 ? ads.map((ad)=>(
                           <>
-                         <div className="row">
-                          <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
+                            <div className="trade-record-card pt-10 pb-20 mb-10">
                             <div className="row">
-                              <div className="col col-2 col-xs-2">
-                                <img src="images/avatar.png" style={{width:"30px", height:"30px"}} />
-                              </div>
-                              <div className="col col-10 col-xs-10 text-start"> 
+                              <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                                 <div className="row">
-                                    <div className="col col-12 col-xs-12">
-                                        <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                  <div className="col col-2 col-xs-2">
+                                    <img src="images/avatar.png" style={{width:"30px", height:"30px"}} />
+                                  </div>
+                                  <div className="col col-10 col-xs-10 text-start"> 
+                                    <div className="row">
+                                        <div className="col col-12 col-xs-12">
+                                            <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                        </div>
+                                        <div className="col col-6 col-xs-6 text-end d-flex">
+                                            <span className="value">{ad.unit}</span>
+                                            <span className="label">Orders</span>
+                                            &nbsp; &nbsp; 
+                                            <span className="value">Completion</span>
+                                            <span className="label">92%</span>
+                                        </div>
                                     </div>
-                                    <div className="col col-6 col-xs-6 text-end d-flex">
-                                        <span className="value">{ad.unit}</span>
-                                        <span className="label">Orders</span>
-                                         &nbsp; &nbsp; 
-                                        <span className="value">Completion</span>
-                                        <span className="label">92%</span>
-                                    </div>
+                              </div>
+                              </div>
+                            </div>
+
+                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                              <div className="row">
+                                <div className="col col-6 col-xs-6">
+                                    <span className="value number">{ad.amount} {ad.currency}</span><br/>
+                                    <span className="label">Price</span>
                                 </div>
-                           </div>
-                          </div>
-                        </div>
-
-                        <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                          <div className="row">
-                            <div className="col col-6 col-xs-6">
-                                <span className="value number">{ad.amount} {ad.currency}</span><br/>
-                                <span className="label">Price</span>
+                                <div className="col col-6 col-xs-6">
+                                    <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
+                                    <span className="label">Amount</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="col col-6 col-xs-6">
-                                <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
-                                <span className="label">Amount</span>
+
+                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                                <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
+                                <span className="label">Limit</span>
                             </div>
-                          </div>
-                        </div>
 
-                        <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                            <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
-                            <span className="label">Limit</span>
-                        </div>
+                            <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
+                                <span className="label">Payment Method</span>
+                            </div>
 
-                        <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                            <span className="label">Payment Method</span>
+                            <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
+                                <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
+                            </div>       
                         </div>
-
-                        <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
-                            <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
-                        </div>       
-                    </div>
-                    </>
+                        </div>
+                      </>
                     ))
                     :
                     <div className="row d-flex justify-content-center align-items-center">
-                      <span>
-                        No Adverts Available
-                      </span>
+                       <div className="trade-record-card pt-10 pb-20 mb-10">
+                            <div className="row">
+                            <span>
+                              No Advert Available
+                            </span>
+                           </div>
+                      </div>
                     </div>
                     }
                 </div>
               </div>
               </div>
         </div>
-    </div>
               <Nav/>
             </>
     )

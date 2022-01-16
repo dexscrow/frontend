@@ -151,7 +151,7 @@ export default function SellAd(){
     <div className="row flex-nowrap">
         <Sidebar account={account}/>
         <div className="col py-3 main">
-                  <div className="row p-20">
+                  <div className="row p-0">
                     <Header account={account}/>
                     </div>
 
@@ -189,7 +189,7 @@ export default function SellAd(){
                             {
                               assets && assets.map((asset)=>(
                                 <>
-                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                  <option value={asset.symbol}>{asset.symbol}</option>
                                 </>
                               ))
                             }
@@ -200,9 +200,9 @@ export default function SellAd(){
                         <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
                         <option value="">All Currencies</option>
                             {
-                              assets && assets.map((asset)=>(
+                              currencies && currencies.map((currency)=>(
                                 <>
-                                  <option value={currencies.symbol}>{currencies.symbol}</option>
+                                  <option value={currency.symbol}>{currency.symbol}</option>
                                 </>
                               ))
                             }
@@ -236,12 +236,11 @@ export default function SellAd(){
                   </div>
                 </form>
 
-                  <div className="row">
-                    <div className="trade-record-card pt-10 pb-20 mb-10">
-                    {
-                         
-                         ads !== [] ? ads.map((ad)=>(
+                  <div className="row" style={{minHeight:"200px"}}>
+                    {    
+                         ads.length>0 ? ads.map((ad)=>(
                           <>
+                          <div className="trade-record-card pt-10 pb-20 mb-10">
                          <div className="row">
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                             <div className="row">
@@ -291,20 +290,24 @@ export default function SellAd(){
                             <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
                         </div>       
                     </div>
+                    </div>
                     </>
                     ))
                     :
                     <div className="row d-flex justify-content-center align-items-center">
-                      <span>
-                        No Adverts Available
-                      </span>
-                    </div>
+                     <div className="trade-record-card pt-10 pb-20 mb-10">
+                            <div className="row">
+                            <span>
+                              No Advert Available
+                            </span>
+                           </div>
+                      </div>
+                      </div>
                     }
                 </div>
               </div>
-              </div>
-        </div>
-        </div>
+            </div>
+          </div>
         <Nav/>
         </>
     )

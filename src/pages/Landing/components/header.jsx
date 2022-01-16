@@ -2,7 +2,7 @@ import React from 'react';
 import { trimText } from '../../../helpers/utils';
 import useLogin from '../../../hooks/useLogin';
 import Logo from "../../../assets/logo-long.png";
-import { setMetamaskConnection,setBinanceWalletConnection } from '../../../helpers/scrow';
+import { setMetamaskConnection,setBinanceWalletConnection,  disconnectWallet} from '../../../helpers/scrow';
 const authToken = localStorage.getItem("authToken")
 
 export default function Header({account}) {
@@ -55,11 +55,16 @@ export default function Header({account}) {
                       </div>
                       </>
                        :
-                           <div> <b>{trimText(account)}</b></div>
+                       <div className="col col-12">
+                         <button className="btn-connect" onClick={e=>disconnectWallet()}><img src="/images/wallet.png"/> 
+                          &nbsp; Disconnect Wallet <br/><small>{trimText(account)}</small>
+                         </button> 
+                        </div>
                         }
                       </div>
                      </div>
                    </div>
+
         </>
     )
 }
