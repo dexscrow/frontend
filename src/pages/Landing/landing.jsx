@@ -11,18 +11,18 @@ export default function Landing() {
 
     // setErrors(error);
     useEffect(()=>{
-        window.ethereum.on("accountsChanged",()=>{
+      window.ethereum && window.ethereum.on("accountsChanged",()=>{
             setAccount(window.ethereum.selectedAddress);
             localStorage.setItem("account",window.ethereum.selectedAddress);
             window.location.reload();
         });
-        window.BinanceChain.on('accountsChanged',async()=>{
+        window.BinanceChain && window.BinanceChain.on('accountsChanged',async()=>{
           const account = await window.BinanceChain.request({method:"eth_accounts"});
           setAccount(account);
           localStorage.setItem("account",account);
           window.location.reload();
         });
-
+        
     },[account]);
 
 
@@ -51,7 +51,7 @@ export default function Landing() {
 
                
                  <div className="row home-content-b p-20">
-                    <div className="col col-sm-12 col-md-4 col-xs-12 about-left mb-20">
+                    <div className="col col-12 col-sm-12 col-md-4 col-xs-12 about-left mb-20">
                       <div className="row"> 
                         <div className="col col-12"> 
                             <h3>Decentralized, But With Low Fees</h3> <br/>
@@ -65,7 +65,7 @@ export default function Landing() {
                       </div>
                     </div>
 
-                    <div className="col col-sm-12 col-md-7 col-xs-12 about-right mb-20">
+                    <div className="col col-12 col-sm-12 col-md-7 col-xs-12 about-right mb-20">
                       <div className="row">
                         <div className="col col-sm-8"> 
                             <h3>Power of P2P Without the Big Brother's Eye</h3> <br/>
