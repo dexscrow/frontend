@@ -7,7 +7,7 @@ import Nav from "../Landing/components/nav";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
 
-const URL = process.env.REACT_APP_SERVER_URL+'/';
+const URL = process.env.REACT_APP_SERVER_URL+'/methods/payment/';
 
 
 export default function Wallet() {
@@ -29,7 +29,6 @@ export default function Wallet() {
                 if(!response.success){
                     setError(response.message)
                 }
-                console.log(response.data)
                 setPaymentMethods(response.data);
             }catch(err){
                 setError(err.message)

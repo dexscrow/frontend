@@ -1,5 +1,5 @@
 import React,{useContext,useState,useEffect} from "react";
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
@@ -12,11 +12,13 @@ const SELL_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=buy";
 const FILTERED_AD_URL = process.env.REACT_APP_SERVER_URL+"/adverts";
 const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
 const CURRENCIES_URL = process.env.REACT_APP_SERVER_URL+"/countries";
+const BUY_TRADE_URL = process.env.REACT_APP_SERVER_URL+"buy/trade";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
 
 export default function SellAd(){
   const [account,_]= useContext(AccountContext);
   const [ads,setAds] = useState([]);
+  const [currentAd,setCurrentAd] = useState({});
   const [error,setError] = useState("");
   const [currency,setCurrency] = useState("");
   const [amount,setAmount]= useState(0);
@@ -26,8 +28,33 @@ export default function SellAd(){
   const [methods,setMethods] = useState([]);
   const [method,setMethod] = useState("");
   const [unit,setUnit] = useState(0);
+  const navigate = useNavigate();
 
-
+  const initSellTrade = ()=>{
+    const run = async ()=>{
+      try{
+        const {data:response} = await axios.post(BUY_TRADE_URL+"/"+currentAd,{
+          unit,
+          price:amount
+        },{
+            headers:{
+                "Authorization":`Bearer ${token}`
+            }
+        });
+        if(response.error){
+            setError(response.error)
+        }
+        if(!response.success){
+            setError(response.message)
+        }
+        console.log(response);
+        navigate("/trade");
+    }catch(err){
+        setError(err.message)
+    }
+    }
+    run();
+  }
 
   const runQuery = ()=>{
     const run = async ()=>{
@@ -38,7 +65,6 @@ export default function SellAd(){
       }
       Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
       const q = new URLSearchParams(filters).toString();
-      console.log(q)
       const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
         headers:{
           "Authorization":`Bearer ${token}`
@@ -52,7 +78,6 @@ export default function SellAd(){
       if(!response.success){
         setError(response.message);
       }
-      console.log(response.data);
       setAds(response.data);
       }catch(error){
         setError(error.message)
@@ -96,7 +121,6 @@ export default function SellAd(){
         if(!response.success){
             setError(response.message)
         }
-        console.log("assets",response.data)
         setAssets(response.data);
     }catch(err){
         setError(err.message)
@@ -142,6 +166,8 @@ export default function SellAd(){
       setError(error.message)
     }
   }
+
+ 
 
     fetchAds();
     fetchAssets();
@@ -346,11 +372,15 @@ export default function SellAd(){
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
+                          <span>{ad.paymentMethod.paymentMethod.name}</span>
                             <span className="label">Payment Method</span>
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
-                            <a href="" className="btn-dex-small btn-dex-primary p-10">{ad.priceType === "sell"?"buy":"sell"}</a>
+                            <button className="btn-dex-small btn-dex-primary p-10" type="button" onClick={(e)=>{
+                              clicked = true;
+                              setCurrentAd(ad);
+                              }}>{ad.priceType === "sell"?"buy":"sell"}</button>
                         </div> 
                             </>
                           ):(
@@ -365,7 +395,7 @@ export default function SellAd(){
                         <form >
                          <div class="row"> 
                             <div class="col col-12 col-xs-12 col-sm-12">
-                                <label>I want to pay</label>
+                                <label>I will pay</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>setAmount(e.target.value)}/>
                                     <span class="input-group-text"><span class="text-primary" onClick={(e)=>setAmount(ad.balance)}>All</span> {ad.currency}</span>
@@ -376,7 +406,7 @@ export default function SellAd(){
 
                          <div class="row"> 
                             <div class="col col-12 col-xs-12 col-sm-12">
-                                <label>I will receive</label>
+                                <label>I want to receive</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>setUnit(e.target.value)}/>
                                     <span class="input-group-text">{ad.asset.symbol}</span>
@@ -388,7 +418,12 @@ export default function SellAd(){
                          <div class="row form-row"> 
                             <div class="col col-12 col-xs-12 col-sm-12 d-flex">
                               <button class="btn-dex-small btn-dex-default" type="button" onClick={(e)=>clicked = false}>Cancel</button>&nbsp;
-                              <button class="btn-dex-small btn-dex-primary" type="button">Sell {ad.asset.symbol}</button>
+                              <button class="btn-dex-small btn-dex-primary" type="button"
+                              onClick={(e)=>{
+                                e.preventDefault();
+                                initSellTrade();
+                              }}
+                              >Buy {ad.asset.symbol}</button>
                             </div>
                          </div>
                         </form>

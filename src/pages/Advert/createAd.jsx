@@ -1,6 +1,6 @@
 import React ,{useContext,useState,memo,useEffect} from 'react'
 import Sidebar from '../Landing/components/sidebar'
-import {Link,Navigate} from "react-router-dom";
+import {Link,Navigate,useNavigate} from "react-router-dom";
 import Header from '../Landing/components/header'
 import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account'
@@ -38,6 +38,8 @@ const CreateAd = () => {
     const [selectedMethod,setSelectedMethod] = useState({});
     const [deadline,setDeadline] = useState(0);
     const [notes,setNotes] = useState("");
+
+    const navigate = useNavigate();
     
     const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}
   
@@ -56,12 +58,13 @@ const CreateAd = () => {
                     lowerLimit,
                     upperLimit,
                     deadline,
+                    balance:price,
                     unit:totalAsset,
                     amount:price,
                     status: "active",
-                    notes:"todo",
+                    notes,
                     conditions:{
-                        registered:String(new Date()),
+                        registered:(new Date()).toISOString(),
                         baseOwnershipAmount:0,
                         status:"now"
                     }
@@ -77,7 +80,7 @@ const CreateAd = () => {
                     setError(response.message);
                 }
 
-              return  <Navigate to="/ad/list"/>
+              navigate("/ad/list");
             }catch(error){
                 setError(error.message)
             }

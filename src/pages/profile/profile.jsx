@@ -3,6 +3,7 @@ import AccountContext from "../../contexts/account";
 import {setBinanceWalletConnection} from "../../helpers/scrow";
 import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
+import Avatar from "../../assets/avatar.png"
 import Sidebar from "../Landing/components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
 import PendingKyc from "./components/pendingKyc";
@@ -159,7 +160,7 @@ export default function Profile() {
                         <div className="col col-6 col-xs-6 col-sm-3 pt-20">
                             <div className="row">
                                 <div className="col col-3 col-xs-3 col-sm-3 text-end">
-                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
+                                    <img src={Avatar} style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
                                     <input type="text" className="form-control" aria-label="" value={username} onChange={(e)=>setUsername(e.target.value)}/>
@@ -190,7 +191,7 @@ export default function Profile() {
                         <div className="col col-6 col-xs-6 col-sm-3 pt-20">
                             <div className="row">
                                 <div className="col col-3 col-xs-3 col-sm-3 text-end">
-                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
+                                    <img src={Avatar} style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
                                     <input type="text" className="form-control" aria-label="" value={email} onChange={(e)=>setEmail(e.target.value)}/>

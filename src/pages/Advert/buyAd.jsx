@@ -1,5 +1,5 @@
 import React,{useContext,useState,useEffect} from "react";
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
@@ -13,11 +13,14 @@ const FILTERED_AD_URL= process.env.REACT_APP_SERVER_URL+"/adverts"
 const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 const CURRENCIES_URL = process.env.REACT_APP_SERVER_URL+"/countries";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
+const SELL_TRADE_URL = process.env.REACT_APP_SERVER_URL+"sell/trade";
+const MY_PAYMENT_METHODS_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
 
 export default function BuyAd(){
     const [account,_]= useContext(AccountContext);
     const [ads,setAds] = useState([]);
     const [error,setError] = useState("");
+    const [currentAd,setCurrentAd] = useState({});
     const [currency,setCurrency] = useState("");
     const [asset,setAsset] = useState("");
     const [currencies,setCurrencies] = useState([]);
@@ -26,6 +29,36 @@ export default function BuyAd(){
     const [method,setMethod] = useState("");
     const [amount,setAmount]= useState(0);
     const [unit,setUnit] = useState(0);
+    const [paymentMethods,setPaymentMethods]= useState([]);
+    const [selectedMethod,setSelectedMethod] = useState({})
+    const navigate = useNavigate();
+
+    const initSellTrade = ()=>{
+      const run = async ()=>{
+        try{
+          const {data:response} = await axios.post(SELL_TRADE_URL+"/"+currentAd,{
+            unit,
+            paymentMethod:selectedMethod,
+            price:amount
+          },{
+              headers:{
+                  "Authorization":`Bearer ${token}`
+              }
+          });
+          if(response.error){
+              setError(response.error)
+          }
+          if(!response.success){
+              setError(response.message)
+          }
+          console.log(response);
+          navigate("/trade");
+      }catch(err){
+          setError(err.message)
+      }
+      }
+      run();
+    }
 
     const runQuery = ()=>{
       const run = async ()=>{
@@ -36,7 +69,6 @@ export default function BuyAd(){
         }
         Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
         const q = new URLSearchParams(filters).toString();
-        console.log(q)
         const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
           headers:{
             "Authorization":`Bearer ${token}`
@@ -139,10 +171,32 @@ export default function BuyAd(){
       }
     }
 
+    const fetchMyPaymentMethods = async ()=>{
+      try{
+        const {data:response} = await axios.get(MY_PAYMENT_METHODS_URL,{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        })
+
+        if(response.error){
+          setError(response.error);
+        }
+
+        if(!response.success){
+          setError(response.message);
+        }
+        setPaymentMethods(response.data);
+      }catch(error){
+        setError(error.message)
+      }
+    }
+
       fetchAds();
       fetchAssets();
       fetchCurrencies();
       fetchMethods();
+      fetchMyPaymentMethods();
     },[token])
 
     return (
@@ -347,7 +401,10 @@ export default function BuyAd(){
                         </div>
 
                         <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
-                            <button className="btn-dex-small btn-dex-primary p-10" onClick={(e)=>clicked = true}>{ad.priceType === "sell"?"buy":"sell"}</button>
+                            <button className="btn-dex-small btn-dex-primary p-10" onClick={(e)=>{
+                              clicked = true;
+                              setCurrentAd(ad)
+                                }}>{ad.priceType === "sell"?"buy":"sell"}</button>
                         </div> 
                         </>)
                         : (<>
@@ -361,7 +418,7 @@ export default function BuyAd(){
                         <form >
                          <div class="row"> 
                             <div class="col col-12 col-xs-12 col-sm-12">
-                                <label>I want to pay</label>
+                                <label>I want to recieve</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>setAmount(e.target.value)}/>
                                     <span class="input-group-text"><span class="text-primary" onClick={(e)=>setAmount(ad.balance)}>All</span> {ad.currency}</span>
@@ -372,7 +429,7 @@ export default function BuyAd(){
 
                          <div class="row"> 
                             <div class="col col-12 col-xs-12 col-sm-12">
-                                <label>I will receive</label>
+                                <label>I will sell</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>setUnit(e.target.value)}/>
                                     <span class="input-group-text">{ad.asset.symbol}</span>
@@ -380,11 +437,31 @@ export default function BuyAd(){
                                 <span class="rate-info float-end"> &nbsp; </span>
                             </div>
                          </div>
+                         <div class="row"> 
+                            <div class="col col-12 col-xs-12 col-sm-12">
+                               <label class="mb-10"> Payment Method</label>
+                               <select name="paymentmethod" class="form-control" value={selectedMethod} onChange={(e)=>setSelectedMethod(e.target.value)}>
+                                   {
+                                     paymentMethods && paymentMethods.map((method)=>(
+                                       <>
+                                       <option value={method._id}>{method.paymentMethod.name}</option>
+                                       </>
+                                     ))
+                                   }
+                               </select>
+                                <span class="rate-info float-end"> &nbsp; </span>
+                            </div>
+                         </div>
 
                          <div class="row form-row"> 
                             <div class="col col-12 col-xs-12 col-sm-12 d-flex">
                               <button class="btn-dex-small btn-dex-default" type="button" onClick={(e)=>clicked = false}>Cancel</button>&nbsp;
-                              <button class="btn-dex-small btn-dex-primary" type="button">Buy {ad.asset.symbol}</button>
+                              <button class="btn-dex-small btn-dex-primary" type="button"
+                                onClick={(e)=>{
+                                  e.preventDefault();
+                                  initSellTrade()
+                                }}
+                              >Sell {ad.asset.symbol}</button>
                             </div>
                          </div>
                         </form>
