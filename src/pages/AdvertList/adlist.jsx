@@ -8,7 +8,6 @@ import axios from "axios";
 const token = localStorage.getItem("authToken");
 
 const URL = process.env.REACT_APP_SERVER_URL+'/adverts/me';
-const FILTERED_AD_URL=`${process.env.REACT_APP_SEREVER_URL}/adverts`
 const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 
@@ -32,7 +31,7 @@ export default function Adlist() {
           Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
           const q = new URLSearchParams(filters).toString();
           console.log(q)
-          const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
+          const {data:response} = await axios.get(`${URL}/?${q}`,{
             headers:{
               "Authorization":`Bearer ${token}`
             }
@@ -45,7 +44,6 @@ export default function Adlist() {
           if(!response.success){
             setError(response.message);
           }
-          console.log(response.data);
           setAds(response.data);
           }catch(error){
             setError(error.message)
@@ -70,7 +68,7 @@ export default function Adlist() {
                 if(!response.success){
                     setError(response.message)
                 }
-                console.log(response.data)
+                console.log(response)
                 setAds(response.data);
             }catch(err){
                 setError(err.message)
@@ -144,9 +142,9 @@ export default function Adlist() {
                         <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                 Ad Management
                                 </span>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                                <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                                <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                                <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
                                 </ul>
                     </div>
                     </div>
@@ -174,21 +172,21 @@ export default function Adlist() {
 
                    <form>
                    <div className="row mb-20 mt-20">
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Asset</label>
                         <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
                              <option value="">All Asset</option>
                             {
                               assets && assets.map((asset)=>(
                                 <>
-                                  <option value={asset.symbol}>{assets.symbol}</option>
+                                  <option value={asset.symbol} key={asset._id}>{asset.symbol}</option>
                                 </>
                               ))
                             }
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Order Type</label>
                         <select className="form-control no-radius"  value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
                             <option value="">All</option>
@@ -197,7 +195,7 @@ export default function Adlist() {
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Status</label>
                         <select className="form-control no-radius"  value={status} onChange={(e)=>setStatus(e.target.value)}>
                             <option value="active">Active</option>
@@ -205,33 +203,32 @@ export default function Adlist() {
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-3">
+                    <div className="col col-6 col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
                         <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>setDate(new Date(e.target.value).toISOString())}/></div>  
                     </div>
 
-                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-start">
+                      <br/>
+                      <span onClick={(e)=>{
                         e.preventDefault();
                         runQuery();
-                        }}> Run Query</button>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        }}> Filter </span> &nbsp; &nbsp;
+                     <span onClick={(e)=>{
                         setDate("");
                         setStatus("");
                         setPriceType("");
                         setAsset("");
-                      }}> Reset Filter </button>
+                      }}> Reset </span>
                     </div>
                   </div>
                 </form>
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20">
                     {
-                        ads !== [] ? ads.map((advert)=>(
+                        ads ? ads.map((advert)=>(
                              <>
-                     <div className="row">
+                     <div className="row" key={advert._id}>
                         <div className="col col-6 col-xs-6 col-sm-2">
                            <b>{advert.priceType}</b><br/>
                            <b><u>{advert.uid}</u></b><br/>
@@ -240,19 +237,18 @@ export default function Adlist() {
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
                             <span className="label">Amount</span><br/>
-                            <span className="value">{advert.amount} {advert.currency}</span><br/>
+                            <span className="value">{advert.unit} {advert.asset}</span><br/>
                             <span className="label">Limit</span><br/>
                             <span className="value">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
                             <span className="label">Price</span><br/>
-                            <span className="value">411.87 USDT</span>
+                            <span className="value">{advert.amount} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6  col-sm-2">
                             <br/><span className="label">{advert.paymentMethod.name}</span>
-                            {/* <br/><span className="label">Paypal</span><br/> */}
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
@@ -271,7 +267,7 @@ export default function Adlist() {
                         ))
                       :
                       <div className='row d-flex justify-content-center align-items-center'>
-                        <span>No Advert</span>
+                        <span className="text-center">No Advert</span>
                       </div>
                       }
                  </div>

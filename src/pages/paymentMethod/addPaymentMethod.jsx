@@ -1,6 +1,6 @@
 import React,{useContext,useState,useEffect} from "react";
 import {config} from "dotenv";
-import {Navigate} from "react-router-dom";
+import {Navigate,useNavigate} from "react-router-dom";
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
@@ -20,6 +20,7 @@ export default function AddPaymentMethod(){
     const [error,setError] = useState(null);
     const [currentMethod,setCurrentMethod] = useState([]);
     const [currentMethodDetails,setCurrentMethodDetails] = useState([]);
+    const navigate = useNavigate();
 
 
     const handleSubmit = (event) =>{
@@ -40,14 +41,13 @@ export default function AddPaymentMethod(){
                 }
             })
             const response = await fetch(req);
-            console.log(response.body)
             if(response.error){
                 setError(response.error)
             }
             if(!response.success){
                 setError(response.message)
             }
-           return <Navigate to="/" replace/>;
+           navigate("/method/payment");
         }
         run();
     }
@@ -69,7 +69,6 @@ export default function AddPaymentMethod(){
                 if(!response.success){
                     setError("cannot make request")
                 }
-                console.log(response.data)
                 setPaymentMethods(response.data);
                 
             }catch(error){

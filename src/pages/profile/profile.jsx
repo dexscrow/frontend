@@ -3,6 +3,7 @@ import AccountContext from "../../contexts/account";
 import {setBinanceWalletConnection} from "../../helpers/scrow";
 import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
+import Avatar from "../../assets/avatar.png"
 import Sidebar from "../Landing/components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
 import PendingKyc from "./components/pendingKyc";
@@ -116,33 +117,47 @@ export default function Profile() {
 
 
             <div className="col py-3 main">
-                  <div className="row p-20">
+                  <div className="row p-0">
                    <Header account={account}/>
                     </div>
+
+                    <div className="row mb-30 mt-20">
+                        <div className="col col-6 col-xs-6 col-sm-6">
+                        <h3 className="page-title">Profile</h3>
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-6 text-end">
+                            <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ad Management
+                            </span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                            <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
                     <div className="row">
-                        <div className="col col-12 col-xs-12">
-                        <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
-                         <li  className="active">
+                    <div className="col col-12 col-xs-12">
+                    <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                         <li className="active">
                              <Link to="/profile" style={{textDecoration:"none"}}>
                              Profile
                              </Link>
-                             </li>
+                        </li>
                          <li>
                              <Link to="/trades" style={{textDecoration:"none"}}>
-                             Transactions History 
+                               Trade History 
                               </Link>
-                              </li>
-                         <li >
-                             <Link to="/ad/list" style={{textDecoration:"none"}}>
-                             Ad Lists
-                             </Link>
-                             </li>
+                         </li>
+                         
                          <li>
                              <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
-                              </li>
+                         </li>
                      </ul>
-                        </div>
-                    </div>
+                     </div>
+                   </div>
+
 
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20 mb-10">
@@ -153,13 +168,13 @@ export default function Profile() {
                            <b>Nickname</b> 
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
-                            <span className="label">It is recommended not to use real name. Your nickname & status is connected to your wallet's address.</span><br/>
+                            <span className="label p-0">It is recommended not to use real name. Your nickname & status is connected to your wallet's address.</span><br/>
                         </div>
             
                         <div className="col col-6 col-xs-6 col-sm-3 pt-20">
                             <div className="row">
                                 <div className="col col-3 col-xs-3 col-sm-3 text-end">
-                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
+                                    <img src={Avatar} style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
                                     <input type="text" className="form-control" aria-label="" value={username} onChange={(e)=>setUsername(e.target.value)}/>
@@ -184,13 +199,13 @@ export default function Profile() {
                            <b>Email</b> 
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
-                            <span className="label">Your Email address needs to be valid to recieve update</span><br/>
+                            <span className="label p-0">Your Email address needs to be valid to recieve update</span><br/>
                         </div>
             
                         <div className="col col-6 col-xs-6 col-sm-3 pt-20">
                             <div className="row">
                                 <div className="col col-3 col-xs-3 col-sm-3 text-end">
-                                    <img src="images/avatar.png" style={{height:"30px", width:"30px"}}/>
+                                    <img src={Avatar} style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
                                     <input type="text" className="form-control" aria-label="" value={email} onChange={(e)=>setEmail(e.target.value)}/>
@@ -216,22 +231,22 @@ export default function Profile() {
                             <div className="col col-6 col-xs-6 col-sm-9">
                                 <div className="row">
                                     <div className="col col-6 col-xs-6 col-sm-3">
-                                        <span className="value">100</span><br/>
+                                        <span className="value">0</span><br/>
                                         <span className="label">Orders</span>
                                    </div>
 
                                    <div className="col col-6 col-xs-6 col-sm-3">
                                     <span className="value">100%</span><br/>
-                                    <span className="label">Positive Feedback</span>
+                                    <span className="label p-0">Positive Feedback</span>
                                   </div>
 
                                   <div className="col col-6 col-xs-6 col-sm-3">
-                                    <span className="value">100</span><br/>
+                                    <span className="value">0</span><br/>
                                     <span className="label">Positive</span>
                                  </div>
 
                                  <div className="col col-6 col-xs-6 col-sm-3">
-                                    <span className="value">5</span><br/>
+                                    <span className="value">0</span><br/>
                                     <span className="label">Negative</span>
                                  </div>
 
@@ -285,7 +300,7 @@ export default function Profile() {
                                         <br/>
                                          <b>KYC</b> 
                                       </div>
-                                      <div className="col col-12 col-xs-12 col-sm-9">
+                                      <div className="col col-12 col-xs-12 col-sm-9 p-20">
                                           <div className="row">
                                               <div className="col">
                                                  <img src="images/approved.svg" style={{width:"40px", height:"40px"}}/>
