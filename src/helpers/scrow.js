@@ -17,10 +17,12 @@ export const setMetamaskConnection = async ()=>{
   if(!window.ethereum) alert("install metamask");
   const provider = window.ethereum;
   if(!provider) throw new Error("install metamask");
-  await provider.request({method:"eth_requestAccounts"});
-  if(provider.networkVersion !== "56"){
+  const account = await provider.request({method:"eth_requestAccounts"});
+  const networkId = await provider.request({method:"net_version"})
+  if(networkId !== "56" && networkId !== "0x38"){
     throw new Error("please select binance smart chain network");
   }
+  localStorage.setItem("account",account);
   localStorage.setItem("wallet","metamask");
   window.location.reload();
 }
