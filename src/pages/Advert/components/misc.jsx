@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Misc({step,notes,setNotes}) {
+export default function Misc({step,notes,setNotes,registered,setRegistered,asset}) {
     return (
         <>
              <div className={`row buy-step-3 ${step !== 3 ? "d-none":""}`}>     
@@ -28,7 +28,7 @@ export default function Misc({step,notes,setNotes}) {
                                     <label>Registered</label>
                                     <div className="input-group mb-3">
                                         <span className="input-group-text" style={{borderBottom:"0px"}}><input type="checkbox" name="asset" /></span>
-                                        <input type="text" className="form-control" aria-label=""/>
+                                        <input type="date" className="form-control" aria-label="" value={registered} onChange={(e)=>setRegistered((new Date(e.target.value)).toISOString())}/>
                                         <span className="input-group-text">Days Ago</span>
                                     </div>
                                 </div>
@@ -37,8 +37,8 @@ export default function Misc({step,notes,setNotes}) {
                                     <label>Holdings More Than</label>
                                     <div className="input-group mb-3">
                                         <span className="input-group-text" style={{borderBottom:"0px"}}><input type="checkbox" name="asset" /></span>
-                                        <input type="text" className="form-control" aria-label=""/>
-                                        <span className="input-group-text">USDT</span>
+                                        <input type="number" className="form-control" aria-label=""/>
+                                        <span className="input-group-text">{asset}</span>
                                     </div>
                                 </div>
 
