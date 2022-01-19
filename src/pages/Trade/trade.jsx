@@ -1,11 +1,38 @@
-import React,{useContext} from 'react'
+import React,{useContext,useEffect,useState} from 'react'
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from '../../contexts/account';
 import Header from "../Landing/components/header";
 import Nav from "../Landing/components/nav";
+import axios from "axios";
+const token = localStorage.getItem("authToken");
+
+const TRADE_URL= process.env.REACT_APP_SERVER_URL+"/trade"
 
 export default function Trade() {
   const [account,_] = useContext(AccountContext);
+  const [error,setError] = useState("");
+  const [trade,setTrade] = useState({});
+
+  useEffect(()=>{
+    const fetchTrade = ()=>{
+      const run = async ()=>{
+        const {data:response} = await axios.get(TRADE_URL,{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        });
+        if(response.error){
+          setError(response.error);
+        }
+        if(!response.success){
+          setError(response.message)
+        }
+        console.log(response);
+        setTrade(response.data)
+      }
+    }
+
+  },[account])
     return (
         <>
          <div className="container-fluid body">
@@ -28,22 +55,22 @@ export default function Trade() {
                             </div>
                             <div className="col col-4 col-xs-12 col-sm-4" style={{fontSize:"11px"}}>
                              <span className="label p-0" style={{fontSize:"11px"}}> ORDER NUMBER </span>
-                             <span className="value p-0"> 0314-3123-3133 </span>
+                             <span className="value p-0"> {trade.uid} </span>
                             </div>
                         </div>
 
                         <div className="row mb-20">
                             <div className="col col-6 col-xs-6 col-sm-4">
-                             <div> <span className="label p-0"> Amount </span></div>
-                             <div className="d-flex"> <h5 className="value">541.45</h5>&nbsp;<h5 className="value dim">NGN</h5></div>
+                             <div> <span className="label p-0"> Rate </span></div>
+                             <div className="d-flex"> <h5 className="value">{trade.advert?.currencyRate}</h5>&nbsp;<h5 className="value dim">{trade.advert?.currency}</h5></div>
                             </div>
                             <div className="col col-6 col-xs-6 col-sm-4">
                              <div> <span className="label p-0"> Amount </span></div>
-                             <div className="d-flex"> <h5 className="value">541.45</h5>&nbsp;<h5 className="value dim">NGN</h5></div>
+                             <div className="d-flex"> <h5 className="value">{trade.price}</h5>&nbsp;<h5 className="value dim">NGN</h5></div>
                            </div>
                            <div className="col col-6 col-xs-6 col-sm-4">
                              <div> <span className="label p-0"> Quantity </span></div>
-                             <div className="d-flex"> <h5 className="value">109.9</h5>&nbsp;<h5 className="value dim">USDT</h5></div>
+                             <div className="d-flex"> <h5 className="value">{trade.unit}</h5>&nbsp;<h5 className="value dim">{trade.advert?.asset.name}</h5></div>
                            </div>
                         </div>
 
@@ -63,20 +90,20 @@ export default function Trade() {
                                     <div className="col col-12 col-xs-12 col-sm-12 p-20">
                                         <div className="row mb-20">
                                             <div className="col col-6 col-xs-6 col-sm-3">
-                                                <span className="btn-dex-small btn-dex-danger">Bank Transfer</span>
+                                                <span className="btn-dex-small btn-dex-danger">{trade.advert?.paymentMethod.paymentMethod.name}</span>
                                             </div>
-                                            <div className="col col-6 col-xs-6 col-sm-3">
-                                              <span className="label p-0"> Name </span><br/>
-                                              <h6 className="value">Ola Fashade</h6>
+                                            {trade.advert?.paymentMethod && (()=>{
+                                              let det = JSON.parse(trade.advert?.paymentMethod.details);
+                                               det && Object.entries(det).map(([name,index])=>(
+                                                    <>
+                                                    <div className="col col-6 col-xs-6 col-sm-3" key={index}>
+                                              <span className="label p-0"> {name} </span><br/>
+                                              <h6 className="value">{det[name]}</h6>
                                            </div>
-                                           <div className="col col-6 col-xs-6 col-sm-3">
-                                             <span className="label p-0"> Bank Account Number </span><br/>
-                                             <h6 className="value">0043320734</h6>
-                                           </div>
-                                           <div className="col col-6 col-xs-6 col-sm-3">
-                                            <span className="label p-0"> Bank Name </span><br/>
-                                            <h6 className="value">Kuda Bank</h6>
-                                          </div>
+                                                    </>
+                                                ))
+                                            })()
+                                            }
                                         </div>
                                     </div>
 
@@ -86,7 +113,7 @@ export default function Trade() {
 
                         <div className="row mb-10">
                             <div className="col col-12 col-xs-12 col-sm-12">
-                                <h5 className="value text-success">PAYMENT TO BE MADE 13:30 </h5>
+                              timer
                             </div>
                         </div>
 

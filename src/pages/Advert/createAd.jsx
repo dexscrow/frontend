@@ -38,8 +38,8 @@ const CreateAd = () => {
     const authToken = localStorage.getItem("authToken");
     const [paymentMethods,setPaymentMethods] = useState([]);
     const [methods,setMethods] = useState([]);
-    const [prefferedMethod,setPrefferedMethod] = useState({});
-    const [selectedMethod,setSelectedMethod] = useState({});
+    const [prefferedMethod,setPrefferedMethod] = useState("");
+    const [selectedMethod,setSelectedMethod] = useState("");
     const [deadline,setDeadline] = useState(0);
     const [notes,setNotes] = useState("");
     const [registered,setRegistered] = useState("");
@@ -101,7 +101,7 @@ const CreateAd = () => {
             try{
                 const {data:response} = await axios.post(CREATE_BUY_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset)._id),
-                    paymentMethod:prefferedMethod._id,
+                    paymentMethod:(methods.find((m)=>m.name == prefferedMethod))._id,
                     currency:currency.symbol,
                     currencyRate,
                     factor,
@@ -287,7 +287,7 @@ const CreateAd = () => {
                 </div>
             </div>
         </div>
-        <div className="modal fade" id="paymentMethodModal" tabIndex="-1" aria-labelledby="epaymentMethodModalLabel" aria-hidden="true">
+        <div className="modal fade" id="epaymentMethodModal" tabIndex="-1" aria-labelledby="epaymentMethodModalLabel" aria-hidden="true">
     <div className="modal-dialog">
       <div className="modal-content">
         <div className="modal-header">
@@ -298,10 +298,12 @@ const CreateAd = () => {
           <div className="row">
             <div className="col-xs-12 col-sm-12">
               <div className="col-xs-12 payment-method">
-                  <select value={prefferedMethod} onChange={(e)=>setPrefferedMethod(e.target.value)}>
+                  <select value={prefferedMethod} onChange={(e)=>{
+                      console.log(e.target.value)
+                      setPrefferedMethod(e.target.value)}}>
                     {
                         methods && methods.map((m)=>(
-                            <option value={m} key={m._id}>{m.name}</option>
+                            <option value={m.name} key={m._id}>{m.name}</option>
                         ))
                     }
                   </select>

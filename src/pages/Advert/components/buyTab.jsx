@@ -184,8 +184,8 @@ const END_POINT = 'http://localhost:8000/assets'
                                            <small> Select a payment method </small> 
                                         </div>
                                         <div className="col col-6 col-xs-6">
-                                        <span class="btn-dex-small btn-dex-danger">{prefferedMethod.name}</span>
-                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#epaymentMethodModalLabel" type="button">+ ADD</button>
+                                        {prefferedMethod && <span className="btn-dex-small btn-dex-danger">{prefferedMethod}</span>}
+                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#epaymentMethodModal" type="button">+ ADD</button>
                                         </div>
                                     </div>
                             </div>  
