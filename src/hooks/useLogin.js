@@ -10,11 +10,8 @@ const useLogin = (walletAddress,prevToken)=>{
     const [_,setAuthToken] = useContext(AuthContext);
 
     useEffect(()=>{
-        if(prevToken) {
-            setAuthToken(prevToken);
-            localStorage.setItem("authToken",prevToken);
-            // setError(null);
-        }
+        const authToken = localStorage.getItem("authToken")
+        if((authToken===null || authToken==='undefined') && walletAddress!=null) {
         const run = async ()=>{
             try{
                 const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
@@ -28,15 +25,21 @@ const useLogin = (walletAddress,prevToken)=>{
                     localStorage.setItem("authToken",null);
                     // setError(response.message);
                 }
-                setAuthToken(response.data.token);
-                localStorage.setItem("authToken",response.data.token);
-                // setError(null)
+                if(response.data.success){
+                    setAuthToken(response.data.token);
+                    localStorage.setItem("authToken",response.data.token);
+                    window.location.reload();
+                }
+                //setError(null)
+                
             }catch(error){
                 setAuthToken(null);
                 // setError(error.message);
             }
         }
         run();
+       }
+
     },[walletAddress,prevToken]);
 }
 

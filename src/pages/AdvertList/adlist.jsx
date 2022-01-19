@@ -172,7 +172,7 @@ export default function Adlist() {
 
                    <form>
                    <div className="row mb-20 mt-20">
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Asset</label>
                         <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
                              <option value="">All Asset</option>
@@ -186,7 +186,7 @@ export default function Adlist() {
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Order Type</label>
                         <select className="form-control no-radius"  value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
                             <option value="">All</option>
@@ -195,7 +195,7 @@ export default function Adlist() {
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Status</label>
                         <select className="form-control no-radius"  value={status} onChange={(e)=>setStatus(e.target.value)}>
                             <option value="active">Active</option>
@@ -203,31 +203,30 @@ export default function Adlist() {
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-3">
+                    <div className="col col-6 col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
                         <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>setDate(new Date(e.target.value).toISOString())}/></div>  
                     </div>
 
-                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                      <span type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-start">
+                      <br/>
+                      <span onClick={(e)=>{
                         e.preventDefault();
                         runQuery();
-                        }}> Run Query</span>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                      <span type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        }}> Filter </span> &nbsp; &nbsp;
+                     <span onClick={(e)=>{
                         setDate("");
                         setStatus("");
                         setPriceType("");
                         setAsset("");
-                      }}> Reset Filter </span>
+                      }}> Reset </span>
                     </div>
                   </div>
                 </form>
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20">
                     {
-                        ads !== [] ? ads.map((advert)=>(
+                        ads ? ads.map((advert)=>(
                              <>
                      <div className="row" key={advert._id}>
                         <div className="col col-6 col-xs-6 col-sm-2">

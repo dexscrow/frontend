@@ -35,12 +35,12 @@ export default function Sidebar({account}) {
                     
                         <div className="col col-xs-2 text-center">
                             <span className="">Completed</span><br/>
-                            <span className="">96.20%</span>
+                            <span className="">100%</span>
                        </div>
 
                         <div className="col col-xs-2 text-center">
                              <span className="">Orders</span><br/>
-                             <span className="">124</span>
+                             <span className="">0</span>
                        </div>
 
                       

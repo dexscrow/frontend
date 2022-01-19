@@ -74,11 +74,11 @@ export default function Trades(){
         <div className="row flex-nowrap">
                 <Sidebar account={account}/>
                  <div className="col py-3 main">
-                  <div className="row p-20">
+                  <div className="row p-0">
                     <Header account={account}/>
-                    </div>
-                   <div className="row">
-                    <div className="col col-12">
+                   </div>
+                   <div className="row mb-30 mt-20">
+                    <div className="col col-6 col-xs-6 col-sm-6">
                        <h3 className="page-title">Trades</h3>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-6 text-end">
@@ -117,7 +117,7 @@ export default function Trades(){
                    <form>
                    <div className="row mb-20 mt-20">
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <label>Asset</label>
                         <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
                             <option value="">All Asset</option>
@@ -129,7 +129,7 @@ export default function Trades(){
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <label>Order Type</label>
                         <select className="form-control no-radius"  value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
                             <option value="">All</option>
@@ -138,7 +138,7 @@ export default function Trades(){
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-2">
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <label>Status</label>
                         <select className="form-control no-radius"  value={status} onChange={(e)=>setStatus(e.target.value)}>
                             <option value="active">Active</option>
@@ -146,33 +146,33 @@ export default function Trades(){
                         </select>
                     </div>
 
-                    <div className="col col-xs-6 col-sm-3">
+                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <div className="col col-12"><label>Date</label> </div>
                         <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>setDate(new Date(e.target.value).toISOString())}/></div>  
                     </div>
 
-                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-start">
+                      <br/><span onClick={(e)=>{
                         e.preventDefault();
                         runQuery();
-                        }}> Run Query</button>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                      <button type="button" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
+                        }}> Filter</span>
+                       &nbsp; &nbsp;
+                      <span onClick={(e)=>{
                         setDate("");
                         setStatus("");
                         setPriceType("");
                         setAsset("");
-                      }}> Reset Filter </button>
+                      }}> Reset </span>
                     </div>
                   </div>
                 </form>
 
 
                 <div className="row">
-                    <div className="trade-record-card pt-10 pb-20">
-                        {trades && trades.map((trade)=>(
+                   
+                        {trades.length>0 ? trades.map((trade)=>(
                             <>
+                     <div className="trade-record-card pt-10 pb-20">
                      <div className="row">
                          
                         <div className="col col-6 col-xs-6 col-sm-2">
@@ -204,12 +204,21 @@ export default function Trades(){
                             <span className="label">Action</span><br/>
                             <span className="value">View</span>
                         </div>
-                    </div>
+                      </div>
+                     </div>
                     </>
-                    ))}
-                 </div>
+                    ))
+                    :
+                    <div className="trade-record-card pt-10 pb-20 mb-10">
+                     <div className="row d-flex justify-content-center align-items-center">
+                      <span className="text-center">
+                       No Trade Found
+                     </span>
+                     </div>
+                    </div>
+                  }
+                
               </div>
-
 
             </div>
            </div>

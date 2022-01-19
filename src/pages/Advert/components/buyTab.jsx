@@ -26,7 +26,7 @@ const END_POINT = 'http://localhost:8000/assets'
                                            <input type="radio" name="asset" value={asset.symbol} key={asset._id} onClick={(e)=>{
                                                setAsset(e.target.value);
                                                setAssetPrice(asset.rateToDollar["$numberDecimal"]);
-                                               setPrice(Number(asset.rateToDollar["$numberDecimal"] * currencyRate))
+                                               setPrice(Number(asset.rateToDollar["$numberDecimal"] * currencyRate).toFixed(2))
                                             }}
                                                 />
                                            {asset.symbol.toUpperCase()} &nbsp;
@@ -46,7 +46,7 @@ const END_POINT = 'http://localhost:8000/assets'
                                            <>
                                            <input type="radio" name="currency" value={currency} key={currency._id} onClick={(e)=>{
                                                setCurrency(currency);
-                                                setPrice(currency.rateToDollar["$numberDecimal"] * assetPrice);
+                                                setPrice((currency.rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
                                                 setCurrencyRate(currency.rateToDollar["$numberDecimal"]);
                                             }
                                                }/>
@@ -89,21 +89,22 @@ const END_POINT = 'http://localhost:8000/assets'
                                   <div className={`${priceType === "fixed" ? "d-none":""}`}>
                                       <div className="label"><b>Floating Price Margin</b></div>
                                     <div className="value-button" id="decrease" value="Decrease Value">-</div>
-                                    <input type="number" id="number" onChange={(e)=>{
+                                    <input type="number" id="number" placeholder="100" onChange={(e)=>{
                                         setFactor(Number(e.target.value));
                                         let factorPrice = calculatePrice(currencyRate,e.target.value);
-                                        setPrice(Number(assetPrice * factorPrice));
+                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
                                     }}/>
                                     <div className="value-button" id="increase" value="Increase Value">+</div>
 
-                                    <div className="pricing-formula"> <span>Pricing Formula</span> &nbsp;  {currencyRate} * {factor}% = <b> {currency.symbol} {price} </b> </div>
+                                    <div className="pricing-formula"> <span>Pricing Formula</span> &nbsp;  {price} * {factor}% = <b> {currency.symbol} {price} </b> </div>
                                   </div>
 
                                   <div className={`${priceType === "floating" ? "d-none":""}`}>
                                     <div className={`value-button`} id="decrease"value="Decrease Value">-</div>
-                                    <input type="number" id="number" onChange={(e)=>{
+                                    <input type="number" id="number" placeholder={price} onChange={(e)=>{
                                         setCurrencyRate(e.target.value);
                                         setFactor(calculateFactor(e.target.value,currency.rateToDollar["$numberDecimal"]));
+                                        setPrice(Number(e.target.value).toFixed(2));
                                         
                                     }} />
                                     <div className="value-button" id="increase"value="Increase Value">+</div>
@@ -151,7 +152,7 @@ const END_POINT = 'http://localhost:8000/assets'
                                                 <input type="number" className="form-control" aria-label="Amount (to the nearest dollar)" value={upperLimit} onChange={(e)=>setUpperLimit(e.target.value)}/>
                                                 <span className="input-group-text">{currency.symbol}</span>
                                             </div>
-                                            <span className="rate-info"> = {lowerLimit} {currency.symbol}</span>
+                                           {/* <span className="rate-info">= {lowerLimit} {currency.symbol}</span>*/} 
                                         </div>
                                      </div>
            

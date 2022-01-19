@@ -14,36 +14,57 @@ export const getBlockchain = async ()=>{
 
 
 export const setMetamaskConnection = async ()=>{
+  if(!window.ethereum) alert("install metamask");
   const provider = window.ethereum;
   if(!provider) throw new Error("install metamask");
-
-  await provider.request({method:"eth_requestAccounts"});
-  if(provider.networkVersion !== "56"){
+  const account = await provider.request({method:"eth_requestAccounts"});
+  const networkId = await provider.request({method:"net_version"})
+  if(networkId !== "56" && networkId !== "0x38"){
     throw new Error("please select binance smart chain network");
   }
-
+  localStorage.setItem("account",account);
+  localStorage.setItem("wallet","metamask");
+  window.location.reload();
 }
 
 
 export const setBinanceWalletConnection = async ()=>{
+  if(!window.BinanceChain) alert("install metamask");
   const provider = window.BinanceChain;
-  if(!provider) throw new Error("you have to install binance wallet");
-
-  await provider.request({
-    method:"eth_requestAccounts"
-  });
-  if(provider.networkVersion !== "56"){
+  if(!provider) throw new Error("install binance chain");
+  const account = await provider.request({method:"eth_accounts"});
+  const networkId = await provider.request({method:"net_version"})
+  if(networkId!==56){
     throw new Error("please select binance smart chain network")
   }
+  localStorage.setItem("account",account);
+  localStorage.setItem("wallet","binance");
+  window.location.reload();
 }
 
 export const disconnectWallet = async ()=>{
-  await await window.ethereum.request({
-    method: "wallet_requestPermissions",
-    params: [
-      {
-        eth_accounts: {}
-      }
-    ]
-  });
+   const wallet = localStorage.getItem("wallet")
+   if(wallet!==null && wallet=="binance"){
+    await window.BinanceChain.request({
+      method: "eth_accounts",
+      params: [
+        {
+          eth_accounts: {}
+        }
+      ]
+     });
+    } else if(wallet!==null && wallet=="metamask"){
+      await window.ethereum.request({
+        method: "eth_requestAccounts",
+        params: [
+          {
+            eth_accounts: {}
+          }
+        ]
+       });
+    }
+  localStorage.removeItem("authToken")
+  localStorage.removeItem("account");
+  localStorage.removeItem("wallet");
+  window.location.reload();
 }

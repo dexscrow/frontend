@@ -202,39 +202,38 @@ export default function BuyAd(){
     return (
         <>
         <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
-    <div className="modal-dialog modal-sm">
-      <div className="modal-content" style={{background:"#ccc"}}>
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-20">
-            <div className="col col-12 col-xs-12">
-              Once taken offline, the Ad will not be able to take in orders from users.
+          <div className="modal-dialog modal-sm">
+            <div className="modal-content" style={{background:"#ccc"}}>
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                <div className="row mb-20">
+                  <div className="col col-12 col-xs-12">
+                    Once taken offline, the Ad will not be able to take in orders from users.
+                  </div>
+                </div>
+
+                <div className="row form-row mb-20">     
+                  <div className="col col-xs-12 text-end">
+                  <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                  <button className="btn-dex-small btn-dex-default">Confirm</button>
+                  </div>
+              </div> 
+
+              </div>
             </div>
           </div>
-
-          <div className="row form-row mb-20">     
-            <div className="col col-xs-12 text-end">
-            <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            <button className="btn-dex-small btn-dex-default">Confirm</button>
-            </div>
-        </div> 
-
         </div>
-      </div>
-    </div>
-  </div>
 
-    <div className="container-fluid body">
+       <div className="container-fluid body">
         <div className="row flex-nowrap">
-        <Sidebar account={account}/>
-        <div className="col py-3 main">
-                  <div className="row p-20">
+          <Sidebar account={account}/>
+           <div className="col py-3 main">
+                  <div className="row p-0">
                     <Header account={account}/>
-                    </div>
-
+                   </div>
                    <div className="row mb-30 mt-20">
                     <div className="col col-6 col-xs-6 col-sm-6">
                        <h3 className="page-title">Buy Ads</h3>
@@ -322,168 +321,210 @@ export default function BuyAd(){
                 </form>
 
                   <div className="row">
-
                        {
-                         
-                         ads ? ads.map((ad)=>{
-                           let clicked = false;
-                           return (
-                          <>
-                                              <div className="trade-record-card pt-10 pb-20 mb-10">
-                         <div className="row">
-                          <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
+                         ads.length>0 ? ads.map((ad)=>{
+                          let clicked = false;
+                          return (
+                           <>
+                            <div className="trade-record-card pt-10 pb-20 mb-10">
                             <div className="row">
-                              <div className="col col-2 col-xs-2">
-                                <img src={Avatar} style={{width:"30px", height:"30px"}} />
-                              </div>
-                              <div className="col col-10 col-xs-10 text-start"> 
-                                <div className="row">
-                                    <div className="col col-12 col-xs-12">
-                                        <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
-                                    </div>
-                                    <div className="col col-6 col-xs-6 text-end d-flex">
-                                        <span className="value">{ad.unit}</span>
-                                        <span className="label">Orders</span>
-                                         &nbsp; &nbsp; 
-                                        <span className="value">Completion</span>
-                                        <span className="label">92%</span>
-                                    </div>
-                                </div>
-                           </div>
-                           {
-                             clicked && (
-                               <>
-                                            <div class="col col-12 col-xs-12 text-start"> 
-                            <span class="label"> Payment Method</span> <br/><br/>
-                            <span class="btn-dex-small btn-dex-danger">{ad.paymentMethod.paymentMethod.name}</span>
-                        </div>
-                               </>
-                             )
-                           }
-                          </div>
-                        </div>
 
-                        <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                          <div className="row">
-                            <div className={`col ${!clicked ? " col-6 col-xs-6":"col col-12 col-xs-12 mb-10"}`}>
-                                <span className="value number">{ad.amount} {ad.currency}</span><br/>
-                                <span className="label">Price</span>
-                            </div>
-                            <div className={`col ${!clicked ? " col-6 col-xs-6":"col col-12 col-xs-12 mb-10"}`}>
-                                <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
-                                <span className="label">Amount</span>
-                            </div>
                             {
-                                  clicked && (
-                                    <>
-                                    <div class="col col-12 col-xs-12 mb-10">
-                            <span class="value number">{ad.lowerLimit}{ad.currency} - {ad.upperLimit} {ad.currency}</span><br/>
-                            <span class="label">Limit</span>
-                         </div>
-                         <div class="col col-12 col-xs-12 mb-10">
-                            <span class="label">Payment Time</span> <span class="value number">{ad.deadline} Minutes</span>
-                         </div>
-                                    </>
-                                  )
-                                }
+                             !clicked && (
+                             <>
+                              <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
+                                <div className="row">
+                                  <div className="col col-2 col-xs-2">
+                                    <img src="{Avatar}" style={{width:"30px", height:"30px"}} />
+                                  </div>
+                                  <div className="col col-10 col-xs-10 text-start"> 
+                                    <div className="row">
+                                        <div className="col col-12 col-xs-12">
+                                            <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                        </div>
+                                        <div className="col col-6 col-xs-6 text-end d-flex">
+                                            <span className="value">{ad.unit}</span>
+                                            <span className="label">Orders</span>
+                                            &nbsp; &nbsp; 
+                                            <span className="value">Completion</span>
+                                            <span className="label">92%</span>
+                                        </div>
+                                    </div>
+                                 </div>
+                               </div>
+                             </div>
+
+
+                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                              <div className="row">
+                                <div className="col col-6 col-xs-6">
+                                    <span className="value number">{ad.amount} {ad.currency}</span><br/>
+                                    <span className="label">Price</span>
+                                </div>
+
+                                <div className="col col-6 col-xs-6">
+                                    <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
+                                    <span className="label">Amount</span>
+                                </div>
+                             </div> 
+                            </div>
+
+                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                              <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
+                              <span className="label">Limit</span>
+                            </div>
+
+                           <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
+                               <span className="value ">{ad.paymentMethod.paymentMethod.name}</span>
+                              <span className="label">Payment Method</span>
                           </div>
-                        </div>
-
-                        { !clicked ? (<>
-                          <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                            <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
-                            <span className="label">Limit</span>
-                        </div>
-
-                        <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                          <span className="value ">{ad.paymentMethod.paymentMethod.name}</span>
-                            <span className="label">Payment Method</span>
-                        </div>
-
-                        <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
+                          
+                          <div className="col col-12 col-xs-12 col-sm-1 text-end p-20">
                             <button className="btn-dex-small btn-dex-primary p-10" onClick={(e)=>{
                               clicked = true;
                               setCurrentAd(ad)
                                 }}>{ad.priceType === "sell"?"buy":"sell"}</button>
-                        </div> 
-                        </>)
-                        : (<>
-                          <div class="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                         <span class="label"> 
-                            <b>Please Read Terms Carefully</b> <br/><br/>
-                            ✔ {ad.notes}
-                         </span>
-                     </div>
-                     <div class="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                        <form >
-                         <div class="row"> 
-                            <div class="col col-12 col-xs-12 col-sm-12">
-                                <label>I want to recieve</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>setAmount(e.target.value)}/>
-                                    <span class="input-group-text"><span class="text-primary" onClick={(e)=>setAmount(ad.balance)}>All</span> {ad.currency}</span>
-                                </div>
-                                <span class="rate-info float-end">&nbsp; </span>
-                            </div>
-                         </div>
+                          </div> 
+                           </>
+                          )
+                         }
+                          
 
-                         <div class="row"> 
-                            <div class="col col-12 col-xs-12 col-sm-12">
-                                <label>I will sell</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>setUnit(e.target.value)}/>
-                                    <span class="input-group-text">{ad.asset.symbol}</span>
-                                </div>
-                                <span class="rate-info float-end"> &nbsp; </span>
-                            </div>
-                         </div>
-                         <div class="row"> 
-                            <div class="col col-12 col-xs-12 col-sm-12">
-                               <label class="mb-10"> Payment Method</label>
-                               <select name="paymentmethod" class="form-control" value={selectedMethod} onChange={(e)=>setSelectedMethod(e.target.value)}>
-                                   {
-                                     paymentMethods && paymentMethods.map((method)=>(
-                                       <>
-                                       <option value={method._id}>{method.paymentMethod.name}</option>
-                                       </>
-                                     ))
-                                   }
-                               </select>
-                                <span class="rate-info float-end"> &nbsp; </span>
-                            </div>
-                         </div>
 
-                         <div class="row form-row"> 
-                            <div class="col col-12 col-xs-12 col-sm-12 d-flex">
-                              <button class="btn-dex-small btn-dex-default" type="button" onClick={(e)=>clicked = false}>Cancel</button>&nbsp;
-                              <button class="btn-dex-small btn-dex-primary" type="button"
-                                onClick={(e)=>{
-                                  e.preventDefault();
-                                  initSellTrade()
-                                }}
-                              >Sell {ad.asset.symbol}</button>
+                          {
+                          clicked && (
+                          <>
+                          <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
+                             <div className="row">
+                                  <div className="col col-2 col-xs-2">
+                                    <img src="{Avatar}" style={{width:"30px", height:"30px"}} />
+                                  </div>
+                                  <div className="col col-10 col-xs-10 text-start"> 
+                                    <div className="row">
+                                        <div className="col col-12 col-xs-12">
+                                            <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                        </div>
+                                        <div className="col col-6 col-xs-6 text-end d-flex">
+                                            <span className="value">{ad.unit}</span>
+                                            <span className="label">Orders</span>
+                                            &nbsp; &nbsp; 
+                                            <span className="value">Completion</span>
+                                            <span className="label">92%</span>
+                                        </div>
+                                    </div>
+                                  </div>
+                                
+                                  <div class="col col-12 col-xs-12 text-start"> 
+                                        <span class="label"> Payment Method</span> <br/><br/>
+                                        <span class="btn-dex-small btn-dex-danger">{ad.paymentMethod.paymentMethod.name}</span>
+                                  </div>
+                                   
+                              </div>
+                             </div>
+
+
+                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                              <div className="row">
+                                <div className="col col-12 col-xs-12 mb-10">
+                                    <span className="value number">{ad.amount} {ad.currency}</span><br/>
+                                    <span className="label">Price</span>
+                                </div>
+                                <div className="col col-12 col-xs-12 mb-10">
+                                    <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
+                                    <span className="label">Amount</span>
+                                </div>
+                                <div className="col col-12 col-xs-12 mb-10">
+                                    <span className="value number">{ad.lowerLimit}{ad.currency} - {ad.upperLimit} {ad.currency}</span><br/>
+                                    <span className="label">Limit</span>
+                                </div>
+                                <div className="col col-12 col-xs-12 mb-10">
+                                    <span className="label">Payment Time</span> <span class="value number">{ad.deadline} Minutes</span>
+                                </div>
+                              </div>
                             </div>
-                         </div>
-                        </form>
-                     </div>
-                        </>)
-                        }      
-                    </div>
-                    </div>
-                    </>
-                         )})
-                    :
-                    <div className="row d-flex justify-content-center align-items-center">
-                      <span className="text-center">
-                        No Adverts Available
-                      </span>
-                    </div>
-                    }
+
+                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                                <span className="label"> 
+                                <b>Please Read Terms Carefully</b> <br/><br/>
+                                 ✔ {ad.notes}
+                                </span>
+                            </div>
+
+                            <div class="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
+                              <form >
+                              <div class="row"> 
+                                  <div class="col col-12 col-xs-12 col-sm-12">
+                                      <label>I want to recieve</label>
+                                      <div class="input-group">
+                                          <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>setAmount(e.target.value)}/>
+                                          <span class="input-group-text"><span class="text-primary" onClick={(e)=>setAmount(ad.balance)}>All</span> {ad.currency}</span>
+                                      </div>
+                                      <span class="rate-info float-end">&nbsp; </span>
+                                  </div>
+                              </div>
+
+                              <div class="row"> 
+                                  <div class="col col-12 col-xs-12 col-sm-12">
+                                      <label>I will sell</label>
+                                      <div class="input-group">
+                                          <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>setUnit(e.target.value)}/>
+                                          <span class="input-group-text">{ad.asset.symbol}</span>
+                                      </div>
+                                      <span class="rate-info float-end"> &nbsp; </span>
+                                  </div>
+                              </div>
+                              <div class="row"> 
+                                  <div class="col col-12 col-xs-12 col-sm-12">
+                                    <label class="mb-10"> Payment Method</label>
+                                    <select name="paymentmethod" class="form-control" value={selectedMethod} onChange={(e)=>setSelectedMethod(e.target.value)}>
+                                        {
+                                          paymentMethods && paymentMethods.map((method)=>(
+                                            <>
+                                            <option value={method._id}>{method.paymentMethod.name}</option>
+                                            </>
+                                          ))
+                                        }
+                                    </select>
+                                      <span class="rate-info float-end"> &nbsp; </span>
+                                  </div>
+                              </div>
+
+                              <div class="row form-row"> 
+                                  <div class="col col-12 col-xs-12 col-sm-12 d-flex">
+                                    <button class="btn-dex-small btn-dex-default" type="button" onClick={(e)=>clicked = false}>Cancel</button>&nbsp;
+                                    <button class="btn-dex-small btn-dex-primary" type="button"
+                                      onClick={(e)=>{
+                                        e.preventDefault();
+                                        initSellTrade()
+                                      }}
+                                    >Sell {ad.asset.symbol}</button>
+                                  </div>
+                              </div>
+                              </form>
+                            </div>
+                            </>
+                             )
+                            }
+                            
+                          </div>
+                        </div>
+                        </>
+                       )})
+                       :
+                       <div className="trade-record-card pt-10 pb-20 mb-10">
+                        <div className="row d-flex justify-content-center align-items-center">
+                         <span className="text-center">
+                          No Advert Available
+                        </span>
+                        </div>
+                       </div>
+                     }
               </div>
-              </div>
-        </div>
-    </div>
-              <Nav/>
-            </>
+
+           </div>
+          </div>
+         </div>
+         <Nav/>
+        </>
     )
 }

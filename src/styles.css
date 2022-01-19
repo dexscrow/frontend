@@ -50,7 +50,7 @@ span{
     opacity: 1;
     text-align: left;
     letter-spacing: 0.36px;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     color: #000000;
     opacity: 0.72;
   }
@@ -76,7 +76,7 @@ span{
     font-size:13px;
     text-align: left;
     letter-spacing: 0.36px;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     border-left: 2px solid #753b3b;
     padding:4px;
     margin-bottom:3px;
@@ -86,7 +86,7 @@ span{
 .modal .alphabet-list{
     font-size:12px;
     letter-spacing:1.86px;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     color: #000000;
     opacity: 0.72;  
 }
@@ -142,7 +142,7 @@ span{
     font-weight: normal; 
     font-size:10px;
     letter-spacing: -0.16px;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     color: #000000;
     text-transform: uppercase;
     opacity: 1;
@@ -204,7 +204,7 @@ width:100px;
 
 /* Start Header*/
 .header{
-   padding:10px; 
+   padding:0px; 
 }
 
 .header .logo img{
@@ -217,19 +217,22 @@ width:100px;
 
 .header .btn-connect{
     font-weight: normal;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     letter-spacing: 0.14px;
     color: #000000;
-    text-transform: uppercase;
     text-align: center;
     text-decoration:none;
-    font-size:12px; 
-    width: 180px;
-    line-height: 24px;
-    padding:14px;
+    font-size:11px; 
+    width: 150px;
+    line-height: 9px;
+    padding:8px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     border-radius: 100px;
     opacity: 1;
+}
+.header .btn-connect img{
+    height:10px;
+    width:10px;
 }
 
 .header span{
@@ -269,7 +272,7 @@ width:100px;
 
  .btn-dex{
     font-weight: normal;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     letter-spacing: 0.14px;
     color: #000000;
     text-align: center;
@@ -318,7 +321,7 @@ width:100px;
 
 .btn-dex-small{
     font-weight: normal;
-    font-family:Space Mono;
+    font-family:Hind Madurai;
     letter-spacing: 0.14px;
     color: #000000;
     text-align: center;
@@ -468,8 +471,9 @@ width:100px;
 
 .main{
    display:block;
-   padding:50px;
-   margin-bottom:100px
+   padding:20px;
+   margin-bottom:100px;
+   background:#BFBFBF
 }
 .main .page-title{
     font-size:20px;
@@ -747,7 +751,6 @@ width:100px;
     font-size:11px;
     text-align:right;
     color: #000000;
-    text-transform: uppercase;
     opacity: 0.47;
 }
 /*End Form*/
