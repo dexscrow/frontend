@@ -130,6 +130,7 @@ const CreateAd = () => {
                 if(!response.success){
                     setError(response.message);
                 }
+                console.log(response);
 
               navigate("/ad/list");
             }catch(error){

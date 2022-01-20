@@ -8,7 +8,7 @@ import Nav from "../Landing/components/nav";
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
-const TRADE_URL= process.env.REACT_APP_SERVER_URL+"/trade"
+const TRADE_URL= process.env.REACT_APP_SERVER_URL+"/buy/trade"
 
 export default function Trade() {
   const [account,_] = useContext(AccountContext);
