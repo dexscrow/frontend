@@ -11,6 +11,7 @@ import Profile from "./pages/profile/profile";
 import SellAd from "./pages/Advert/sellAd";
 import BuyAd from "./pages/Advert/buyAd";
 import Trade from "./pages/Trade/trade";
+import Staking from "./pages/Staking/staking";
 import AddPaymentMethod from "./pages/paymentMethod/addPaymentMethod";
 import "./styles.css";
 
@@ -38,6 +39,7 @@ import "./styles.css";
           <Route path="/ad/buy" element={<BuyAd/>}/>
           <Route path="/trade" element={<Trade/>}/>
           <Route path="/profile" element={<Profile/>}/>
+          <Route path="/staking" element={<Staking/>}/>
           <Route path = "/methods/payment/new" element={<AddPaymentMethod />}/>
           </Routes>
       </Router>

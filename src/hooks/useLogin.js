@@ -12,6 +12,7 @@ const useLogin = (walletAddress,prevToken)=>{
     useEffect(()=>{
         const authToken = localStorage.getItem("authToken")
         if((authToken===null || authToken==='undefined') && walletAddress!=null) {
+            alert(authToken);
         const run = async ()=>{
             try{
                 const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});

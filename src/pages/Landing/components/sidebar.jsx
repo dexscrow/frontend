@@ -21,7 +21,7 @@ export default function Sidebar({account}) {
                         </li>
 
                         <li className="nav-item text-center" style={{width:"100%"}}>
-                            <Link to="/" className="nav-link align-middle text-center px-0">
+                            <Link to="/staking" className="nav-link align-middle text-center px-0">
                                 <img src={Add}/><br/>
                                 <span className="ms-1 d-none d-sm-inline">Staking</span>
                             </Link>

@@ -75,12 +75,12 @@ export default function Profile() {
         run();
     }
     useEffect(()=>{
-        async function request(){ 
+        /*async function request(){ 
         if(!account){
             await setBinanceWalletConnection();
         }
     }
-    request();
+    request(); */
     },[account])
 
 
@@ -102,6 +102,8 @@ export default function Profile() {
                 }
                 console.log(response.data)
                 setUser(response.data);
+                setUsername(response.data.username);
+                setEmail(response.data.email);
             }catch(error){
                 setError(error.message)
             }

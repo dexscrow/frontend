@@ -1368,8 +1368,131 @@ width:100px;
 .p-40{
     padding:40px;
   }
+  .cPanelContainer {
+    margin:auto;
+    padding:0;
+    background:#ccc;
+    }
 
+    .cPanelHeader {
+    margin:auto;
+    padding:50px 50px;
+    background: transparent;
+    text-align:center;
+    }
 
+    .cPanelHeader > h3, .cPanelHeader > h5 {
+    margin:auto;
+    color:#000;
+    font-weight:100;
+    }
+
+    .cPanelFooter {
+    margin:auto;
+    padding:50px;
+    background:#ccc;
+    text-align:center;
+    }
+
+    .cPanelFooter > span {
+    color:#000;
+    font-size:15px;
+    font-weight:400;
+    }
+
+    .cPanelContent {
+    margin:auto;
+    padding:0;
+    background:transparent;
+    text-align:center;
+    display:flex;
+    }
+
+    .cPanelSection {
+    position:relative;
+    flex:1;
+    transition:0.3s;
+    -moz-transition:0.3s;
+    -o-transition:0.3s;
+    -webkit-transition:0.3s;
+    padding:25px;
+    border-right:1px solid rgb(122, 122, 122);
+    border-left:1px solid rgb(122, 122, 122);
+    }
+
+    .cPanelSection:hover {
+    background:#ccc;
+    flex:2;
+    border-right:1px solid #f0f0f0;
+    border-left:1px solid #f0f0f0;
+    }
+
+    .cPanelContent > div:first-child {
+    border-left:none;
+    }
+
+    .cPanelContent > div:last-child {
+    border-right:none;
+    }
+
+    .cPanelContent > div:last-child:after {
+    display:none;
+    }
+
+    .cPanelContent > div:after {
+    position:absolute;
+    top:50%;
+    left:100%;
+    transform:translate(-50%, -50%);
+    z-index:1;
+    opacity:1;
+    padding:5px 13px;
+    border-radius:50%;
+    background:transparent;
+    transition:0.3s;
+    -moz-transition:0.3s;
+    -o-transition:0.3s;
+    -webkit-transition:0.3s;
+    content: "\f061";
+    font-size:25px;
+    font-family: FontAwesome;
+    color:#000;
+    }
+
+    .cPanelContent h5 {
+    color:#000;
+    font-weight:400;
+    }
+
+    .cPanelContent p {
+    font-size:14px;
+    color:#000;
+    padding:0 10%;
+    }
+
+    .cPanelArrowPulse {
+    position:absolute;
+    width:0%;
+    padding-bottom:0%;
+    border-radius:50%;
+    top:50%;
+    left:100%;
+    transform:translate(-50%, -50%);
+    background:#000;
+    opacity:0;
+    z-index:2;
+    
+    animation-name:cPanelArrowPulseAnimation;
+    animation-duration:2s;
+    animation-iteration-count:infinite;
+    animation-timing-function:ease-out;
+    }
+
+    @keyframes cPanelArrowPulseAnimation {
+    0% { opacity:1; width:0%; padding-bottom:0%; }
+    50% { opacity:0; width:20%; padding-bottom:20%; }
+    100% { opacity:0; width:0%; padding-bottom:0%; }
+}
 
 @media only screen and (min-width: 320px) and (max-width: 479px) {
     h3{
