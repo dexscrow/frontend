@@ -8,7 +8,7 @@ const END_POINT = 'http://localhost:8000/assets'
 
 
  const BuyTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,createBuyAd,prefferedMethod
 }) =>{
     
     return (
@@ -160,8 +160,7 @@ const END_POINT = 'http://localhost:8000/assets'
                                         <div className="col col-12 col-xs-12 col-sm-8 mt-20">
                                             <label>Payment Time Limit</label>
                                             <select className="form-control" value={deadline} onChange={(e)=>{
-                                                const val = Number(e.target.value);
-                                                setDeadline((1000*60*val));
+                                                setDeadline(Number(e.target.value));
                                             }}>
                                                 <option value="15">15 Min</option>
                                                 <option value="30">30 Min</option>
@@ -186,48 +185,12 @@ const END_POINT = 'http://localhost:8000/assets'
                                            <small> Select a payment method </small> 
                                         </div>
                                         <div className="col col-6 col-xs-6">
-                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal" type="button">+ ADD</button>
+                                        {prefferedMethod && <span className="btn-dex-small btn-dex-danger">{prefferedMethod}</span>}
+                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#epaymentMethodModal" type="button">+ ADD</button>
                                         </div>
-
-                                   
-                                                {
-                                                    selectedMethod.details && 
-                                                    (()=>{
-                                                        let det = JSON.parse(selectedMethod.details);
-                                                        return (
-                                                            <>
-                                        <div className="col col-xs-12 col-sm-12 p-20">
-                                            <div className="card payment-method-card">
-                                                             <div className="row">
-                                              <div className="col col-6 col-xs-6 text-start">
-                                                <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
-                                              </div>
-                                              <div className="col col-6 col-xs-6 text-end"
-                                              onClick={(e)=>setSelectedMethod({})}>
-                                                 X
-                                              </div>
-                                             </div>
-                                             {
-                                                 Object.entries(det).map(([key,index])=>(
-                                                    <div className="row" key={index}>
-                                              <div className="col col-6 col-xs-6 label dim text-end">
-                                                  {key} :
-                                              </div>
-                                              <div className="col col-6 col-xs-6 value">
-                                                 {det[key]}
-                                             </div>
-                                             </div>
-                                                 ))
-                                             }
-                                            </div>
-                                         </div>
-                                                            </>
-                                                        )
-                                                    })()
-                                                }
                                     </div>
                             </div>  
-                           <Misc step={step}/>
+                           <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} asset={asset}/>
                             <div className="row form-row">     
                                 <div className="col col-xs-12 text-end">
                                     <button className="btn-dex btn-dex-primary buy-step1-next" onClick={(e)=>{
@@ -238,7 +201,9 @@ const END_POINT = 'http://localhost:8000/assets'
                                         e.preventDefault();
                                        step ===3 ? setStep(3) : setStep(step+1)}
                                     }>Next</button>
-                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>e.preventDefault()}>Submit</button>
+                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>{e.preventDefault();
+                                        createBuyAd();
+                                    }}>Submit</button>
                                 </div>
                             </div> 
                           </form>

@@ -5,7 +5,7 @@ import Misc from './misc'
 const END_POINT = 'http://localhost:8000/assets'
 
 const SellTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,createSellAd
 }) =>{
  
     return (
@@ -156,8 +156,7 @@ const SellTab = memo(({
                                             <div className="col col-12 col-xs-12 col-sm-8 mt-20">
                                                 <label>Payment Time Limit</label>
                                                 <select className="form-control" value={deadline} onChange={(e)=>{
-                                                    const val = Number(e.target.value);
-                                                    setDeadline(1000*60*val);
+                                                    setDeadline(Number(e.target.value));
                                                 }}>
                                                     <option value="15">15 Min</option>
                                                     <option value="30">30 Min</option>
@@ -224,7 +223,7 @@ const SellTab = memo(({
                                                 
                                     </div>
                                 </div>  
-                                <Misc step={step}/>
+                                <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} asset={asset}/>
                                 <div className="row form-row">     
                                     <div className="col col-xs-12 text-end">
                                     <button className="btn-dex btn-dex-primary buy-step1-next" onClick={(e)=>{
@@ -235,7 +234,9 @@ const SellTab = memo(({
                                         e.preventDefault();
                                        step ===3 ? setStep(3) : setStep(step+1)}
                                     }>Next</button>
-                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>e.preventDefault()}>Submit</button>
+                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>{e.preventDefault();
+                                        createSellAd();
+                                    }}>Submit</button>
                                 </div>
                                 </div> 
                               </form>

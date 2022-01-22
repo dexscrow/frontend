@@ -1,5 +1,7 @@
 import React,{useContext,useState,useEffect} from 'react'
 import Header from '../Landing/components/header'
+import Delete from "../../assets/delete.svg"
+import Edit from "../../assets/edit.svg"
 import {Link} from "react-router-dom";
 import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account';
@@ -7,7 +9,7 @@ import Sidebar from '../Landing/components/sidebar';
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
-const URL = process.env.REACT_APP_SERVER_URL+'/adverts/me';
+const URL = process.env.REACT_APP_SERVER_URL+'/buy/adverts';
 const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 
@@ -88,7 +90,6 @@ export default function Adlist() {
             if(!response.success){
                 setError(response.message)
             }
-            console.log(response.data)
             setAssets(response.data);
         }catch(err){
             setError(err.message)
@@ -233,22 +234,23 @@ export default function Adlist() {
                            <b>{advert.priceType}</b><br/>
                            <b><u>{advert.uid}</u></b><br/>
                            <span className="label">Asset</span><br/>
-                           <span className="value"> {advert.asset}/{advert.currency}</span>
+                           <span className="value"> {advert.asset.name}/{advert.currency}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
                             <span className="label">Amount</span><br/>
-                            <span className="value">{advert.unit} {advert.asset}</span><br/>
+                            <span className="value">{advert.unit["$numberDecimal"]} {advert.asset.name}</span><br/>
                             <span className="label">Limit</span><br/>
                             <span className="value">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
                             <span className="label">Price</span><br/>
-                            <span className="value">{advert.amount} {advert.currency}</span>
+                            <span className="value">{advert.amount["$numberDecimal"]} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6  col-sm-2">
-                            <br/><span className="label">{advert.paymentMethod.name}</span>
+                          <span className="label">Payment Method</span><br/>
+                            <br/><span className="value">{advert.paymentMethod.name}</span>
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
@@ -257,9 +259,9 @@ export default function Adlist() {
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
-                            <img src="images/delete.svg" style={{width:"20px", height:"20px"}}/>
+                            <img src={Delete} style={{width:"20px", height:"20px"}}/>
                              &nbsp;&nbsp;
-                            <img src="images/edit.svg" style={{width:"20px", height:"20px"}}/>
+                            <img src={Edit} style={{width:"20px", height:"20px"}}/>
                         </div>
  
                     </div>

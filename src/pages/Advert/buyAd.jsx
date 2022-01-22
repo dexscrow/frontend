@@ -8,8 +8,8 @@ import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
 
-const BUY_ADS_URL= process.env.REACT_APP_SERVER_URL+"/adverts?priceType=sell";
-const FILTERED_AD_URL= process.env.REACT_APP_SERVER_URL+"/adverts"
+const BUY_ADS_URL= process.env.REACT_APP_SERVER_URL+"/buy/adverts/";
+const FILTERED_AD_URL= process.env.REACT_APP_SERVER_URL+"/buy/adverts"
 const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 const CURRENCIES_URL = process.env.REACT_APP_SERVER_URL+"/countries";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";

@@ -14,7 +14,9 @@ import axios from 'axios'
 const COUNTRIES_URL=process.env.REACT_APP_SERVER_URL+"/countries";
 const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
-const CREATE_AD_URL = process.env.REACT_APP_SERVER_URL+"/advert";
+const PAYMENT_ALL_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
+const CREATE_BUY_AD_URL = process.env.REACT_APP_SERVER_URL+"/buy/advert";
+const CREATE_SELL_AD_URL = process.env.REACT_APP_SERVER_URL+"/sell/advert";
 
 const CreateAd = () => {
     const [account,_] = useContext(AccountContext);
@@ -35,22 +37,71 @@ const CreateAd = () => {
     const [error,setError] = useState("");
     const authToken = localStorage.getItem("authToken");
     const [paymentMethods,setPaymentMethods] = useState([]);
-    const [selectedMethod,setSelectedMethod] = useState({});
+    const [methods,setMethods] = useState([]);
+    const [prefferedMethod,setPrefferedMethod] = useState("");
+    const [selectedMethod,setSelectedMethod] = useState("");
     const [deadline,setDeadline] = useState(0);
     const [notes,setNotes] = useState("");
+    const [registered,setRegistered] = useState("");
 
     const navigate = useNavigate();
     
     const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}
   
 
-    const createAd = ()=>{
+    const createSellAd = ()=>{
         console.log("here")
         const run = async ()=>{
             try{
-                const {data:response} = await axios.post(CREATE_AD_URL,{
+                const {data:response} = await axios.post(CREATE_SELL_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset)._id),
                     paymentMethod:selectedMethod._id,
+                    currency:currency.symbol,
+                    currencyRate,
+                    factor,
+                    priceType,
+                    lowerLimit,
+                    upperLimit,
+                    deadline,
+                    balance:price,
+                    unit:totalAsset,
+                    amount:price,
+                    status: "active",
+                    notes,
+                    conditions:{
+                        registered,
+                        baseOwnershipAmount:0,
+                        status:"now"
+                    }
+                },{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.success){
+                    setError(response.message);
+                }
+
+              navigate("/ad/list");
+            }catch(error){
+                setError(error.message)
+            }
+           
+        };
+        run();
+    }
+
+    
+    const createBuyAd = ()=>{
+        console.log("here")
+        const run = async ()=>{
+            try{
+                const {data:response} = await axios.post(CREATE_BUY_AD_URL,{
+                    asset:(assets.find((a)=>a.symbol == asset)._id),
+                    paymentMethod:(methods.find((m)=>m.name == prefferedMethod))._id,
                     currency:currency.symbol,
                     currencyRate,
                     factor,
@@ -79,6 +130,7 @@ const CreateAd = () => {
                 if(!response.success){
                     setError(response.message);
                 }
+                console.log(response);
 
               navigate("/ad/list");
             }catch(error){
@@ -90,7 +142,7 @@ const CreateAd = () => {
     }
 
     const advertDetails = {
-        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createAd,selectedMethod,setSelectedMethod
+        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createBuyAd,createSellAd,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,prefferedMethod
     }
 
     
@@ -153,14 +205,34 @@ const CreateAd = () => {
             }
         }
 
+        const fetchMethods= async ()=>{
+            try{
+                const {data:response} = await axios.get(PAYMENT_ALL_METHOD_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                }
+                if(!response.success){
+                    setError(response.message);
+                }
+                setMethods(response.data);
+            }catch(error){
+                setError(error.message)
+            }
+        }
+
         fetchAssets();
         fetchCountries();
         fetchPaymentMethods();
-    },[authToken,paymentMethods]);
+        fetchMethods();
+    },[authToken]);
     
     return (
         <>
-        {error && console.log(error)}
+        {error && alert(error)}
         <PaymentModal />
         <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog">
@@ -216,6 +288,33 @@ const CreateAd = () => {
                 </div>
             </div>
         </div>
+        <div className="modal fade" id="epaymentMethodModal" tabIndex="-1" aria-labelledby="epaymentMethodModalLabel" aria-hidden="true">
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title" id="exampleModalLabel">Select Payment Method</h5>
+          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div className="modal-body">
+          <div className="row">
+            <div className="col-xs-12 col-sm-12">
+              <div className="col-xs-12 payment-method">
+                  <select value={prefferedMethod} onChange={(e)=>{
+                      console.log(e.target.value)
+                      setPrefferedMethod(e.target.value)}}>
+                    {
+                        methods && methods.map((m)=>(
+                            <option value={m.name} key={m._id}>{m.name}</option>
+                        ))
+                    }
+                  </select>
+              </div>
+            </div>
+           </div>
+         </div>
+        </div>
+      </div>
+    </div>
         <ConfirmAd {...confirmDetails}/>
         <div className="container-fluid body">
                 <div className="row flex-nowrap">
