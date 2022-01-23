@@ -9,7 +9,8 @@ import Sidebar from '../Landing/components/sidebar';
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
-const URL = process.env.REACT_APP_SERVER_URL+'/buy/adverts';
+const BUY_AD_URL = process.env.REACT_APP_SERVER_URL+'/buy/adverts/me';
+const SELL_AD_URL = process.env.REACT_APP_SERVER_URL+'/sell/adverts/me';
 const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 
@@ -28,12 +29,12 @@ export default function Adlist() {
           try{
             
           const filters = {
-            createdAt:date,status,priceType,asset
+            createdAt:date,status,asset
           }
           Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
           const q = new URLSearchParams(filters).toString();
           console.log(q)
-          const {data:response} = await axios.get(`${URL}/?${q}`,{
+          const {data:response} = await axios.get(`${priceType === "buy"?BUY_AD_URL:SELL_AD_URL}/?${q}`,{
             headers:{
               "Authorization":`Bearer ${token}`
             }
@@ -46,6 +47,7 @@ export default function Adlist() {
           if(!response.success){
             setError(response.message);
           }
+          console.log(response)
           setAds(response.data);
           }catch(error){
             setError(error.message)
@@ -59,7 +61,7 @@ export default function Adlist() {
     useEffect(()=>{
         const run = async()=>{
             try{
-                const {data:response} = await axios.get(URL,{
+                const {data:response} = await axios.get(BUY_AD_URL,{
                     headers:{
                         "Authorization":`Bearer ${token}`
                     }
@@ -206,7 +208,9 @@ export default function Adlist() {
 
                     <div className="col col-6 col-xs-6 col-sm-3">
                         <div className="col col-12"><label>Date</label> </div>
-                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>setDate(new Date(e.target.value).toISOString())}/></div>  
+                        <div className="col col-12 d-flex"><input type="date" value={date} onChange={e=>{
+                          console.log(new Date(e.target.value))
+                          setDate(new Date(e.target.value).toUTCString())}}/></div>  
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-start">
@@ -227,18 +231,18 @@ export default function Adlist() {
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20">
                     {
-                        ads ? ads.map((advert)=>(
+                        (ads && ads !==[]) ? ads.map((advert)=>(
                              <>
                      <div className="row" key={advert._id}>
                         <div className="col col-6 col-xs-6 col-sm-2">
                            <b>{advert.priceType}</b><br/>
                            <b><u>{advert.uid}</u></b><br/>
                            <span className="label">Asset</span><br/>
-                           <span className="value"> {advert.asset.name}/{advert.currency}</span>
+                           <span className="value"> {advert.asset?.name}/{advert.currency}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
                             <span className="label">Amount</span><br/>
-                            <span className="value">{advert.unit["$numberDecimal"]} {advert.asset.name}</span><br/>
+                            <span className="value">{advert.unit["$numberDecimal"]} {advert.asset?.name}</span><br/>
                             <span className="label">Limit</span><br/>
                             <span className="value">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
                         </div>

@@ -343,7 +343,7 @@ export default function BuyAd(){
                                             <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
                                         </div>
                                         <div className="col col-6 col-xs-6 text-end d-flex">
-                                            <span className="value">{ad.unit}</span>
+                                            <span className="value">{ad.unit["$numberDecimal"]}</span>
                                             <span className="label">Orders</span>
                                             &nbsp; &nbsp; 
                                             <span className="value">Completion</span>
@@ -358,12 +358,12 @@ export default function BuyAd(){
                             <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                               <div className="row">
                                 <div className="col col-6 col-xs-6">
-                                    <span className="value number">{ad.amount} {ad.currency}</span><br/>
+                                    <span className="value number">{ad.amount["$numberDecimal"]} {ad.currency}</span><br/>
                                     <span className="label">Price</span>
                                 </div>
 
                                 <div className="col col-6 col-xs-6">
-                                    <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
+                                    <span className="value number">{ad.unit["$numberDecimal"]} {ad.asset.symbol}</span><br/>
                                     <span className="label">Amount</span>
                                 </div>
                              </div> 
@@ -375,7 +375,7 @@ export default function BuyAd(){
                             </div>
 
                            <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                               <span className="value ">{ad.paymentMethod.paymentMethod.name}</span>
+                               <span className="value ">{ad.paymentMethod.paymentMethod?.name}</span>
                               <span className="label">Payment Method</span>
                           </div>
                           
@@ -397,7 +397,7 @@ export default function BuyAd(){
                           <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                              <div className="row">
                                   <div className="col col-2 col-xs-2">
-                                    <img src="{Avatar}" style={{width:"30px", height:"30px"}} />
+                                    <img src={Avatar} style={{width:"30px", height:"30px"}} />
                                   </div>
                                   <div className="col col-10 col-xs-10 text-start"> 
                                     <div className="row">
@@ -405,7 +405,7 @@ export default function BuyAd(){
                                             <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
                                         </div>
                                         <div className="col col-6 col-xs-6 text-end d-flex">
-                                            <span className="value">{ad.unit}</span>
+                                            <span className="value">{ad.unit["$numberDecimal"]}</span>
                                             <span className="label">Orders</span>
                                             &nbsp; &nbsp; 
                                             <span className="value">Completion</span>
@@ -426,11 +426,11 @@ export default function BuyAd(){
                             <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                               <div className="row">
                                 <div className="col col-12 col-xs-12 mb-10">
-                                    <span className="value number">{ad.amount} {ad.currency}</span><br/>
+                                    <span className="value number">{ad.amount["$numberDecimal"]} {ad.currency}</span><br/>
                                     <span className="label">Price</span>
                                 </div>
                                 <div className="col col-12 col-xs-12 mb-10">
-                                    <span className="value number">{ad.unit} {ad.asset.symbol}</span><br/>
+                                    <span className="value number">{ad.unit["$numberDecimal"]} {ad.asset.symbol}</span><br/>
                                     <span className="label">Amount</span>
                                 </div>
                                 <div className="col col-12 col-xs-12 mb-10">
