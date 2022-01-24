@@ -375,7 +375,7 @@ export default function BuyAd(){
                             </div>
 
                            <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                               <span className="value ">{ad.paymentMethod.paymentMethod.name}</span>
+                               <span className="value ">{ad.paymentMethod.name}</span>
                               <span className="label">Payment Method</span>
                           </div>
                           
@@ -416,7 +416,7 @@ export default function BuyAd(){
                                 
                                   <div class="col col-12 col-xs-12 text-start"> 
                                         <span class="label"> Payment Method</span> <br/><br/>
-                                        <span class="btn-dex-small btn-dex-danger">{ad.paymentMethod.paymentMethod.name}</span>
+                                        <span class="btn-dex-small btn-dex-danger">{ad.paymentMethod.name}</span>
                                   </div>
                                    
                               </div>
