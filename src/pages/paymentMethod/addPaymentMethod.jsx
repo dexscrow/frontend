@@ -123,12 +123,17 @@ export default function AddPaymentMethod(){
                             </div>
                                 </>
                             ))}
-                            <div className="row mb-20">     
+                        
+                         
+                            {currentMethodDetails.length>0?
+                             <div className="row mb-20">     
                                 <div className="col col-xs-12 col-sm-10 text-end">
                                 <button className="btn-dex-small btn-dex-danger">Cancel</button>
                                 <button className="btn-dex-small btn-dex-default" type="submit">Confirm</button>
                                 </div>
-                            </div>
+                            </div>:""
+                             } 
+
                             </form>
 
                         </div>

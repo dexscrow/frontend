@@ -50,7 +50,6 @@ const CreateAd = () => {
   
 
     const createSellAd = ()=>{
-        console.log("here")
         const run = async ()=>{
             try{
                 const {data:response} = await axios.post(CREATE_SELL_AD_URL,{
@@ -96,7 +95,6 @@ const CreateAd = () => {
 
     
     const createBuyAd = ()=>{
-        console.log("here")
         const run = async ()=>{
             try{
                 const {data:response} = await axios.post(CREATE_BUY_AD_URL,{

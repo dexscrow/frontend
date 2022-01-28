@@ -7,7 +7,6 @@ import { setMetamaskConnection,setBinanceWalletConnection,  disconnectWallet} fr
 const authToken = localStorage.getItem("authToken")
 
 export default function Header({account}) {
-      useLogin(account,authToken)
     //  useEffect(()=>{
     //  },[account])
    

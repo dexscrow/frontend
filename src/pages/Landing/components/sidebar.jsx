@@ -7,7 +7,6 @@ import P2P from "../../../assets/p2p.svg";
 const USER_URL  = process.env.REACT_APP_SERVER_URL+'/user/stat';
 const token = localStorage.getItem("authToken");
 
-
 export default function Sidebar({account}) {
     const [error,setError] = useState("");
     const [user,setUser] = useState({});
