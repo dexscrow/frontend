@@ -335,7 +335,7 @@ export default function BuyAd(){
                               <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
                                 <div className="row">
                                   <div className="col col-2 col-xs-2">
-                                    <img src="{Avatar}" style={{width:"30px", height:"30px"}} />
+                                    <img src={Avatar} style={{width:"30px", height:"30px"}} />
                                   </div>
                                   <div className="col col-10 col-xs-10 text-start"> 
                                     <div className="row">
