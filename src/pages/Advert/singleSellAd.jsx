@@ -1,8 +1,10 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
 import {Link,useNavigate,useParams} from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
+import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
@@ -29,6 +31,13 @@ export default function SingleSellAd(){
 
   const initSellTrade = ()=>{
     const run = async ()=>{
+
+      toast.error("You cannot perform trade yet, check back later", {
+        position: 'middle-center',
+      });
+
+      return
+
       try{
         const {data:response} = await axios.post(BUY_TRADE_URL+"/"+id,{
           unit,
@@ -101,6 +110,7 @@ const fetchMethods = useCallback(async() => {
   },[token])
     return (
         <>
+         <Toaster containerStyle={{ position: 'absolute' }} />
     <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
      <div className="modal-dialog modal-sm">
       <div className="modal-content" style={{background:"#ccc"}}>
@@ -130,7 +140,7 @@ const fetchMethods = useCallback(async() => {
     <div className="container-fluid body">
       <div className="row flex-nowrap">
         <Sidebar account={account}/>
-        <div className="col py-3 main">
+          <div className="col py-3 main">
                   <div className="row p-0">
                     <Header account={account}/>
                     </div>
@@ -283,7 +293,7 @@ const fetchMethods = useCallback(async() => {
                         </div>
                      }
                   </div>
-                
+                  <NavSocial/>
               </div>
             </div>
           </div>

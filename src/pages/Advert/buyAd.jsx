@@ -1,8 +1,9 @@
-import React,{useContext,useState,useEffect} from "react";
+import React,{useContext,useState,useEffect,useCallback} from "react";
 import {Link,useNavigate} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
+import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
@@ -20,28 +21,22 @@ export default function BuyAd(){
     const [account,_]= useContext(AccountContext);
     const [ads,setAds] = useState([]);
     const [error,setError] = useState("");
-    const [currentAd,setCurrentAd] = useState({});
     const [currency,setCurrency] = useState("");
     const [asset,setAsset] = useState("");
     const [currencies,setCurrencies] = useState([]);
     const [assets,setAssets] = useState([]);
     const [methods,setMethods] = useState([]);
     const [method,setMethod] = useState("");
-    const [amount,setAmount]= useState(0);
-    const [unit,setUnit] = useState(0);
     const [paymentMethods,setPaymentMethods]= useState([]);
-    const [selectedMethod,setSelectedMethod] = useState({})
     const navigate = useNavigate();
     
-    const runQuery = ()=>{
-      const run = async ()=>{
+
+    const runQuery = useCallback(async() => {
         try{
-          
         const filters = {
           currency,paymentMethod:method,asset
         }
-
-        alert(JSON.stringify(filters));
+  
         Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
         const q = new URLSearchParams(filters).toString();
         const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
@@ -61,120 +56,120 @@ export default function BuyAd(){
         }catch(error){
           setError(error.message)
         }
+      
+    });
+
+    const fetchAds = useCallback(async() => {
+      try{
+        const {data:response} = await axios.get(BUY_ADS_URL,{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        })
+
+        if(response.error){
+          setError(response.error);
+        }
+
+        if(!response.success){
+          setError(response.message);
+        }
+        setAds(response.data);
+      }catch(error){
+        setError(error.message)
       }
-      run();
-    }
+    });
 
-
-    useEffect(()=>{
-      const fetchAds = async ()=>{
-        try{
-          const {data:response} = await axios.get(BUY_ADS_URL,{
+   const  fetchAssets = useCallback(async() => {
+      try{
+        const {data:response} = await axios.get(ASSETS_URL,{
             headers:{
-              "Authorization":`Bearer ${token}`
+                "Authorization":`Bearer ${token}`
             }
-          })
-
-          if(response.error){
-            setError(response.error);
-          }
-
-          if(!response.success){
-            setError(response.message);
-          }
-          setAds(response.data);
-        }catch(error){
-          setError(error.message)
+        });
+        if(response.error){
+            setError(response.error)
         }
-      }
-      const fetchAssets = async ()=>{
-        try{
-          const {data:response} = await axios.get(ASSETS_URL,{
-              headers:{
-                  "Authorization":`Bearer ${token}`
-              }
-          });
-          if(response.error){
-              setError(response.error)
-          }
-          if(!response.success){
-              setError(response.message)
-          }
-          setAssets(response.data);
-          setAsset(response.data[0].symbol);
-      }catch(err){
-          setError(err.message)
-      }
+        if(!response.success){
+            setError(response.message)
+        }
+        setAssets(response.data);
+        setAsset(response.data[0]._id);
+    }catch(err){
+        setError(err.message)
     }
+  })
 
-    const fetchCurrencies = async ()=>{
-      try{
-        const {data:response} = await axios.get(CURRENCIES_URL,{
-          headers:{
-              "Authorization":`Bearer ${token}`
-          }
-      });
+  const fetchCurrencies = useCallback(async() => {
+    try{
+      const {data:response} = await axios.get(CURRENCIES_URL,{
+        headers:{
+            "Authorization":`Bearer ${token}`
+        }
+    });
+    if(response.error){
+        setError(response.error)
+    }
+    if(!response.success){
+        setError(response.message)
+    }
+    setCurrencies(response.data);
+    setCurrency(response.data[0].symbol);
+    }catch(error){
+      setError(error.message)
+    }
+  });
+
+  
+  const fetchMethods = useCallback(async() => {
+    try{
+      const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
+
       if(response.error){
-          setError(response.error)
+        setError(response.error);
       }
+
       if(!response.success){
-          setError(response.message)
+        setError(response.message);
       }
-      setCurrencies(response.data);
-      setCurrency(response.data[0].symbol);
-      }catch(error){
-        setError(error.message)
-      }
+      setMethods(response.data);
+      setMethod(response.data[0]._id);
+      await runQuery();
+    }catch(error){
+      setError(error.message)
     }
+  });
 
-    const fetchMethods = async ()=>{
-      try{
-        const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
-          headers:{
-            "Authorization":`Bearer ${token}`
-          }
-        })
-
-        if(response.error){
-          setError(response.error);
+  const fetchMyPaymentMethods = useCallback(async() => {
+    try{
+      const {data:response} = await axios.get(MY_PAYMENT_METHODS_URL,{
+        headers:{
+          "Authorization":`Bearer ${token}`
         }
+      })
 
-        if(!response.success){
-          setError(response.message);
-        }
-        setMethods(response.data);
-        setMethod(response.data[0].name);
-        runQuery();
-      }catch(error){
-        setError(error.message)
+      if(response.error){
+        setError(response.error);
       }
-    }
 
-    const fetchMyPaymentMethods = async ()=>{
-      try{
-        const {data:response} = await axios.get(MY_PAYMENT_METHODS_URL,{
-          headers:{
-            "Authorization":`Bearer ${token}`
-          }
-        })
-
-        if(response.error){
-          setError(response.error);
-        }
-
-        if(!response.success){
-          setError(response.message);
-        }
-        setPaymentMethods(response.data);
-        fetchAds();
-      }catch(error){
-        setError(error.message)
+      if(!response.success){
+        setError(response.message);
       }
+      setPaymentMethods(response.data);
+    }catch(error){
+      setError(error.message)
     }
-      fetchAssets();
-      fetchCurrencies();
-      fetchMethods();
-      fetchMyPaymentMethods();
+  })
+
+  useEffect(async()=>{
+      await fetchAssets();
+      await fetchCurrencies();
+      await fetchMethods();
+      await fetchMyPaymentMethods();
     },[token])
 
     return (
@@ -243,10 +238,10 @@ export default function BuyAd(){
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
                         <option value="">All Assets</option>
-                        {
+                           {
                               assets && assets.map((asset)=>(
                                 <>
-                                  <option value={asset.symbol}>{asset.symbol}</option>
+                                  <option value={asset._id}>{asset.symbol}</option>
                                 </>
                               ))
                             }
@@ -272,7 +267,7 @@ export default function BuyAd(){
                             {
                               methods && methods.map((method)=>(
                                 <>
-                                <option value={(method.name).toString()}>{(method.name).toString()}</option>
+                                <option value={method._id}>{(method.name).toString()}</option>
                                 </>
                               ))
                             }
@@ -372,8 +367,8 @@ export default function BuyAd(){
                        </div>
                      }
               </div>
-
-           </div>
+             <NavSocial/>
+            </div>
           </div>
          </div>
          <Nav/>

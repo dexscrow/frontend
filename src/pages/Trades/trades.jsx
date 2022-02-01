@@ -1,4 +1,5 @@
 import{useState,useEffect,useContext} from "react";
+import toast, { Toaster } from 'react-hot-toast';
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
 import {Link} from "react-router-dom";
@@ -22,7 +23,12 @@ export default function Trades(){
     const runQuery = ()=>{
         const run = async ()=>{
           try{
-            
+          if(token==='null' || token===null || token==='undefined'){
+              toast.error("Please connect wallet first", {
+                  position: 'middle-center',
+              });
+              return
+          }
           const filters = {
             createdAt:date,status,priceType,asset
           }
@@ -53,6 +59,9 @@ export default function Trades(){
 
     useEffect(()=>{
         const run = async ()=>{
+            if(token==='null' || token===null || token==='undefined'){
+              return
+            }
             const {data:response} = await axios.get(TRADES_URL,{
                 headers:{
                     "Authorization":`Bearer ${token}`
@@ -70,6 +79,7 @@ export default function Trades(){
     },[])
     return(
     <>
+     <Toaster containerStyle={{ position: 'absolute' }} />
        <div className="container-fluid body">
         <div className="row flex-nowrap">
                 <Sidebar account={account}/>

@@ -1,6 +1,6 @@
 import React,{useContext,useState,useEffect} from "react";
 import {config} from "dotenv";
-import {Navigate,useNavigate} from "react-router-dom";
+import {Navigate,useNavigate, Link} from "react-router-dom";
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
@@ -32,6 +32,9 @@ export default function AddPaymentMethod(){
 
 
     const addPaymentMethod = (formdata)=>{
+        if(token==='null' || token===null || token==='undefined'){
+            return
+        }
         const run = async ()=>{
             const req = new Request(ADD_PAYMENT_METHOD_URL,{
                 body:formdata,
@@ -57,7 +60,9 @@ export default function AddPaymentMethod(){
         
         const getMethods = async ()=>{
             try{
-                
+                if(token==='null' || token===null || token==='undefined'){
+                    return
+                }
                 const {data:response} = await axios.get(PAYMENT_METHODS_URL,{
                     headers:{
                         "Authorization":`Bearer ${token}`
@@ -97,9 +102,28 @@ export default function AddPaymentMethod(){
                     </div>
 
                     <div className="row">
+                    <div className="col col-12 col-xs-12">
+                    <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                         <li >
+                             <Link to="/profile" style={{textDecoration:"none"}}>
+                             Profile
+                             </Link>
+                        </li>
+                         <li>
+                             <Link to="/trades" style={{textDecoration:"none"}}>
+                               Trade History 
+                              </Link>
+                         </li>
+                         
+                         <li className="active">
+                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+                         </li>
+                     </ul>
+                     </div>
+                   </div>
 
-
-                    <div className="trade-record-card pt-10 pb-20 mb-10">
+                    <div className="row" style={{minHeight:'200px'}}>
+                    <div className="trade-record-card pt-10 pb-20 mb-10 mt-0">
                         <div className="row gap-2">
                         <div className="col col-12 col-xs-12 col-sm-12 mb-20">
                             {paymentMethods && paymentMethods.map((method)=>(

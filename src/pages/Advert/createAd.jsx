@@ -1,4 +1,5 @@
-import React ,{useContext,useState,memo,useEffect} from 'react'
+import React ,{useContext,useState,memo,useEffect} from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import Sidebar from '../Landing/components/sidebar'
 import {Link,Navigate,useNavigate} from "react-router-dom";
 import Header from '../Landing/components/header'
@@ -52,6 +53,12 @@ const CreateAd = () => {
     const createSellAd = ()=>{
         const run = async ()=>{
             try{
+                if(authToken==='null' || authToken===null || authToken==='undefined'){
+                    toast.error("Please connect wallet first", {
+                        position: 'middle-center',
+                    });
+                    return
+                }
                 const {data:response} = await axios.post(CREATE_SELL_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset)._id),
                     paymentMethod:selectedMethod._id,
@@ -97,6 +104,12 @@ const CreateAd = () => {
     const createBuyAd = ()=>{
         const run = async ()=>{
             try{
+                if(authToken==='null' || authToken===null || authToken==='undefined'){
+                    toast.error("Please connect wallet first", {
+                        position: 'middle-center',
+                    });
+                    return
+                }
                 const {data:response} = await axios.post(CREATE_BUY_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset)._id),
                     paymentMethod:(methods.find((m)=>m.name == prefferedMethod))._id,
@@ -147,6 +160,7 @@ const CreateAd = () => {
     useEffect(()=>{
         const fetchCountries = async ()=>{
             try{
+               
                 const {data:response} = await axios.get(COUNTRIES_URL,{
                     headers:{
                         "Authorization":`Bearer ${authToken}`
@@ -165,6 +179,7 @@ const CreateAd = () => {
         }
         const fetchAssets = async ()=>{
             try{
+              
                 const {data:response} = await axios.get(ASSETS_URL,{
                     headers:{
                         "Authorization":`Bearer ${authToken}`
@@ -185,6 +200,9 @@ const CreateAd = () => {
         }
         const fetchPaymentMethods= async ()=>{
             try{
+                if(authToken==='null' || authToken===null || authToken==='undefined'){
+                    return
+                }
                 const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
                     headers:{
                         "Authorization":`Bearer ${authToken}`
@@ -230,8 +248,8 @@ const CreateAd = () => {
     
     return (
         <>
-        {error && alert(error)}
         <PaymentModal />
+        <Toaster containerStyle={{ position: 'absolute' }} />
         <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog">
                 <div className="modal-content">

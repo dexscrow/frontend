@@ -20,6 +20,7 @@ export const setMetamaskConnection = async ()=>{
   const account = await provider.request({method:"eth_requestAccounts"});
   const networkId = await provider.request({method:"net_version"})
   if(networkId !== "56" && networkId !== "0x38"){
+  //if(networkId !== "97"){
     throw new Error("please select binance smart chain network");
   }
   localStorage.setItem("account",account);
@@ -33,8 +34,9 @@ export const setBinanceWalletConnection = async ()=>{
   const provider = window.BinanceChain;
   if(!provider) throw new Error("install binance chain");
   const account = await provider.request({method:"eth_accounts"});
-  const networkId = await provider.request({method:"net_version"})
-  if(networkId!==56){
+  const networkId = await provider.request({method:"net_version"});
+  //if(networkId !== "56" && networkId !== "0x38"){
+  if(networkId!==97){
     throw new Error("please select binance smart chain network")
   }
   localStorage.setItem("account",account);

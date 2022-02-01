@@ -2,7 +2,7 @@ import React,{memo} from 'react'
 import { calculateFactor, calculatePrice } from '../../../helpers/utils';
 import Misc from './misc'
 
-const END_POINT = 'http://localhost:8000/assets'
+const END_POINT = process.env.REACT_APP_SERVER_URL+'/assets';
 
 const SellTab = memo(({
     step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,createSellAd

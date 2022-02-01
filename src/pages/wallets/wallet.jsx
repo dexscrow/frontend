@@ -1,4 +1,5 @@
 import React, {useContext,useState,useEffect} from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import {Link} from "react-router-dom";
@@ -18,6 +19,12 @@ export default function Wallet() {
     useEffect(()=>{
         const run = async()=>{
             try{
+                if(token==='null' || token===null || token==='undefined'){
+                    toast.error("Please connect wallet first", {
+                        position: 'middle-center',
+                    });
+                    return
+                }
                 const {data:response} = await axios.get(URL,{
                     headers:{
                         "Authorization":`Bearer ${token}`
@@ -39,7 +46,9 @@ export default function Wallet() {
     },[])
     return (
             
-    <><div className="container-fluid body">
+    <>
+     <Toaster containerStyle={{ position: 'absolute' }} />
+    <div className="container-fluid body">
             <div className="row flex-nowrap">
                 <Sidebar account={account}/>
                 <div className="col py-3 main">

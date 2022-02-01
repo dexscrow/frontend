@@ -1,8 +1,9 @@
-import React,{useContext,useState,useEffect} from "react";
+import React,{useContext,useState,useEffect,useCallback} from "react";
 import {Link,useNavigate} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
+import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
@@ -18,20 +19,17 @@ const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/al
 export default function SellAd(){
   const [account,_]= useContext(AccountContext);
   const [ads,setAds] = useState([]);
-  const [currentAd,setCurrentAd] = useState({});
   const [error,setError] = useState("");
   const [currency,setCurrency] = useState("");
-  const [amount,setAmount]= useState(0);
   const [asset,setAsset] = useState("");
   const [currencies,setCurrencies] = useState([]);
   const [assets,setAssets] = useState([]);
   const [methods,setMethods] = useState([]);
   const [method,setMethod] = useState("");
-  const [unit,setUnit] = useState(0);
+  const [methodName,setMethodName] = useState("");
   const navigate = useNavigate();
 
-  const runQuery = ()=>{
-    const run = async ()=>{
+  const runQuery = useCallback(async() => {
       try{
       const filters = {
         currency,paymentMethod:method,asset
@@ -55,74 +53,11 @@ export default function SellAd(){
       }catch(error){
         setError(error.message)
       }
-    }
-    run();
-  }
+  });
 
-  useEffect(()=>{
-    const fetchAds = async ()=>{
-      try{
-        const {data:response} = await axios.get(SELL_ADS_URL,{
-          headers:{
-            "Authorization":`Bearer ${token}`
-          }
-        })
-
-        if(response.error){
-          setError(response.error);
-        }
-
-        if(!response.success){
-          setError(response.message);
-        }
-        console.log(response.data)
-        setAds(response.data);
-      }catch(error){
-        setError(error.message)
-      }
-    }
-
-    const fetchAssets = async ()=>{
-      try{
-        const {data:response} = await axios.get(ASSETS_URL,{
-            headers:{
-                "Authorization":`Bearer ${token}`
-            }
-        });
-        if(response.error){
-            setError(response.error)
-        }
-        if(!response.success){
-            setError(response.message)
-        }
-        setAssets(response.data);
-    }catch(err){
-        setError(err.message)
-    }
-  }
-
-  const fetchCurrencies = async ()=>{
+  const fetchAds = useCallback(async() => {
     try{
-      const {data:response} = await axios.get(CURRENCIES_URL,{
-        headers:{
-            "Authorization":`Bearer ${token}`
-        }
-    });
-    if(response.error){
-        setError(response.error)
-    }
-    if(!response.success){
-        setError(response.message)
-    }
-    setCurrencies(response.data);
-    }catch(error){
-      setError(error.message)
-    }
-  }
-
-  const fetchMethods = async ()=>{
-    try{
-      const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
+      const {data:response} = await axios.get(SELL_ADS_URL,{
         headers:{
           "Authorization":`Bearer ${token}`
         }
@@ -135,13 +70,79 @@ export default function SellAd(){
       if(!response.success){
         setError(response.message);
       }
-      setMethods(response.data);
+      console.log(response.data)
+      setAds(response.data);
     }catch(error){
       setError(error.message)
     }
-  }
+  });
 
-    fetchAds();
+  const fetchAssets = useCallback(async() => {
+    try{
+      const {data:response} = await axios.get(ASSETS_URL,{
+          headers:{
+              "Authorization":`Bearer ${token}`
+          }
+      });
+      if(response.error){
+          setError(response.error)
+      }
+      if(!response.success){
+          setError(response.message)
+      }
+      setAssets(response.data);
+      setAsset(response.data[0]._id);
+  }catch(err){
+      setError(err.message)
+  }
+});
+
+const fetchCurrencies = useCallback(async() => {
+  try{
+    const {data:response} = await axios.get(CURRENCIES_URL,{
+      headers:{
+          "Authorization":`Bearer ${token}`
+      }
+  });
+  if(response.error){
+      setError(response.error)
+  }
+  if(!response.success){
+      setError(response.message)
+  }
+  setCurrencies(response.data);
+  setCurrency(response.data[0].symbol);
+  }catch(error){
+    setError(error.message)
+  }
+});
+
+
+const fetchMethods = useCallback(async() => {
+  try{
+    const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
+      headers:{
+        "Authorization":`Bearer ${token}`
+      }
+    })
+
+    if(response.error){
+      setError(response.error);
+    }
+
+    if(!response.success){
+      setError(response.message);
+    }
+    setMethods(response.data);
+    setMethod(response.data[0]._id);
+    setMethodName(response.data[0].name);
+    await runQuery();
+  }catch(error){
+    setError(error.message)
+  }
+});
+
+  useEffect(()=>{
     fetchAssets();
     fetchCurrencies();
     fetchMethods();
@@ -216,7 +217,7 @@ export default function SellAd(){
                             {
                               assets && assets.map((asset)=>(
                                 <>
-                                  <option value={asset.symbol}>{asset.symbol}</option>
+                                  <option value={asset._id}>{asset.symbol}</option>
                                 </>
                               ))
                             }
@@ -237,12 +238,18 @@ export default function SellAd(){
                     </div>
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                    <select className="form-control no-radius" value={method} onChange={(e)=>setMethod(e.target.value)}>
+                    <select className="form-control no-radius" value={method} onChange={(e)=>{
+                            setMethod(e.target.value);
+                            methods.filter(method => method._id === e.target.value)
+                            .map(method =>{ 
+                              setMethodName(method.name);
+                             }) 
+                           }}>
                             <option value="">All Payment Methods</option>
                             {
                               methods && methods.map((method)=>(
                                 <>
-                                <option value={(method.name).toString()}>{(method.name).toString()}</option>
+                                <option value={method._id}>{(method.name).toString()}</option>
                                 </>
                               ))
                             }
@@ -317,11 +324,9 @@ export default function SellAd(){
                               <span className="label p-0">Limit</span>
                             </div>
 
-                           <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">   
-                               { 
-                                  methods.filter(method => method._id === ad.paymentMethod.paymentMethod)
-                                  .map(method => <span className="value p-0">{method.name}</span>) 
-                                }
+                           <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20"> 
+                               {methodName}  
+                               
                               <br/><span className="label p-0">Payment Method</span>
                           </div>
                           
@@ -345,7 +350,7 @@ export default function SellAd(){
                        </div>
                      }
                   </div>
-                
+                  <NavSocial/>
               </div>
             </div>
           </div>

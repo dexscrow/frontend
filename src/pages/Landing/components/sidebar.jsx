@@ -4,15 +4,20 @@ import {Link} from "react-router-dom";
 import Add from "../../../assets/add.svg";
 import Avatar from "../../../assets/avatar.png";
 import P2P from "../../../assets/p2p.svg";
+import useLogin from '../../../hooks/useLogin';
 const USER_URL  = process.env.REACT_APP_SERVER_URL+'/user/stat';
 const token = localStorage.getItem("authToken");
 
 export default function Sidebar({account}) {
+    useLogin(account,token)
     const [error,setError] = useState("");
     const [user,setUser] = useState({});
 
     const fetchUser = useCallback(async() => {
         try{
+            if(token==='null' || token===null || token==='undefined'){
+                return
+            }
             const {data:response} = await axios.get(USER_URL,{
                 headers:{
                     "Authorization":`Bearer ${token}`
@@ -43,7 +48,7 @@ export default function Sidebar({account}) {
                     
                     <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start menu" id="menu">
                         <li className="nav-item text-center" style={{width:"100%"}}>
-                            <Link to="/ad/buy" className="nav-link align-middle text-center px-0">
+                            <Link to="/ad/sell" className="nav-link align-middle text-center px-0">
                                 <img src={P2P}/><br/>
                                  <span className="ms-1 d-none d-sm-inline">P2P Trade</span>
                             </Link>

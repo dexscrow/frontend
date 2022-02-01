@@ -1,170 +1,151 @@
-import React, {useContext,useState,useEffect,useCallback} from 'react'
+import React, {useContext,useState,useEffect,useCallback} from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import {Link} from "react-router-dom";
-import axios from "axios";
 import Nav from "../Landing/components/nav";
+import NavSocial from "../Landing/components/navsocial";
 import AccountContext from "../../contexts/account";
+import {totalStakers,totalStaked,stakeOf,createStake,createStakeHolder,rewardOf,withdrawReward,removeStake} from '../../helpers/staking';
 const token = localStorage.getItem("authToken");
 
-const URL = process.env.REACT_APP_SERVER_URL+'/staking/sitestake';
+/*const URL = process.env.REACT_APP_SERVER_URL+'/staking/sitestake';
 const USER_STAKING_URL = process.env.REACT_APP_SERVER_URL+'/staking/userstake';
 const USER_UNSTAKE_URL = process.env.REACT_APP_SERVER_URL+'/staking/unstake';
 const STAKING_WITHDRAWABLE_URL = process.env.REACT_APP_SERVER_URL+'/staking/stakeWithdrawable';
 const USER_WITHDRAW_STAKE  = process.env.REACT_APP_SERVER_URL+'/staking/withdrawStake';
-const USER_WITHDRAW_REWARD  = process.env.REACT_APP_SERVER_URL+'/staking/withdrawReward';
+const USER_WITHDRAW_REWARD  = process.env.REACT_APP_SERVER_URL+'/staking/withdrawReward';*/
 
 export default function Staking() {
     const [account,setAccount] = useContext(AccountContext);
     const [error,setError] = useState("");
-    const [siteStake,setSiteStake] = useState("");
+    const [assetStaked,setAssetStaked] = useState(0);
+    const [stakers,setStakers] = useState(0);
     const [step,setStep] = useState(1);
     const [terms,setTerms] = useState(0);
     const [amount,setAmount] = useState(0);
-    const [userStake,setUserStake] = useState("");
-    const [withdrawable,setWithdrawable] = useState("");
+    const [userStake,setUserStake] = useState(0);
+    const [userReward,setUserReward] = useState(0);
     const authToken = localStorage.getItem("authToken");
 
-    const fetchSiteStake = useCallback(async() => {
+    const getStakeOf = useCallback(async() => {
         try{
-            const {data:response} = await axios.get(URL,{
-                headers:{
-                    "Authorization":`Bearer ${token}`
-                }
-            });
-            if(response.error){
-                setError(response.error)
+             const stake = await stakeOf();
+             setUserStake(stake);
+            }catch(error){
+                toast.error('An error occured', {
+                    position: 'middle-center',
+                });
+                setError(error.message)
             }
-            if(!response.success){
-                setError(response.message)
+    });
+
+    const getTotalStakers = useCallback(async() => {
+        try{
+             const stakers = await totalStakers();
+             setStakers(stakers);
+            }catch(error){
+                toast.error('An error occured', {
+                    position: 'middle-center',
+                });
+                setError(error.message)
             }
-            setSiteStake(response.data);
-        }catch(err){
-            setError(err.message)
-        }
+    });
+
+    const getTotalStaked = useCallback(async() => {
+        try{
+             const stake = await totalStaked();
+             setAssetStaked(stake);
+            }catch(error){
+                toast.error('An error occured', {
+                    position: 'middle-center',
+                });
+                setError(error.message)
+            }
+    });
+
+    const getRewardOf = useCallback(async() => {
+        try{
+             const reward = await rewardOf();
+             setUserReward(reward);
+            }catch(error){
+                toast.error('An error occured', {
+                    position: 'middle-center',
+                });
+                setError(error.message)
+            }
+    });
+
+    const stakeInit = useCallback(async() => {
+        try{
+             toast.error('Staking program not started yet', {
+                position: 'middle-center',
+             });
+             /*
+             const stake = createStakeHolder(amount.toString());
+             getTotalStaked();
+             getStakeOf();
+             getRewardOf();
+             getTotalStakers();*/
+            }catch(error){
+                setError(error.message)
+            }
     });
 
     const stake = useCallback(async() => {
-      alert('here');
+        try{
+            toast.error('Staking program not started yet', {
+                position: 'middle-center',
+             });
+             /*const stake = createStake(amount);
+             getTotalStaked();
+             getStakeOf();
+             getRewardOf();
+             getTotalStakers();*/
+            }catch(error){
+                setError(error.message)
+            }
     });
 
     const unstake = useCallback(async() => {
         try{
-            const {data:response} = await axios.post(USER_UNSTAKE_URL,{},{
-                headers:{
-                    "Authorization":`Bearer ${authToken}`
-                }
-            });
-            if(response.error){
-                setError(response.error)
-            }
-            if(!response.success){
-                setError(response.message);
-            }
-            console.log(response); 
-            fetchUserStake();
-        }catch(error){
-            setError(error.message)
-        }
-    });
-
-
-    const fetchUserStake  = useCallback(async() => {
-        try{
-            const {data:response} = await axios.get(USER_STAKING_URL,{
-                headers:{
-                    "Authorization":`Bearer ${authToken}`
-                }
-            });
-            if(response.error){
-                setError(response.error)
-            }
-            if(!response.success){
-                setError(response.message);
-            }
-            // console.log(response)
-            setUserStake(response.data);
-            
-        }catch(error){
-            setError(error.message)
-        }
-    });
-
-    const fetchWithdrawable  = useCallback(async() => {
-        try{
-            const {data:response} = await axios.get(STAKING_WITHDRAWABLE_URL,{
-                headers:{
-                    "Authorization":`Bearer ${authToken}`
-                }
-            });
-            if(response.error){
-                setError(response.error)
-            }
-            if(!response.success){
-                setError(response.message);
-            }
-            // console.log(response)
-            setWithdrawable(response.data);
-            
-        }catch(error){
-            setError(error.message)
-        }
-    });
-    
-    const withdrawStake  = useCallback(async() => {
-        try{
-            const {data:response} = await axios.post(USER_WITHDRAW_STAKE,{},{
-                headers:{
-                    "Authorization":`Bearer ${token}`
-                }
-            });
-            if(!response || response.error){
-                setError(response.error)
-            }
-            if(!response.success){
-                setError(response.message)
-            }
-            fetchWithdrawable();
-            return;
+             const stake = removeStake();
+             getTotalStaked();
+             getStakeOf();
+             getRewardOf();
+             getTotalStakers();
             }catch(error){
                 setError(error.message)
             }
     });
 
-    const withdrawReward = useCallback(async() => {
+    const runWithdrawReward = useCallback(async() => {
         try{
-            const {data:response} = await axios.post(USER_WITHDRAW_REWARD,{},{
-                headers:{
-                    "Authorization":`Bearer ${token}`
-                }
-            });
-            if(!response || response.error){
-                setError(response.error)
-            }
-            if(!response.success){
-                setError(response.message)
-            }
-            fetchUserStake();
-            return;
+             const stake = withdrawReward();
+             getRewardOf();
             }catch(error){
                 setError(error.message)
             }
     });
-
 
     useEffect(() => {
-        fetchSiteStake();
-        fetchUserStake();
-        fetchWithdrawable();
+        getTotalStaked();
+        getStakeOf();
+        getRewardOf();
+        getTotalStakers();
+
         // The effect calls innerFunction, hence it should declare it as a dependency
         // Otherwise, if something about innerFunction changes (e.g. the data it uses), the effect would run the outdated version of innerFunction
     }, []);
 
     return (      
       <> 
+       <Toaster containerStyle={{ position: 'absolute' }} />
        <div className="container-fluid body">
             <div className="row flex-nowrap">
               <Sidebar account={account}/>
+
+
                 <div className="col py-3 main">
                     <div className="row p-0">
                         <Header account={account} />
@@ -187,7 +168,7 @@ export default function Staking() {
                            <div className="row">
                               <div className="col col-12 col-xs-12 col-sm-12">
                                <span className="label">Number of Stakers</span> <br/>
-                               <span className="value">{siteStake.stakers?siteStake.stakers:0}</span><br/>
+                               <span className="value">{stakers}</span><br/>
                               </div>
                           </div>
                         </div>
@@ -198,7 +179,7 @@ export default function Staking() {
                            <div className="row">
                               <div className="col col-12 col-xs-12 col-sm-12">
                                <span className="label">Total DXW Staked</span><br/>
-                               <span className="value">{siteStake.totalStaked?siteStake.totalStaked:0}</span><br/>
+                               <span className="value">{assetStaked}</span><br/>
                               </div>
                           </div>
                         </div>
@@ -208,8 +189,8 @@ export default function Staking() {
                        <div className="trade-record-card pt-10 pb-20 mb-10">
                            <div className="row">
                               <div className="col col-12 col-xs-12 col-sm-12">
-                               <span className="label">APY</span><br/>
-                               <span className="value">{siteStake.apy?siteStake.apy:0}%</span><br/>
+                               <span className="label">APR</span><br/>
+                               <span className="value">{} 15%</span><br/>
                               </div>
                           </div>
                         </div>
@@ -224,40 +205,23 @@ export default function Staking() {
                            <div className="row">
                               <div className="col col-12 col-xs-12 col-sm-12">
                                <span className="label">Staked</span> <br/>
-                               <span className="value">{userStake.stakedAmount?userStake.stakedAmount:0} DXW</span><br/>
+                               <span className="value">{userStake} DXW</span><br/>
                               </div>
                               <div className="col col-12 col-xs-12 col-sm-12 align-items-center text-center"><br/>
-                               <button  type="button" value="Update" className="btn-dex-small btn-dex-default" onClick={(e)=>{
-                                e.preventDefault();
-                               unstake();
-                               }}>Unstake</button>
+                                {
+                                    userStake>0?
+                                    <button  type="button" value="Update" className="btn-dex-small btn-dex-default" onClick={(e)=>{
+                                        e.preventDefault();
+                                    unstake();
+                                    }}>Unstake</button>
+                                    :
+                                    ""
+                                }
+                               
                               </div>
                           </div>
                         </div>
                    </div>
-
-                   {
-                    !withdrawable.totalWithdrawable!=null && withdrawable.totalWithdrawable<=0 && (
-                    <>
-                    <div className="col col-6 col-xs-6 col-sm-4 align-items-center text-center ">
-                       <div className="trade-record-card pt-10 pb-20 mb-10">
-                           <div className="row">
-                              <div className="col col-12 col-xs-12 col-sm-12">
-                               <span className="label">Withdrawable</span><br/>
-                               <span className="value">{withdrawable.totalWithdrawable} DXW</span><br/>
-                              </div>
-                              <div className="col col-12 col-xs-12 col-sm-12 align-items-center text-center"><br/>
-                               <button type="button" value="Update" className="btn-dex-small btn-dex-default" onClick={(e)=>{
-                                e.preventDefault();
-                               withdrawStake();
-                               }}>Withdraw</button>
-                              </div>
-                          </div>
-                        </div>
-                    </div>
-                   </>
-                    )
-                   }
 
 
                    <div className="col col-6 col-xs-6 col-sm-4 align-items-center text-center ">
@@ -265,13 +229,18 @@ export default function Staking() {
                            <div className="row">
                               <div className="col col-12 col-xs-12 col-sm-12">
                                <span className="label">Rewards</span><br/>
-                               <span className="value">{userStake.stakeReward?userStake.stakeReward:0} DXW</span><br/>
+                               <span className="value">{userReward} DXW</span><br/>
                               </div>
                               <div className="col col-12 col-xs-12 col-sm-12 align-items-center text-center"><br/>
-                               <button type="button" value="Update" className="btn-dex-small btn-dex-default" onClick={(e)=>{
-                                e.preventDefault();
-                                withdrawReward();
-                               }}>Withdraw</button>
+                                {
+                                    userReward>0?
+                                    <button type="button" value="Update" className="btn-dex-small btn-dex-default" onClick={(e)=>{
+                                        e.preventDefault();
+                                        runWithdrawReward();
+                                       }}>Withdraw</button>
+                                    :
+                                    ""
+                                }
                               </div>
                           </div>
                         </div>
@@ -359,7 +328,7 @@ export default function Staking() {
                                             <span>
                                                 <input type="checkbox" value="1" name="terms" onClick={(e)=>{
                                                 setTerms(e.target.value);
-                                                }}/> &nbsp;  Yea, I have read the <u data-bs-toggle="modal" data-bs-target="#termsModal">Staking Term</u>
+                                                }}/> &nbsp; ticking the box means you agree to staking terms
                                             </span>
                                         </div>
                                         <div className="col col-xs-12 text-center mt-20">
@@ -386,21 +355,29 @@ export default function Staking() {
                                     <label>Amount to Stake</label>
                                     <div className="input-group mb-3">
                                         <input type="text" name="amount" className="form-control" aria-label="" onChange={(e)=>{
-                                        setAmount(Number(e.target.value));
+                                        setAmount(e.target.value);
                                     }}/>
                                         <span className="input-group-text">DXW</span>
                                     </div>
                                 </div>
                                 <div className="col col-12 col-xs-12 col-sm-12 text-end">
+                                
                                 <button className="btn-dex-small btn-dex-primary" 
                                         onClick={(e)=>{
                                         e.preventDefault();
                                         setStep(1);
                                     }}>Back</button>
-                                     <button className="btn-dex-small btn-dex-default" onClick={(e)=>{
+                                    {
+                                     userStake>0?<button className="btn-dex-small btn-dex-default" onClick={(e)=>{
                                         e.preventDefault();
-                                        stake();
+                                        stakeInit();
+                                    }}>Stake</button>:
+                                    <button className="btn-dex-small btn-dex-default" onClick={(e)=>{
+                                        e.preventDefault();
+                                        stakeInit();
                                     }}>Stake</button>
+                                    }
+                                    
                                 </div>
                             </div>
 
@@ -413,8 +390,8 @@ export default function Staking() {
                     </div>
 
                   </div>
-
-
+ 
+                  <NavSocial/>
                 </div>
               </div>
           </div>

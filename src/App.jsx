@@ -1,6 +1,7 @@
 import { useState,useEffect } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 import axios from "axios";
-import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,HashRouter,} from "react-router-dom";
 import AccountContext from "./contexts/account";
 import AuthContext from "./contexts/auth";
 import Landing from "./pages/Landing/landing";
@@ -17,15 +18,20 @@ import Trade from "./pages/Trade/trade";
 import Staking from "./pages/Staking/staking";
 import AddPaymentMethod from "./pages/paymentMethod/addPaymentMethod";
 import "./styles.css";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUser,faFile} from '@fortawesome/free-solid-svg-icons';
+import {fab} from '@fortawesome/free-brands-svg-icons';
 const walletAddress = localStorage.getItem("account");
 const jwtToken = localStorage.getItem("authToken");
 const SERVER_URL = process.env.REACT_APP_SERVER_URL||process.env.REACT_APP_SERVER_URL+"";
+
+library.add(fab,faUser, faFile);
 
  function App() {
    const [account,setAccount] = useState(null);
    const [token,setAuthToken] = useState("");
    
-   if((jwtToken==='null' || jwtToken==='undefined') && walletAddress!=null) {
+   if((jwtToken==='null' || jwtToken===null || jwtToken==='undefined') && walletAddress!=null) {
     const run = async ()=>{
     try{
         const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
@@ -61,7 +67,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL||process.env.REACT_APP_SERVE
   return (
     <AuthContext.Provider value={[token,setAuthToken]}>
       <AccountContext.Provider value={[account,setAccount]}>
-        <Router>
+        <HashRouter>
           <Routes>
           <Route path="/" element={<Landing/>}/>
           <Route path="/ad/create" element={<CreateAd/>}/>
@@ -77,7 +83,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL||process.env.REACT_APP_SERVE
           <Route path="/staking" element={<Staking/>}/>
           <Route path = "/methods/payment/new" element={<AddPaymentMethod />}/>
           </Routes>
-      </Router>
+      </HashRouter>
       </AccountContext.Provider>
     </AuthContext.Provider>
   )

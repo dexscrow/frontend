@@ -22,11 +22,6 @@ export default function Header({account}) {
         <div className="modal-body">
           
             <div className="row form-row">
-             <div className="col-xs-12 col-sm-12 text-center pb-10 btn" style={{borderBottom: "1px solid #f4f4f4"}} onClick={e=>setBinanceWalletConnection()}>
-             <img src="/images/binancechain.png" style={{width:"100px", height:"auto" }}/> <br/> 
-             <h5> Binance Chain</h5>
-             <span className="label">Connect your binance chain wallet</span>
-            </div>
             <div className="col-xs-12 col-sm-12 text-center mt-20 btn" onClick={e=>setMetamaskConnection()}>
              <img src="/images/metamask.svg" style={{width:"100px", height:"auto" }}/> <br/> 
              <h5> MetaMask</h5>

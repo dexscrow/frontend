@@ -1,8 +1,10 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
 import {Link,useNavigate,useParams} from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
+import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
@@ -27,6 +29,13 @@ export default function SingleBuyAd(){
 
     const initSellTrade = ()=>{
       const run = async ()=>{
+
+        toast.error("You cannot perform trade yet, check back later", {
+          position: 'middle-center',
+        });
+
+        return
+
         try{
           const {data:response} = await axios.post(SELL_TRADE_URL+"/"+id,{
             unit,
@@ -102,6 +111,7 @@ export default function SingleBuyAd(){
 
     return (
         <>
+         <Toaster containerStyle={{ position: 'absolute' }} />
        <div className="container-fluid body">
         <div className="row flex-nowrap">
           <Sidebar account={account}/>
@@ -300,7 +310,7 @@ export default function SingleBuyAd(){
                        </div>
                      }
               </div>
-
+              <NavSocial/>
            </div>
           </div>
          </div>

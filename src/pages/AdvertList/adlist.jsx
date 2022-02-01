@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 import Header from '../Landing/components/header'
 import Delete from "../../assets/delete.svg"
 import Edit from "../../assets/edit.svg"
@@ -28,7 +29,12 @@ export default function Adlist() {
     const runQuery = ()=>{
         const run = async ()=>{
           try{
-            
+          if(token==='null' || token===null || token==='undefined'){
+            toast.error('Please connect your wallet', {
+              position: 'middle-center',
+             });
+             return;
+          }
           const filters = {
             createdAt:date,status,asset
           }
@@ -65,6 +71,9 @@ export default function Adlist() {
 
    const fetchBuyAds = useCallback(async() => {
       try{
+        if(token==='null' || token===null || token==='undefined'){
+          return
+       }
         const {data:response} = await axios.get(BUY_AD_URL,{
             headers:{
                 "Authorization":`Bearer ${token}`
@@ -85,6 +94,9 @@ export default function Adlist() {
 
    const fetchSellAds = useCallback(async() => {
       try{
+       if(token==='null' || token===null || token==='undefined'){
+          return
+       }
         const {data:response} = await axios.get(SELL_AD_URL,{
             headers:{
                 "Authorization":`Bearer ${token}`
@@ -130,6 +142,7 @@ export default function Adlist() {
 
     return (
         <>
+         <Toaster containerStyle={{ position: 'absolute' }} />
         <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
     <div className="modal-dialog modal-sm">
       <div className="modal-content" style={{background:"#ccc"}}>

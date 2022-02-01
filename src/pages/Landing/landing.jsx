@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 import Sidebar from './components/sidebar'
 import Header from './components/header';
 import Nav from "./components/nav";
+import NavSocial from "./components/navsocial";
 import AccountContext from '../../contexts/account';
 
 export default function Landing() {
@@ -31,7 +32,7 @@ export default function Landing() {
         <div className="container-fluid body">
         <div className="row flex-nowrap">
             <Sidebar account={account}/>
-            <div className="col py-3">
+            <div className="col py-3 main">
                  <div className="row p-20"> 
                    <Header account={account}/>
 
@@ -44,8 +45,8 @@ export default function Landing() {
 
                  <div className="row">
                     <div className="col col-12 d-flex header-button">
-                        <Link to="/ad/buy" className="btn-dex btn-dex-default">P2P Trade</Link>  &nbsp; &nbsp; 
-                        <Link to="/" className="btn-dex btn-dex-bordered">staking</Link>
+                        <Link to="/ad/sell" className="btn-dex btn-dex-default">P2P Trade</Link>  &nbsp; &nbsp; 
+                        <Link to="/staking" className="btn-dex btn-dex-bordered">Staking</Link>
                     </div>
                  </div>
 
@@ -77,10 +78,9 @@ export default function Landing() {
                        </div>
                     </div>
                 </div>
-
-
-
+                <NavSocial/>
             </div>
+           
         </div>
 
       </div>
