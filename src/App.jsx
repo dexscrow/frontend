@@ -1,5 +1,7 @@
 import { useState,useEffect } from "react";
 import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
+import {useWalletProvider} from "use-wallet";
+import bsc from "@binance-chain/bsc-use-wallet";
 import AccountContext from "./contexts/account";
 import AuthContext from "./contexts/auth";
 import Landing from "./pages/Landing/landing";
@@ -25,6 +27,7 @@ import "./styles.css";
      jwtToken && setAuthToken(jwtToken);
    }, []);
   return (
+    <useWalletProvider connectors={{bsc}}>
     <AuthContext.Provider value={[token,setAuthToken]}>
       <AccountContext.Provider value={[account,setAccount]}>
         <Router>
@@ -43,6 +46,7 @@ import "./styles.css";
       </Router>
       </AccountContext.Provider>
     </AuthContext.Provider>
+    </useWalletProvider>
   )
 }
 
