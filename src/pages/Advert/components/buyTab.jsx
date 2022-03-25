@@ -6,9 +6,8 @@ import useFetch from "../../../hooks/useFetch";
 const END_POINT = process.env.REACT_APP_SERVER_URL+'/assets';
 const TRADE_FEE = process.env.TRADE_FEE;
 const BuyTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,createBuyAd,prefferedMethod
+    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,prefferedMethod,online,setOnline,autoreply,setAutoReply
 }) =>{
-    
     return (
         <>
             <div className="tab-pane fade show active" id="buy" role="tabpanel" aria-labelledby="buy-tab">
@@ -19,15 +18,16 @@ const BuyTab = memo(({
                                 </div>
                                 <div className="col col-12 col-xs-12 col-sm-12">
                                    {
-                                      assets && assets.map((asset)=>(
+                                      assets && assets.map((a)=>(
                                            <>
-                                           <input type="radio" name="asset" value={asset.symbol} key={asset._id} onClick={(e)=>{
+                                           <input type="radio" name="asset" value={a.symbol} key={a._id} onChange={(e)=>{
                                                setAsset(e.target.value);
-                                               setAssetPrice(asset.rateToDollar["$numberDecimal"]);
-                                               setPrice(Number(asset.rateToDollar["$numberDecimal"] * currencyRate).toFixed(2))
+                                               setAssetPrice(a.rateToDollar["$numberDecimal"]);
+                                               setPrice(Number(a.rateToDollar["$numberDecimal"] * currencyRate).toFixed(2))
                                             }}
+                                            checked={a.symbol==asset}
                                             />
-                                           {asset.symbol.toUpperCase()} &nbsp;
+                                           {a.symbol.toUpperCase()} &nbsp;
                                            </>
                                        ))
                                    }
@@ -40,15 +40,16 @@ const BuyTab = memo(({
                                 </div>
                                 <div className="col col-12 col-xs-12 col-sm-12">
                                    {
-                                     currencies &&  currencies.map((currency)=>(
+                                     currencies &&  currencies.map((c)=>(
                                            <>
-                                           <input type="radio" name="currency" value={currency} key={currency._id} onClick={(e)=>{
-                                               setCurrency(currency);
-                                                setPrice((currency.rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
-                                                setCurrencyRate(currency.rateToDollar["$numberDecimal"]);
+                                           <input type="radio" name="currency" value={c} key={currency._id} onChange={(e)=>{
+                                                setCurrency(c);
+                                                setPrice((c.rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
+                                                setCurrencyRate(c.rateToDollar["$numberDecimal"]);
                                             }
-                                               }/>
-                                           {currency.symbol} &nbsp;
+                                               }
+                                           checked={c.symbol==currency.symbol}/>
+                                           {c.symbol} &nbsp;
                                            </>
                                        ))
                                    }
@@ -59,33 +60,40 @@ const BuyTab = memo(({
                             <div className={`row form-row ${step !== 1 ? "d-none":""} buy-step-1`}>     
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                   <div className="label"><b>Your Price</b></div>
-                                  <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>{price}</h4></div>
+                                  <div className="d-flex"><h5 className="currency">{currency.symbol}</h5>&nbsp;<h5>{price}</h5></div>
                                 </div>
                                 
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster d-none mb-20">
                                     <div className="label"><b>Highest Order Price</b></div>
                                     <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>411.34</h4></div>
                                 </div>
-
+                                
+                                {
+                                /*
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                     <div className="label"><b>Price Type</b></div>
                                     <div>
+                                    
                                         <input type="radio" name="priceType" onChange={()=>{
                                             setFactor(100);
                                             setPriceType("fixed");
                                         }
-                                        } checked={priceType === "fixed"}/>Fixed &nbsp;
+                                        } checked={priceType === "fixed"}/> 
+                                         
+                                         Factor &nbsp;
                                          <input type="radio" name="priceType" onChange={()=>{
                                              setFactor(0);
                                              setPriceType("floating")
                                          }}  checked={priceType === "floating"}/>Floating &nbsp;
                                     </div>
                                 </div>
+                                 */
+                                }
 
-                                <div className={`col col-xs-12 col-sm-12 col-md-3 form-cluster mb-20`}>
+                                <div className={`col col-xs-12 col-sm-12 col-md-6 form-cluster mb-20`}>
                                   
                                   <div className={`${priceType === "fixed" ? "d-none":""}`}>
-                                      <div className="label"><b>Set Floating Price Margin</b></div>
+                                      <div className="label"><b>Set Price Factor</b></div>
                                     <div className="value-button" id="decrease" value="Decrease Value"
                                      onClick={(e)=>{
                                         factor = Number(factor) - 0.01; 
@@ -95,7 +103,7 @@ const BuyTab = memo(({
                                         price = Number(price) - 1;
                                       }}
                                     >-</div>
-                                    <input type="number" id="number" placeholder="100" onChange={(e)=>{
+                                    <input type="number" id="number" placeholder="100" value={factor} onChange={(e)=>{
                                         setFactor(Number(e.target.value));
                                         let factorPrice = calculatePrice(currencyRate,e.target.value);
                                         setPrice(Number(assetPrice * factorPrice).toFixed(2));
@@ -205,19 +213,19 @@ const BuyTab = memo(({
                                 </div>
 
                                 <div className="col col-12 col-xs-12 col-sm-6">
-                                        <div className="col col-xs-12 col-sm-12">
+                                        <div className="col col-12 col-xs-12 col-sm-12">
                                             <div className="label"><b>Payment Method</b></div>
                                         </div>
-                                        <div className="col col-6 col-xs-6">
+                                        <div className="col col-6 col-xs-6 col-sm-6">
                                            <small> Select a payment method </small> 
                                         </div>
-                                        <div className="col col-6 col-xs-6">
+                                        <div className="col col-6 col-xs-6 col-sm-6">
                                         {prefferedMethod && <span className="btn-dex-small btn-dex-danger">{prefferedMethod}</span>}
                                             <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#epaymentMethodModal" type="button">+ ADD</button>
                                         </div>
                                     </div>
                             </div>  
-                           <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} asset={asset}/>
+                           <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} asset={asset}  online={online} setOnline={setOnline} autoreply={autoreply} setAutoReply={setAutoReply}/>
                             <div className="row form-row">     
                                 <div className="col col-xs-12 text-end">
                                     <button className="btn-dex btn-dex-primary buy-step1-next" onClick={(e)=>{
@@ -229,7 +237,6 @@ const BuyTab = memo(({
                                        step ===3 ? setStep(3) : setStep(step+1)}
                                     }>Next</button>
                                     <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>{e.preventDefault();
-                                        createBuyAd();
                                     }}>Submit</button>
                                 </div>
                             </div> 

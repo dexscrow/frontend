@@ -185,10 +185,10 @@ const fetchMethods = useCallback(async() => {
 
                     <div className="row mb-30 mt-20">
                     <div className="col col-6 col-xs-6 col-sm-6">
-                       <h3 className="page-title">Sell Ads</h3>
+                       <h3 className="page-title">Buy Ads</h3>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                    <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                           <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                               Ad Management
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">

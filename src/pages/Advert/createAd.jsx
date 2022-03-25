@@ -35,6 +35,8 @@ const CreateAd = () => {
     const [upperLimit, setUpperLimit] = useState(0);
     const [lowerLimit,setLowerLimit] = useState(0);
     const [totalAsset,setTotalAsset] = useState(0);
+    const [online,setOnline] = useState('now');
+    const [autoreply,setAutoReply] = useState('');
     const [error,setError] = useState("");
     const authToken = localStorage.getItem("authToken");
     const [paymentMethods,setPaymentMethods] = useState([]);
@@ -46,9 +48,6 @@ const CreateAd = () => {
     const [registered,setRegistered] = useState("");
 
     const navigate = useNavigate();
-    
-    const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}
-  
 
     const createSellAd = ()=>{
         const run = async ()=>{
@@ -60,7 +59,7 @@ const CreateAd = () => {
                     return
                 }
                 const {data:response} = await axios.post(CREATE_SELL_AD_URL,{
-                    asset:(assets.find((a)=>a.symbol == asset)._id),
+                    asset:(assets.find((a)=>a.symbol == asset))._id,
                     paymentMethod:selectedMethod._id,
                     currency:currency.symbol,
                     currencyRate,
@@ -74,10 +73,11 @@ const CreateAd = () => {
                     amount:price,
                     status: "active",
                     notes,
+                    autoreply,
                     conditions:{
                         registered,
                         baseOwnershipAmount:0,
-                        status:"now"
+                        status:online
                     }
                 },{
                     headers:{
@@ -86,16 +86,29 @@ const CreateAd = () => {
                 });
                 if(response.error){
                     setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
                 }
                 if(!response.success){
                     setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
                 }
-
-              navigate("/ad/list");
+              else{
+                    toast.success("Ad has been created successfully", {
+                        position: 'middle-center',
+                    });
+                    window.location.reload(); 
+                    navigate("/ad/list");
+                }
             }catch(error){
                 setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
             }
-           
         };
         run();
     }
@@ -111,7 +124,7 @@ const CreateAd = () => {
                     return
                 }
                 const {data:response} = await axios.post(CREATE_BUY_AD_URL,{
-                    asset:(assets.find((a)=>a.symbol == asset)._id),
+                    asset:(assets.find((a)=>a.symbol == asset))._id,
                     paymentMethod:(methods.find((m)=>m.name == prefferedMethod))._id,
                     currency:currency.symbol,
                     currencyRate,
@@ -125,10 +138,11 @@ const CreateAd = () => {
                     amount:price,
                     status: "active",
                     notes,
+                    autoreply,
                     conditions:{
-                        registered:(new Date()).toISOString(),
+                        registered,
                         baseOwnershipAmount:0,
-                        status:"now"
+                        status:online
                     }
                 },{
                     headers:{
@@ -137,44 +151,69 @@ const CreateAd = () => {
                 });
                 if(response.error){
                     setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
                 }
                 if(!response.success){
                     setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
                 }
-                console.log(response);
-
+                else{
+                    toast.success("Ad has been created successfullly", {
+                        position: 'middle-center',
+                    });
+                }
               navigate("/ad/list");
+              window.location.reload(); 
             }catch(error){
                 setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
             }
-           
         };
         run();
     }
 
-    const advertDetails = {
-        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createBuyAd,createSellAd,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,prefferedMethod
-    }
+    const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset,createSellAd,createBuyAd}
 
+    const advertDetails = {
+        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createBuyAd,createSellAd,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,prefferedMethod,setOnline,autoreply,setAutoReply
+    }
     
     useEffect(()=>{
         const fetchCountries = async ()=>{
             try{
-               
                 const {data:response} = await axios.get(COUNTRIES_URL,{
                     headers:{
                         "Authorization":`Bearer ${authToken}`
                     }
                 });
                 if(response.error){
-                    setError(response.error)
+                    setError(response.error);
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
                 }
                 if(!response.success){
                     setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
                 }
                 setCurrencies(response.data);
+                setCurrency(response.data[0]);
+                setPrice(Number(response.data[0].rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
+                setCurrencyRate(response.data[0].rateToDollar["$numberDecimal"]);
+
             }catch(error){
-                setError(error.message)
+                setError(error.message);
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
             }
         }
         const fetchAssets = async ()=>{
@@ -187,15 +226,25 @@ const CreateAd = () => {
                 });
                 if(response.error){
                     setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
                 }
                 if(!response.success){
                     setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
                 }
-                // console.log(response)
                 setAssets(response.data);
+                setAsset(response.data[0].symbol);
+                setAssetPrice(response.data[0].rateToDollar["$numberDecimal"]);
                 
             }catch(error){
                 setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
             }
         }
         const fetchPaymentMethods= async ()=>{
@@ -210,14 +259,22 @@ const CreateAd = () => {
                 });
                 if(response.error){
                     setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
                 }
                 if(!response.success){
                     setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
                 }
-                console.log(response.data);
                 setPaymentMethods(response.data);
             }catch(error){
                 setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
             }
         }
 
@@ -230,13 +287,23 @@ const CreateAd = () => {
                 });
                 if(response.error){
                     setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
+                  
                 }
                 if(!response.success){
                     setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
                 }
                 setMethods(response.data);
             }catch(error){
                 setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
             }
         }
 
@@ -315,9 +382,10 @@ const CreateAd = () => {
           <div className="row">
             <div className="col-xs-12 col-sm-12">
               <div className="col-xs-12 payment-method">
-                  <select value={prefferedMethod} onChange={(e)=>{
+                  <select className="form-control" value={prefferedMethod} onChange={(e)=>{
                       console.log(e.target.value)
                       setPrefferedMethod(e.target.value)}}>
+                    <option value="">--Select an Option--</option>
                     {
                         methods && methods.map((m)=>(
                             <option value={m.name} key={m._id}>{m.name}</option>

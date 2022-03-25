@@ -1,8 +1,8 @@
 import {Contract,ethers} from "ethers";
 import staking from "../contracts/Staking.json";
 import token from "../contracts/TestCoin.json";
-const CONTRACT_ADDRESS = "0x75559A1761b8d4ca0bFF8f918Df37BB4aBe9Bb14";
-const TOKEN_ADDRESS = "0x901CB9961D81Ba4911E6B340C82F41fb9372Dc3e";
+const CONTRACT_ADDRESS = "0x426c7d4B76a1a8e556d2D8cc19b7F994A8a76378";
+const TOKEN_ADDRESS = "0x3BE068Bcc82460d866EE6816aC986630964371B7";
 
 export const totalStaked = async () =>{
   try{
@@ -25,7 +25,6 @@ export const totalStakers = async () =>{
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
-      const userAddress = await signer.getAddress();
       var stakers = await Stake.totalStakers();
       return parseInt(stakers);
   }catch(error){
@@ -53,9 +52,18 @@ export const createStake = async (amount) => {
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
   const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
-  const userAddress = await signer.getAddress();
-  var stake = await Stake.createStake(1900000000000);
-  alert(stake);
+  const Token = new ethers.Contract(TOKEN_ADDRESS,token.abi,signer);
+  let wei = ethers.utils.parseEther(amount);
+  try{
+     await Token.approve(CONTRACT_ADDRESS,wei).then(async(tx) => {
+       await timeout(15000);
+       await Stake.createStake(wei);
+       await timeout(15000);
+       return true;
+     });
+    }catch(error){
+      throw new Error(error.message);
+   }
 }
 
 export const createStakeHolder = async (amount) => {
@@ -64,11 +72,17 @@ export const createStakeHolder = async (amount) => {
   const signer = provider.getSigner();
   const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
   const Token = new ethers.Contract(TOKEN_ADDRESS,token.abi,signer);
-  const userAddress = await signer.getAddress();
-  let wei = ethers.utils.parseEther(amount);
-  await Token.approve(CONTRACT_ADDRESS,wei);
-  var stake = await Stake.createStakeHolder(wei);
-  alert(JSON.stringify(stake));
+  let wei = ethers.utils.parseEther(amount.toString());
+  try{
+      await Token.approve(CONTRACT_ADDRESS,wei).then(async(tx) => {
+      await timeout(15000);
+      await Stake.createStakeHolder(wei);
+      await timeout(15000);
+      return true;
+     });
+    }catch(error){
+      throw new Error(error.message);
+   }
 }
 
 export const removeStake = async() => {
@@ -76,9 +90,13 @@ export const removeStake = async() => {
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
   const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
-  const userAddress = await signer.getAddress();
-  var stake = await Stake.removeStakeHolder();
-  alert(stake);
+  try{
+      await Stake.removeStakeHolder();
+      await timeout(15000);
+      return true;
+     }catch(error){
+       throw new Error(error.message);
+     }
 }
 
 export const withdrawReward = async() => {
@@ -86,9 +104,13 @@ export const withdrawReward = async() => {
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
   const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
-  const userAddress = await signer.getAddress();
-  var stake = await Stake.withdrawReward();
-  alert(stake);
+  try{
+    await Stake.withdrawReward();
+    await timeout(15000);
+    return true;
+  }catch(error){
+    throw new Error(error.message);
+  }
 }
 
 export const rewardOf = async() => {
@@ -106,6 +128,21 @@ export const rewardOf = async() => {
   }
 }
 
-export const gotHere = async ()=>{
-  alert('here');
+export const withdraw = async (amount)=>{
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send("eth_requestAccounts", []);
+  const signer = provider.getSigner();
+  const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
+  let wei = ethers.utils.parseEther(amount.toString());
+  //alert(wei.toString());
+  try{
+    await Stake.withdraw(wei);
+    return true;
+  }catch(error){
+    throw new Error(error.message);
+  }
+}
+
+const timeout = async (delay:number)=>{
+  return new Promise( res => setTimeout(res, delay));
 }

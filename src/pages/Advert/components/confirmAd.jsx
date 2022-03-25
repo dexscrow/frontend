@@ -1,7 +1,6 @@
 import React from 'react';
 
-
-export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset}) {
+export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset,createBuyAd,createSellAd}) {
     return (
         <>
             <div className="modal fade" id="confirmPostModal" tabIndex="-1" aria-labelledby="confirmPostModalLabel" aria-hidden="true">
@@ -78,7 +77,14 @@ export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lo
               <div className="row form-row mb-20">     
                 <div className="col col-xs-12 text-end">
                 <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal">Cancel</button>
-                <button className="btn-dex-small btn-dex-default" type='submit'>Confirm</button>
+                <button className="btn-dex-small btn-dex-default" type='submit' onClick={(e)=>{
+                   e.preventDefault();
+                   if(type==='buy'){
+                     createBuyAd();
+                    }else if(type==='sell'){
+                      createSellAd();
+                    }
+                   }}>Create</button>
                 </div>
             </div> 
 

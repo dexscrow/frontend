@@ -3,6 +3,7 @@
 .body{
     background: #BFBFBF 0% 0% no-repeat padding-box;
     opacity: 1;
+    font-family:Hind Madurai;
 }
 
 h3{
@@ -372,6 +373,15 @@ width:100px;
     height: 50px;
 }
 
+.home-content-b .about-left p{
+    text-align: left;
+    font: normal normal normal 16px/28px Hind Madurai;
+    letter-spacing: 0px;
+    color: #FFF;
+    opacity: 0.61;
+    text-align:justify
+}
+
 .home-content-b .about-right{
     background: transparent linear-gradient(180deg, #262631 0%, #3F3F52D5 83%, #848496 100%) 0% 0% no-repeat padding-box;
     border: 1px solid #969696;
@@ -400,6 +410,15 @@ width:100px;
     letter-spacing: 0px;
     color: #FFFEFA;
     opacity: 0.61;
+}
+
+.home-content-b .about-right p{
+    text-align: left;
+    font: normal normal normal 16px/28px Hind Madurai;
+    letter-spacing: 0px;
+    color: #FFF;
+    opacity: 0.61;
+    text-align:justify
 }
 
 .home-content-b .about-right img{
@@ -1470,7 +1489,6 @@ width:100px;
     -moz-transition:0.3s;
     -o-transition:0.3s;
     -webkit-transition:0.3s;
-    content: "\f061";
     font-size:25px;
     font-family: FontAwesome;
     color:#000;
@@ -1652,7 +1670,61 @@ width:100px;
      }
 }
 
+.footer-menu {
+    width:100%;
+    margin-top:150px;
+    margin-bottom:0px;
+  }
 
+.footer-menu li {
+    display:inline-block;
+}
+.footer-menu a {
+    color:#2094E5;
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+    margin: 10px;
+}
 
+.blink_me {
+    animation: blinker 2s linear infinite;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
 
-
+  .overlay {
+    background: #ffffff;
+    color: #666666;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 5000;
+    top: 0;
+    left: 0;
+    float: left;
+    text-align: center;
+    padding-top: 25%;
+    opacity: .80;
+  }
+  .spinner {
+      margin: 0 auto;
+      height: 64px;
+      width: 64px;
+      animation: rotate 0.8s infinite linear;
+      border: 5px solid firebrick;
+      border-right-color: transparent;
+      border-radius: 50%;
+  }
+  @keyframes rotate {
+      0% {
+          transform: rotate(0deg);
+      }
+      100% {
+          transform: rotate(360deg);
+      }
+  }

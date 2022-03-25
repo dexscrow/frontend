@@ -29,7 +29,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "distributeReward",
+		"name": "removeStakeHolder",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -81,26 +81,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_stakeholder",
-				"type": "address"
-			}
-		],
-		"name": "removeStake",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "removeStakeHolder",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -142,6 +122,38 @@
 			}
 		],
 		"name": "Unstaked",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "date",
+				"type": "uint256"
+			}
+		],
+		"name": "Withdrawn",
 		"type": "event"
 	},
 	{
@@ -219,44 +231,6 @@
 				"type": "address"
 			}
 		],
-		"name": "rewardOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "rewards",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_stakeholder",
-				"type": "address"
-			}
-		],
 		"name": "stakeOf",
 		"outputs": [
 			{
@@ -277,19 +251,6 @@
 			}
 		],
 		"name": "stakes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalReward",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -326,5 +287,5 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-  ]
+   ]
  }

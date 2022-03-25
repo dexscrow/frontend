@@ -251,7 +251,7 @@ export default function BuyAd(){
                     <div className="col col-6 col-xs-6 col-sm-2">
                         <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
                           <option value="">All Currencies</option>
-                          {
+                           {
                               currencies && currencies.map((currency)=>(
                                 <>
                                   <option value={currency.symbol}>{currency.symbol}</option>

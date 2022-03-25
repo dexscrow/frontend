@@ -2,19 +2,11 @@ import React, {useContext,useState,useEffect,useCallback} from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
-import {Link} from "react-router-dom";
 import Nav from "../Landing/components/nav";
 import NavSocial from "../Landing/components/navsocial";
 import AccountContext from "../../contexts/account";
-import {totalStakers,totalStaked,stakeOf,createStake,createStakeHolder,rewardOf,withdrawReward,removeStake} from '../../helpers/staking';
+import {totalStakers,totalStaked,stakeOf,createStake,createStakeHolder,rewardOf,withdrawReward,removeStake,withdraw} from '../../helpers/staking';
 const token = localStorage.getItem("authToken");
-
-/*const URL = process.env.REACT_APP_SERVER_URL+'/staking/sitestake';
-const USER_STAKING_URL = process.env.REACT_APP_SERVER_URL+'/staking/userstake';
-const USER_UNSTAKE_URL = process.env.REACT_APP_SERVER_URL+'/staking/unstake';
-const STAKING_WITHDRAWABLE_URL = process.env.REACT_APP_SERVER_URL+'/staking/stakeWithdrawable';
-const USER_WITHDRAW_STAKE  = process.env.REACT_APP_SERVER_URL+'/staking/withdrawStake';
-const USER_WITHDRAW_REWARD  = process.env.REACT_APP_SERVER_URL+'/staking/withdrawReward';*/
 
 export default function Staking() {
     const [account,setAccount] = useContext(AccountContext);
@@ -24,116 +16,153 @@ export default function Staking() {
     const [step,setStep] = useState(1);
     const [terms,setTerms] = useState(0);
     const [amount,setAmount] = useState(0);
+    const [loading,setLoading] = useState(false);
     const [userStake,setUserStake] = useState(0);
     const [userReward,setUserReward] = useState(0);
     const authToken = localStorage.getItem("authToken");
 
     const getStakeOf = useCallback(async() => {
         try{
-             const stake = await stakeOf();
+             var stake = await stakeOf();
              setUserStake(stake);
             }catch(error){
-                toast.error('An error occured', {
-                    position: 'middle-center',
-                });
-                setError(error.message)
-            }
+          }
     });
 
     const getTotalStakers = useCallback(async() => {
         try{
-             const stakers = await totalStakers();
-             setStakers(stakers);
-            }catch(error){
-                toast.error('An error occured', {
-                    position: 'middle-center',
-                });
-                setError(error.message)
-            }
+            var stakers = await totalStakers();
+            setStakers(stakers);
+            }catch(error){   
+         }
     });
 
     const getTotalStaked = useCallback(async() => {
         try{
-             const stake = await totalStaked();
-             setAssetStaked(stake);
+            var staked = await totalStaked();
+             setAssetStaked(staked);
             }catch(error){
-                toast.error('An error occured', {
-                    position: 'middle-center',
-                });
                 setError(error.message)
             }
     });
 
     const getRewardOf = useCallback(async() => {
         try{
-             const reward = await rewardOf();
+             var reward = await rewardOf();
              setUserReward(reward);
             }catch(error){
-                toast.error('An error occured', {
-                    position: 'middle-center',
-                });
-                setError(error.message)
-            }
+         }
     });
 
     const stakeInit = useCallback(async() => {
         try{
-             toast.error('Staking program not started yet', {
-                position: 'middle-center',
-             });
-             /*
-             const stake = createStakeHolder(amount.toString());
-             getTotalStaked();
-             getStakeOf();
-             getRewardOf();
-             getTotalStakers();*/
+               setLoading(true);
+               var stake = await stakeOf();
+               if(stake > 0){
+                toast.success("Page refreshing, please wait", {
+                    position: 'middle-center',
+                  });
+                window.location.reload();
+               }else{
+                await createStakeHolder(amount);
+                getTotalStaked();
+                getStakeOf();
+                getRewardOf();
+                getTotalStakers();
+                setLoading(false);
+                toast.success("Staked successfully", {
+                 position: 'middle-center',
+                });
+               window.location.reload();
+             }     
             }catch(error){
-                setError(error.message)
+               toast.error(error.message, {
+                    position: 'middle-center',
+                });
+               setLoading(false);
             }
     });
 
     const stake = useCallback(async() => {
         try{
-            toast.error('Staking program not started yet', {
-                position: 'middle-center',
-             });
-             /*const stake = createStake(amount);
-             getTotalStaked();
-             getStakeOf();
-             getRewardOf();
-             getTotalStakers();*/
-            }catch(error){
-                setError(error.message)
-            }
+                setLoading(true);
+                await withdrawReward();
+                await createStake(amount);
+                getTotalStaked();
+                getStakeOf();
+                getRewardOf();
+                getTotalStakers();
+                setLoading(false);
+                toast.success("Staked successfully", {
+                    position: 'middle-center',
+                 });
+                 window.location.reload();
+         }catch(error){
+               toast.error(error.message, {
+                 position: 'middle-center',
+               });
+               setLoading(false);
+         }
     });
 
     const unstake = useCallback(async() => {
         try{
-             const stake = removeStake();
-             getTotalStaked();
-             getStakeOf();
-             getRewardOf();
-             getTotalStakers();
+                setLoading(true);
+                await removeStake();
+                getTotalStaked();
+                getStakeOf();
+                getRewardOf();
+                getTotalStakers();
+                setLoading(false);
+                toast.success("Unstaked successfully", {
+                    position: 'middle-center',
+                  });
+                window.location.reload();
             }catch(error){
-                setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
+                setLoading(false);
             }
     });
 
     const runWithdrawReward = useCallback(async() => {
         try{
-             const stake = withdrawReward();
-             getRewardOf();
+            setLoading(true);
+            await withdrawReward();
+            getRewardOf();
+             toast.success("Withdraw successful", {
+                position: 'middle-center',
+             });
+             window.location.reload();
             }catch(error){
-                setError(error.message)
-            }
+              toast.error(error.message, {
+                position:'middle-center',
+              });
+           }
+    });
+
+    const runWithdraw = useCallback(async() => {
+        try{
+            setLoading(true);
+            await withdraw(10);
+             toast.success("Withdraw successful", {
+                position: 'middle-center',
+             });
+             window.location.reload();
+            }catch(error){
+              toast.error(error.message, {
+                position:'middle-center',
+              });
+           }
     });
 
     useEffect(() => {
+        //runWithdraw();
         getTotalStaked();
         getStakeOf();
         getRewardOf();
         getTotalStakers();
-
         // The effect calls innerFunction, hence it should declare it as a dependency
         // Otherwise, if something about innerFunction changes (e.g. the data it uses), the effect would run the outdated version of innerFunction
     }, []);
@@ -141,6 +170,14 @@ export default function Staking() {
     return (      
       <> 
        <Toaster containerStyle={{ position: 'absolute' }} />
+
+      <div class="overlay" style={{display:loading?'block':'none'}}>
+            <div class="spinner"></div>
+            <br/>
+            Loading...
+     </div>
+
+
        <div className="container-fluid body">
             <div className="row flex-nowrap">
               <Sidebar account={account}/>
@@ -190,7 +227,7 @@ export default function Staking() {
                            <div className="row">
                               <div className="col col-12 col-xs-12 col-sm-12">
                                <span className="label">APR</span><br/>
-                               <span className="value">{} 15%</span><br/>
+                               <span className="value">{} 50%</span><br/>
                               </div>
                           </div>
                         </div>
@@ -328,13 +365,19 @@ export default function Staking() {
                                             <span>
                                                 <input type="checkbox" value="1" name="terms" onClick={(e)=>{
                                                 setTerms(e.target.value);
-                                                }}/> &nbsp; ticking the box means you agree to staking terms
+                                                }}/> &nbsp; Do you agree to stake your DXW tokens
                                             </span>
                                         </div>
                                         <div className="col col-xs-12 text-center mt-20">
                                             <button className="btn-dex btn-dex-default sell-step1-next" 
                                                onClick={(e)=>{
+                                               if(terms!=1){
+                                                toast.error('You need to accept terms to proceed', {
+                                                    position: 'middle-center',
+                                                });
+                                               }else{
                                                setStep(2);
+                                               }
                                             }}>Next</button>
                                         </div>
                                     </div>
@@ -370,7 +413,7 @@ export default function Staking() {
                                     {
                                      userStake>0?<button className="btn-dex-small btn-dex-default" onClick={(e)=>{
                                         e.preventDefault();
-                                        stakeInit();
+                                        stake();
                                     }}>Stake</button>:
                                     <button className="btn-dex-small btn-dex-default" onClick={(e)=>{
                                         e.preventDefault();
