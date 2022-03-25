@@ -7,6 +7,7 @@ import {useWallet} from "use-wallet";
 const authToken = localStorage.getItem("authToken")
 
 export default function Header({account}) {
+<<<<<<< HEAD
   const {connect,reset,account} = useWallet();
       useLogin(account,authToken)
 
@@ -24,6 +25,10 @@ export default function Header({account}) {
         localStorage.setItem("account",account);
         localStorage.setItem("wallet","binance");
       }
+=======
+    //  useEffect(()=>{
+    //  },[account])
+>>>>>>> 3f611177b6fe0201e52cbdf6709e3586e864c3a4
    
     return (
         <>
@@ -37,12 +42,16 @@ export default function Header({account}) {
         <div className="modal-body">
           
             <div className="row form-row">
+<<<<<<< HEAD
              <div className="col-xs-12 col-sm-12 text-center pb-10 btn" style={{borderBottom: "1px solid #f4f4f4"}} onClick={setBinanceWalletConnection}>
              <img src="/images/binancechain.png" style={{width:"100px", height:"auto" }}/> <br/> 
              <h5> Binance Chain</h5>
              <span className="label">Connect your binance chain wallet</span>
             </div>
             <div className="col-xs-12 col-sm-12 text-center mt-20 btn" onClick={e=>setMetmaskConnection}>
+=======
+            <div className="col-xs-12 col-sm-12 text-center mt-20 btn" onClick={e=>setMetamaskConnection()}>
+>>>>>>> 3f611177b6fe0201e52cbdf6709e3586e864c3a4
              <img src="/images/metamask.svg" style={{width:"100px", height:"auto" }}/> <br/> 
              <h5> MetaMask</h5>
              <span className="label">Connect your metamask wallet</span>

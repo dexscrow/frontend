@@ -1,10 +1,44 @@
-import React from 'react'
+import React, {useState,useEffect,useCallback} from 'react';
+import axios from "axios";
 import {Link} from "react-router-dom";
 import Add from "../../../assets/add.svg";
 import Avatar from "../../../assets/avatar.png";
 import P2P from "../../../assets/p2p.svg";
+import useLogin from '../../../hooks/useLogin';
+const USER_URL  = process.env.REACT_APP_SERVER_URL+'/user/stat';
+const token = localStorage.getItem("authToken");
 
 export default function Sidebar({account}) {
+    useLogin(account,token)
+    const [error,setError] = useState("");
+    const [user,setUser] = useState({});
+
+    const fetchUser = useCallback(async() => {
+        try{
+            if(token==='null' || token===null || token==='undefined'){
+                return
+            }
+            const {data:response} = await axios.get(USER_URL,{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(response.error){
+                setError(response.error)
+            }
+            if(!response.success){
+                setError(response.message)
+            }
+            setUser(response.data);
+        }catch(err){
+            setError(err.message)
+        }
+    });
+    
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
     return (
              <div className="col-auto col-md-1 col-xl-1 px-sm-2 px-0 align-items-center side d-none d-md-block">
                 <div className="d-flex flex-column align-items-center px-3 pt-2 text-white min-vh-100">
@@ -14,14 +48,14 @@ export default function Sidebar({account}) {
                     
                     <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start menu" id="menu">
                         <li className="nav-item text-center" style={{width:"100%"}}>
-                            <Link to="/ad/buy" className="nav-link align-middle text-center px-0">
+                            <Link to="/ad/sell" className="nav-link align-middle text-center px-0">
                                 <img src={P2P}/><br/>
                                  <span className="ms-1 d-none d-sm-inline">P2P Trade</span>
                             </Link>
                         </li>
 
                         <li className="nav-item text-center" style={{width:"100%"}}>
-                            <Link to="/" className="nav-link align-middle text-center px-0">
+                            <Link to="/staking" className="nav-link align-middle text-center px-0">
                                 <img src={Add}/><br/>
                                 <span className="ms-1 d-none d-sm-inline">Staking</span>
                             </Link>
@@ -30,21 +64,18 @@ export default function Sidebar({account}) {
                     </ul>
 
                     {
-                        
                         account && <div className="row mb-sm-auto mb-0 align-items-center align-items-sm-start menu-rotate">
-                    
                         <div className="col col-xs-2 text-center">
                             <span className="">Completed</span><br/>
-                            <span className="">100%</span>
+                            <span className="">{user.completed} %</span>
                        </div>
 
                         <div className="col col-xs-2 text-center">
                              <span className="">Orders</span><br/>
-                             <span className="">0</span>
+                             <span className="">{user.orders}</span>
                        </div>
-
-                      
-                    </div>}
+                    </div>
+                    }
 
                     <hr/>
                         { account &&   <div className="dropdown pb-4">

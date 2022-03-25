@@ -1,4 +1,5 @@
-import React,{useContext,useState,useEffect} from 'react'
+import React,{useContext,useState,useEffect,useCallback} from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import AccountContext from "../../contexts/account";
 import {setBinanceWalletConnection} from "../../helpers/scrow";
 import {Link} from "react-router-dom";
@@ -8,6 +9,7 @@ import Sidebar from "../Landing/components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
 import PendingKyc from "./components/pendingKyc";
 import Nav from "../Landing/components/nav";
+import NavSocial from "../Landing/components/navsocial";
 import VerifiedKyc from "./components/verifiedKyc";
 import axios from "axios";
 const token = localStorage.getItem("authToken");
@@ -19,30 +21,50 @@ const USERNAME_URL = process.env.REACT_APP_SERVER_URL+"/user/username"
 export default function Profile() {
     const [account,_] = useContext(AccountContext);
     const [user,setUser] = useState(null);
-    const [username,setUsername] = useState("");
-    const [email,setEmail] = useState("");
+    const [username,setUsername] = useState('');
+    const [usernameUpdate,setUsernameUpdate] = useState(true);
+    const [emailUpdate,setEmailUpdate] = useState(true);
+    const [email,setEmail] = useState('');
     const [error,setError] = useState(null);
 
     const updateUsername = ()=>{
         const run = async ()=>{
-            try{
-                
+            try{    
+            if(token==='null' || token===null || token==='undefined'){
+                toast.error("Please connect wallet first", {
+                    position: 'middle-center',
+                });
+                return
+            }
             const {data:response} = await axios.post(USERNAME_URL,{name:username},{
                 headers:{
                     "Authorization":`Bearer ${token}`
                 }
             });
-            if(!response || response.error){
-                setError(response.error)
+            if(!response){
+                setError(response.error);
+                toast.error("An error occured with the request", {
+                    position: 'middle-center',
+                  });
+               return;
             }
             if(!response.success){
-                setError(response.message)
+                setError(response.error);
+                toast.error(response.error, {
+                    position: 'middle-center',
+                  });
+            }else{
+            toast.success(response.message, {
+                position: 'middle-center',
+              });
+              getUser();
             }
             return;
-
             }catch(error){
-                
                 setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                  });
             }
 
         }
@@ -52,69 +74,92 @@ export default function Profile() {
     const updateEmail = ()=>{
         const run = async ()=>{
             try{
-                
+            if(token==='null' || token===null || token==='undefined'){
+                toast.error("Please connect wallet first", {
+                    position: 'middle-center',
+                });
+                return
+            }
             const {data:response} = await axios.post(EMAIL_URL,{email},{
                 headers:{
                     "Authorization":`Bearer ${token}`
                 }
             });
+            if(!response){
+                setError(response.error);
+                toast.error("An error occured with the request", {
+                    position: 'middle-center',
+                  });
+                return;
+            }
+            if(!response.success){
+                setError(response.error);
+                toast.error(response.error, {
+                    position: 'middle-center',
+                });
+            }else{
+                toast.success(response.message, {
+                position: 'middle-center',
+               });
+               getUser();
+            }
+            return;
+            }catch(error){
+                setError(error.message);
+                toast.error(error.message, {
+                    position: 'middle-center',
+                 });
+            }
+        }
+        run();
+    }
+
+    const getUser = useCallback(async() => {
+        try{
+            if(token==='null' || token===null || token==='undefined'){
+                toast.error("Please connect wallet first", {
+                    position: 'middle-center',
+                });
+                return
+            }
+            const {data:response} = await axios.get(API_URL,{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+
             if(!response || response.error){
                 setError(response.error)
             }
             if(!response.success){
                 setError(response.message)
             }
-            return;
+            console.log(response.data)
+            setUser(response.data);
+            setUsername(response.data.username);
+            setEmail(response.data.email);
 
-            }catch(error){
-                
-                setError(error.message)
+            if(response.data.username!=''){
+                setUsernameUpdate(false);
             }
-
+            if(response.data.email!=''){
+                setEmailUpdate(false);
+            }
+        }catch(error){
+            setError(error.message)
         }
-        run();
-    }
-    useEffect(()=>{
-        async function request(){ 
-        if(!account){
-            await setBinanceWalletConnection();
-        }
-    }
-    request();
-    },[account])
+    });
 
 
     useEffect(()=>{
-        console.log(user)
-        const run = async ()=>{
-            try{
-                const {data:response} = await axios.get(API_URL,{
-                    headers:{
-                        "Authorization":`Bearer ${token}`
-                    }
-                });
-
-                if(!response || response.error){
-                    setError(response.error)
-                }
-                if(!response.success){
-                    setError(response.message)
-                }
-                console.log(response.data)
-                setUser(response.data);
-            }catch(error){
-                setError(error.message)
-            }
-        }
-        run();
-    },[account])
+        getUser();
+    },[])
     return (
         <>
+         <Toaster containerStyle={{ position: 'absolute' }} />
              <div className="container-fluid body">
-        <div className="row flex-nowrap">
-        <Sidebar account={account}/>
-
-
+            <div className="row flex-nowrap">
+            <Sidebar account={account}/>
 
             <div className="col py-3 main">
                   <div className="row p-0">
@@ -129,13 +174,12 @@ export default function Profile() {
                             <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                             Ad Management
                             </span>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                            <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+                            <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                            <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
                             </ul>
                         </div>
                     </div>
-
 
                     <div className="row">
                     <div className="col col-12 col-xs-12">
@@ -157,8 +201,7 @@ export default function Profile() {
                      </ul>
                      </div>
                    </div>
-
-
+       
                 <div className="row">
                     <div className="trade-record-card pt-10 pb-20 mb-10">
                     <form action="" method="">
@@ -177,14 +220,20 @@ export default function Profile() {
                                     <img src={Avatar} style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
-                                    <input type="text" className="form-control" aria-label="" value={username} onChange={(e)=>setUsername(e.target.value)}/>
+                                    { !usernameUpdate?                                     
+                                     <input type="text" className="form-control" aria-label="" value={username} readonly />
+                                    :<input type="text" className="form-control" aria-label="" value={username}  onChange={(e)=>setUsername(e.target.value)}/>
+                                    }
                                 </div>
                             </div>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center"><br/>
                             <button type="button" value="Update" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
                                 e.preventDefault();
-                                updateUsername();
+                                if(!usernameUpdate){
+                                }else{
+                                 updateUsername();
+                                }
                             }}>Update</button>
                         </div>
                      
@@ -208,14 +257,22 @@ export default function Profile() {
                                     <img src={Avatar} style={{height:"30px", width:"30px"}}/>
                                 </div>
                                 <div className="col col-9 col-xs-9 col-sm-9">
+                                  { 
+                                    !emailUpdate?    
+                                    <input type="text" className="form-control" aria-label="" value={email} readonly />
+                                    :
                                     <input type="text" className="form-control" aria-label="" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                                  }
                                 </div>
                             </div>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center"><br/>
                             <button type="button" value="Update" className="btn-dex-small btn-dex-primary" onClick={(e)=>{
                                 e.preventDefault();
-                                updateEmail();
+                                if(!emailUpdate){
+                                }else{
+                                 updateEmail();
+                                }
                             }}>Update</button>
                         </div>
                      
@@ -328,15 +385,13 @@ export default function Profile() {
                           </div>
                         </div>
                     </div>
-
+                   
+                    <NavSocial/>
                    </div>
-
-
-
-
               </div>
             </div>
-       <Nav/>
+    
+          <Nav/>
         </>
     )
 }

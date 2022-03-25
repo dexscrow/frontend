@@ -1,4 +1,5 @@
-import React,{useContext,useState,useEffect} from 'react'
+import React,{useContext,useState,useEffect,useCallback} from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 import Header from '../Landing/components/header'
 import Delete from "../../assets/delete.svg"
 import Edit from "../../assets/edit.svg"
@@ -16,7 +17,8 @@ const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 export default function Adlist() {
     const [account,_] = useContext(AccountContext);
-    const [ads,setAds] = useState([]);
+    const [buyAds,setBuyAds] = useState([]);
+    const [sellAds,setSellAds] = useState([]);
     const [error,setError] = useState("");
     const [date,setDate]= useState("");
     const [status,setStatus] = useState("");
@@ -27,7 +29,12 @@ export default function Adlist() {
     const runQuery = ()=>{
         const run = async ()=>{
           try{
-            
+          if(token==='null' || token===null || token==='undefined'){
+            toast.error('Please connect your wallet', {
+              position: 'middle-center',
+             });
+             return;
+          }
           const filters = {
             createdAt:date,status,asset
           }
@@ -48,7 +55,11 @@ export default function Adlist() {
             setError(response.message);
           }
           console.log(response)
-          setAds(response.data);
+            if(priceType === "buy"){
+              setBuyAds(response.data);
+            }else if(priceType === "sell"){
+              setSellAds(response.data);
+            }
           }catch(error){
             setError(error.message)
           }
@@ -58,51 +69,80 @@ export default function Adlist() {
         run();
       }
 
+   const fetchBuyAds = useCallback(async() => {
+      try{
+        if(token==='null' || token===null || token==='undefined'){
+          return
+       }
+        const {data:response} = await axios.get(BUY_AD_URL,{
+            headers:{
+                "Authorization":`Bearer ${token}`
+            }
+        });
+        if(response.error){
+            setError(response.error)
+        }
+        if(!response.success){
+            setError(response.message)
+        }
+        console.log(response)
+        setBuyAds(response.data);
+    }catch(err){
+        setError(err.message)
+    }
+   })
+
+   const fetchSellAds = useCallback(async() => {
+      try{
+       if(token==='null' || token===null || token==='undefined'){
+          return
+       }
+        const {data:response} = await axios.get(SELL_AD_URL,{
+            headers:{
+                "Authorization":`Bearer ${token}`
+            }
+        });
+        if(response.error){
+            setError(response.error)
+        }
+        if(!response.success){
+            setError(response.message)
+        }
+        console.log(response)
+        setSellAds(response.data);
+    }catch(err){
+        setError(err.message)
+    }
+   })
+
+   const fetchAssets  = useCallback(async() => {
+      try{
+        const {data:response} = await axios.get(ASSETS_URL,{
+            headers:{
+                "Authorization":`Bearer ${token}`
+            }
+        });
+        if(response.error){
+            setError(response.error)
+        }
+        if(!response.success){
+            setError(response.message)
+        }
+        setAssets(response.data);
+    }catch(err){
+        setError(err.message)
+    }
+   })
+
     useEffect(()=>{
-        const run = async()=>{
-            try{
-                const {data:response} = await axios.get(BUY_AD_URL,{
-                    headers:{
-                        "Authorization":`Bearer ${token}`
-                    }
-                });
-                if(response.error){
-                    setError(response.error)
-                }
-                if(!response.success){
-                    setError(response.message)
-                }
-                console.log(response)
-                setAds(response.data);
-            }catch(err){
-                setError(err.message)
-            }
-            
-        }
-        const fetchAssets = async ()=>{
-          try{
-            const {data:response} = await axios.get(ASSETS_URL,{
-                headers:{
-                    "Authorization":`Bearer ${token}`
-                }
-            });
-            if(response.error){
-                setError(response.error)
-            }
-            if(!response.success){
-                setError(response.message)
-            }
-            setAssets(response.data);
-        }catch(err){
-            setError(err.message)
-        }
-        }
-       run();
+       fetchBuyAds();
+       fetchSellAds();
        fetchAssets();
     },[URL]);
 
     return (
         <>
+         <Toaster containerStyle={{ position: 'absolute' }} />
         <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
     <div className="modal-dialog modal-sm">
       <div className="modal-content" style={{background:"#ccc"}}>
@@ -229,37 +269,38 @@ export default function Adlist() {
                   </div>
                 </form>
                 <div className="row">
-                    <div className="trade-record-card pt-10 pb-20">
+                   
                     {
-                        (ads && ads !==[]) ? ads.map((advert)=>(
-                             <>
+                     (sellAds && sellAds !==[]) ? sellAds.map((advert)=>(
+                      <>
+                     <div className="trade-record-card pt-10 pb-20 mb-10">
                      <div className="row" key={advert._id}>
                         <div className="col col-6 col-xs-6 col-sm-2">
-                           <b>{advert.priceType}</b><br/>
+                           <b>Sell</b><br/>
                            <b><u>{advert.uid}</u></b><br/>
                            <span className="label">Asset</span><br/>
-                           <span className="value"> {advert.asset?.name}/{advert.currency}</span>
+                           <span className="value"> {advert.asset?.symbol}/{advert.currency}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
-                            <span className="label">Amount</span><br/>
-                            <span className="value">{advert.unit["$numberDecimal"]} {advert.asset?.name}</span><br/>
-                            <span className="label">Limit</span><br/>
-                            <span className="value">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
+                            <span className="label p-0">Amount</span><br/>
+                            <span className="value p-0">{advert.unit["$numberDecimal"]} {advert.asset?.symbol}</span><br/>
+                            <span className="label p-0">Limit</span><br/>
+                            <span className="value p-0">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
-                            <span className="label">Price</span><br/>
-                            <span className="value">{advert.amount["$numberDecimal"]} {advert.currency}</span>
+                            <span className="label p-0">Price</span><br/>
+                            <span className="value p-0">{advert.amount["$numberDecimal"]} {advert.currency}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6  col-sm-2">
-                          <span className="label">Payment Method</span><br/>
-                            <br/><span className="value">{advert.paymentMethod.name}</span>
+                          <span className="label p-0">Payment Method</span><br/>
+                            <br/><span className="value p-0">{advert.paymentMethod.name}</span>
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
-                            <span className="label">Status</span><br/>
-                            <span className="value" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">{advert.status}</span><br/><br/>
+                            <span className="label p-0">Status</span><br/>
+                            <span className="value p-0" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">{advert.status}</span><br/><br/>
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
@@ -269,14 +310,73 @@ export default function Adlist() {
                         </div>
  
                     </div>
+                    </div>
                     </>
                         ))
                       :
-                      <div className='row d-flex justify-content-center align-items-center'>
-                        <span className="text-center">No Advert</span>
+                       ""
+
+                     }
+
+                     {
+                        
+                       (buyAds && buyAds !==[]) ? buyAds.map((advert)=>(
+                        <>
+                       <div className="trade-record-card pt-10 pb-20 mb-10">
+                       <div className="row" key={advert._id}>
+                          <div className="col col-6 col-xs-6 col-sm-2">
+                             <b>Buy</b><br/>
+                             <b><u>{advert.uid}</u></b><br/>
+                             <span className="label">Asset</span><br/>
+                             <span className="value"> {advert.asset?.symbol}/{advert.currency}</span>
+                          </div>
+                          <div className="col col-6 col-xs-6 col-sm-3">
+                              <span className="label p-0">Amount</span><br/>
+                              <span className="value p-0">{advert.unit["$numberDecimal"]} {advert.asset?.symbol}</span><br/>
+                              <span className="label p-0">Limit</span><br/>
+                              <span className="value p-0">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
+                          </div>
+  
+                          <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
+                              <span className="label p-0">Price</span><br/>
+                              <span className="value p-0">{advert.amount["$numberDecimal"]} {advert.currency}</span>
+                          </div>
+  
+                          <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
+                            <span className="label p-0">Payment Method</span><br/>
+                              <span className="value p-0">{advert.paymentMethod.name}</span>
+                          </div>
+  
+                          <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
+                              <span className="label p-0">Status</span><br/>
+                              <span className="value p-0" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">{advert.status}</span><br/><br/>
+                          </div>
+  
+                          <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
+                              <img src={Delete} style={{width:"20px", height:"20px"}}/>
+                               &nbsp;&nbsp;
+                              <img src={Edit} style={{width:"20px", height:"20px"}}/>
+                          </div>
+   
                       </div>
+                      </div>
+                      </>
+                        ))
+                        :
+                        ""
+                       }
+
+                       {
+                       (buyAds.length==0 && sellAds.length==0) ?
+                       <div className="trade-record-card pt-10 pb-20">
+                        <div className='row d-flex justify-content-center align-items-center'>
+                          <span className="text-center">No Advert Found</span>
+                        </div>
+                       </div>
+                       :
+                       ""
                       }
-                 </div>
+                
               </div>
             </div>
            </div>

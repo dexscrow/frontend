@@ -3,6 +3,7 @@
 .body{
     background: #BFBFBF 0% 0% no-repeat padding-box;
     opacity: 1;
+    font-family:Hind Madurai;
 }
 
 h3{
@@ -181,7 +182,7 @@ width:100px;
     font-family:Hind Madurai;
     letter-spacing: 0px;
     color: #000000;
-    opacity: 0.5;
+    opacity: 0.9;
 }
 .bottom-nav img{ 
     width: 15px;
@@ -372,6 +373,15 @@ width:100px;
     height: 50px;
 }
 
+.home-content-b .about-left p{
+    text-align: left;
+    font: normal normal normal 16px/28px Hind Madurai;
+    letter-spacing: 0px;
+    color: #FFF;
+    opacity: 0.61;
+    text-align:justify
+}
+
 .home-content-b .about-right{
     background: transparent linear-gradient(180deg, #262631 0%, #3F3F52D5 83%, #848496 100%) 0% 0% no-repeat padding-box;
     border: 1px solid #969696;
@@ -400,6 +410,15 @@ width:100px;
     letter-spacing: 0px;
     color: #FFFEFA;
     opacity: 0.61;
+}
+
+.home-content-b .about-right p{
+    text-align: left;
+    font: normal normal normal 16px/28px Hind Madurai;
+    letter-spacing: 0px;
+    color: #FFF;
+    opacity: 0.61;
+    text-align:justify
 }
 
 .home-content-b .about-right img{
@@ -472,7 +491,7 @@ width:100px;
 .main{
    display:block;
    padding:20px;
-   margin-bottom:100px;
+   margin-bottom:60px;
    background:#BFBFBF
 }
 .main .page-title{
@@ -790,7 +809,24 @@ width:100px;
     border-bottom:3px solid #0381FF
   }
 
+ .social-nav {
+    font-size:13px;
+    width:100%;
+    letter-spacing: 1.1px;
+    margin-top:150px;
+    margin-bottom:0px;
+  }
+ .social-nav li{
+      padding:5px;
+      font-size:13px;
+      margin-right:13px;
+      color:#000
+ }
 
+ .social-nav li a{
+    color:#000
+}
+   
 .payment-method-card{
     background: #D3D3D3 0% 0% no-repeat padding-box;
     border: 1px solid #A5A5A5;
@@ -1368,8 +1404,130 @@ width:100px;
 .p-40{
     padding:40px;
   }
+  .cPanelContainer {
+    margin:auto;
+    padding:0;
+    background:#ccc;
+    }
 
+    .cPanelHeader {
+    margin:auto;
+    padding:50px 50px;
+    background: transparent;
+    text-align:center;
+    }
 
+    .cPanelHeader > h3, .cPanelHeader > h5 {
+    margin:auto;
+    color:#000;
+    font-weight:100;
+    }
+
+    .cPanelFooter {
+    margin:auto;
+    padding:50px;
+    background:#ccc;
+    text-align:center;
+    }
+
+    .cPanelFooter > span {
+    color:#000;
+    font-size:15px;
+    font-weight:400;
+    }
+
+    .cPanelContent {
+    margin:auto;
+    padding:0;
+    background:transparent;
+    text-align:center;
+    display:flex;
+    }
+
+    .cPanelSection {
+    position:relative;
+    flex:1;
+    transition:0.3s;
+    -moz-transition:0.3s;
+    -o-transition:0.3s;
+    -webkit-transition:0.3s;
+    padding:25px;
+    border-right:1px solid rgb(122, 122, 122);
+    border-left:1px solid rgb(122, 122, 122);
+    }
+
+    .cPanelSection:hover {
+    background:#ccc;
+    flex:2;
+    border-right:1px solid #f0f0f0;
+    border-left:1px solid #f0f0f0;
+    }
+
+    .cPanelContent > div:first-child {
+    border-left:none;
+    }
+
+    .cPanelContent > div:last-child {
+    border-right:none;
+    }
+
+    .cPanelContent > div:last-child:after {
+    display:none;
+    }
+
+    .cPanelContent > div:after {
+    position:absolute;
+    top:50%;
+    left:100%;
+    transform:translate(-50%, -50%);
+    z-index:1;
+    opacity:1;
+    padding:5px 13px;
+    border-radius:50%;
+    background:transparent;
+    transition:0.3s;
+    -moz-transition:0.3s;
+    -o-transition:0.3s;
+    -webkit-transition:0.3s;
+    font-size:25px;
+    font-family: FontAwesome;
+    color:#000;
+    }
+
+    .cPanelContent h5 {
+    color:#000;
+    font-weight:400;
+    }
+
+    .cPanelContent p {
+    font-size:14px;
+    color:#000;
+    padding:0 10%;
+    }
+
+    .cPanelArrowPulse {
+    position:absolute;
+    width:0%;
+    padding-bottom:0%;
+    border-radius:50%;
+    top:50%;
+    left:100%;
+    transform:translate(-50%, -50%);
+    background:#000;
+    opacity:0;
+    z-index:2;
+    
+    animation-name:cPanelArrowPulseAnimation;
+    animation-duration:2s;
+    animation-iteration-count:infinite;
+    animation-timing-function:ease-out;
+    }
+
+    @keyframes cPanelArrowPulseAnimation {
+    0% { opacity:1; width:0%; padding-bottom:0%; }
+    50% { opacity:0; width:20%; padding-bottom:20%; }
+    100% { opacity:0; width:0%; padding-bottom:0%; }
+}
 
 @media only screen and (min-width: 320px) and (max-width: 479px) {
     h3{
@@ -1512,7 +1670,61 @@ width:100px;
      }
 }
 
+.footer-menu {
+    width:100%;
+    margin-top:150px;
+    margin-bottom:0px;
+  }
 
+.footer-menu li {
+    display:inline-block;
+}
+.footer-menu a {
+    color:#2094E5;
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+    margin: 10px;
+}
 
+.blink_me {
+    animation: blinker 2s linear infinite;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
 
-
+  .overlay {
+    background: #ffffff;
+    color: #666666;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 5000;
+    top: 0;
+    left: 0;
+    float: left;
+    text-align: center;
+    padding-top: 25%;
+    opacity: .80;
+  }
+  .spinner {
+      margin: 0 auto;
+      height: 64px;
+      width: 64px;
+      animation: rotate 0.8s infinite linear;
+      border: 5px solid firebrick;
+      border-right-color: transparent;
+      border-radius: 50%;
+  }
+  @keyframes rotate {
+      0% {
+          transform: rotate(0deg);
+      }
+      100% {
+          transform: rotate(360deg);
+      }
+  }

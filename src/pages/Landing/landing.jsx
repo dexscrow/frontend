@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 import Sidebar from './components/sidebar'
 import Header from './components/header';
 import Nav from "./components/nav";
+import NavSocial from "./components/navsocial";
 import AccountContext from '../../contexts/account';
 
 export default function Landing() {
@@ -31,7 +32,7 @@ export default function Landing() {
         <div className="container-fluid body">
         <div className="row flex-nowrap">
             <Sidebar account={account}/>
-            <div className="col py-3">
+            <div className="col py-3 main">
                  <div className="row p-20"> 
                    <Header account={account}/>
 
@@ -44,8 +45,8 @@ export default function Landing() {
 
                  <div className="row">
                     <div className="col col-12 d-flex header-button">
-                        <Link to="/ad/buy" className="btn-dex btn-dex-default">P2P Trade</Link>  &nbsp; &nbsp; 
-                        <Link to="/" className="btn-dex btn-dex-bordered">staking</Link>
+                        <Link to="/ad/sell" className="btn-dex btn-dex-default">P2P Trade</Link>  &nbsp; &nbsp; 
+                        <Link to="/staking" className="btn-dex btn-dex-bordered" style={{color:'#FFF', border:'1px solid #FFF', background:'#2094E5'}} >Staking</Link>
                     </div>
                  </div>
 
@@ -54,8 +55,9 @@ export default function Landing() {
                     <div className="col col-12 col-sm-12 col-md-4 col-xs-12 about-left mb-20">
                       <div className="row"> 
                         <div className="col col-12"> 
-                            <h3>Decentralized, But With Low Fees</h3> <br/>
-                            <span>This information is stored in the blockchain in encrypted form and is available only to the participant himself.</span>
+                            <h3>Decentralized, But With Low Fees</h3><br/>
+                            <p>Trading on Dexscrow will function through the use of a trusted escrow smart contract, reducing control and enhancing decentralization, security and privacy. </p>
+                            <p>Trading comes with risks, but traders should not face any other risks than those they are willing to take. This innovative idea will come to traders at a very low fees as Dexscrow aims for global crypto inclusion.</p>
                         </div>
 
                         <div className="col col-12 mt-30 d-flex"> 
@@ -67,20 +69,27 @@ export default function Landing() {
 
                     <div className="col col-12 col-sm-12 col-md-7 col-xs-12 about-right mb-20">
                       <div className="row">
-                        <div className="col col-sm-8"> 
-                            <h3>Power of P2P Without the Big Brother's Eye</h3> <br/>
-                            <span>This information is stored in the blockchain in encrypted form and is available only to the participant himself.</span>
+                        <div className="col col-12 col-sm-8 col-xs-12"> 
+                            <h3>The Power of Dexscrow P2P Exchange</h3> <br/>
+                            <p>
+                            <b>Fiat Option:</b> Most decentralized platforms do not provide fiat payments. Dexscrow's primary responsibility it to make sure users/traders can seamlessly convert their assets to fiat and vice-versa with little or no interference or control 
+                            </p>
+                            <p>
+                            <b>Trustless:</b> Dexscrow will allow traders to remain custodian of their assets. Users assets and data are safe 
+                            </p>
+                            <p>
+                            <b>Security:</b> Privacy and security are well preserved
+                            </p>
                         </div>
-                        <div className="col col-sm-4 pt-30"> 
+                        <div className="col col-12 col-sm-4 col-xs-12 pt-30"> 
                             <img src="/images/block.png" /> 
                         </div>
                        </div>
                     </div>
                 </div>
-
-
-
+                <NavSocial/>
             </div>
+           
         </div>
 
       </div>

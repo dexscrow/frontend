@@ -3,16 +3,15 @@ import axios from "axios";
 import AuthContext from "../contexts/auth";
 require("dotenv").config();
 
-
 const SERVER_URL = process.env.REACT_APP_SERVER_URL||process.env.REACT_APP_SERVER_URL+"";
 
 const useLogin = (walletAddress,prevToken)=>{
     const [_,setAuthToken] = useContext(AuthContext);
 
     useEffect(()=>{
-        const authToken = localStorage.getItem("authToken")
-        if((authToken===null || authToken==='undefined') && walletAddress!=null) {
-        const run = async ()=>{
+        if((prevToken==='null' || prevToken==='undefined') && walletAddress!=null) {
+            alert(prevToken);
+           const run = async ()=>{
             try{
                 const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
                 if(response.data.error){
