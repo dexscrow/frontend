@@ -1,13 +1,7 @@
 import { useState,useEffect } from "react";
-<<<<<<< HEAD
-import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
-import {useWalletProvider} from "use-wallet";
-import bsc from "@binance-chain/bsc-use-wallet";
-=======
 import toast, { Toaster } from 'react-hot-toast';
 import axios from "axios";
 import {BrowserRouter as Router,Routes,Route,HashRouter,} from "react-router-dom";
->>>>>>> 3f611177b6fe0201e52cbdf6709e3586e864c3a4
 import AccountContext from "./contexts/account";
 import AuthContext from "./contexts/auth";
 import Landing from "./pages/Landing/landing";
