@@ -80,33 +80,36 @@ export default function Trades(){
     return(
     <>
      <Toaster containerStyle={{ position: 'absolute' }} />
-       <div className="container-fluid body">
-        <div className="row flex-nowrap">
-                <Sidebar account={account}/>
-                 <div className="col py-3 main">
-                  <div className="row p-0">
-                    <Header account={account}/>
-                   </div>
-                   <div className="row mb-30 mt-20">
-                    <div className="col col-6 col-xs-6 col-sm-6">
-                       <h3 className="page-title">Trades</h3>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                        <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                Ad Management
-                                </span>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                                <li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
-                                </ul>
-                    </div>
-                    </div>
-
-
-                   <div className="row">
-                    <div className="col col-12 col-xs-12">
-                    <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
-                         <li >
+	    <Sidebar account={account}/>
+			 <div className="offcanvas-overly"></div>
+			 
+			  <div className="main-content">
+			  
+				<Header account={account}/>
+				 <main style={{width:'100%'}}>
+				 
+				 <section className="sell-nfts-area mb-50 mt-120">
+					<div className="container">
+	                  <div className="row mb-30 mt-20">
+                        <div className="col col-6 col-xs-6 col-sm-6">
+                        <h3 className="page-title">Trades</h3>
+                        </div>
+                        <div className="col col-6 col-xs-6 col-sm-6 text-end">
+                            <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+							  Ad Management
+							</span>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+							<li><Link class="dropdown-item" to="/ad/create">Create Ad</Link></li>
+							<li><Link class="dropdown-item" to="/ad/list">Ad list</Link></li>
+							</ul>
+                        </div>
+                      </div>
+					  
+					  
+					  <div className="row">
+                      <div className="col col-12 col-xs-12">
+                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                         <li>
                              <Link to="/profile" style={{textDecoration:"none"}}>
                              Profile
                              </Link>
@@ -120,11 +123,13 @@ export default function Trades(){
                          <li>
                              <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
                          </li>
-                     </ul>
+                       </ul>
                      </div>
                    </div>
-
-                   <form>
+				   
+				   
+				   
+				  <form>
                    <div className="row mb-20 mt-20">
 
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
@@ -176,12 +181,11 @@ export default function Trades(){
                     </div>
                   </div>
                 </form>
-
-
-                <div className="row">
-                   
-                        {trades.length>0 ? trades.map((trade)=>(
-                            <>
+	 
+	 
+	           <div className="row p-10">
+				    {trades.length>0 ? trades.map((trade)=>(
+                     <>
                      <div className="trade-record-card pt-10 pb-20">
                      <div className="row">
                          
@@ -226,16 +230,17 @@ export default function Trades(){
                      </span>
                      </div>
                     </div>
-                  }
-                
-              </div>
+				   }
+	             
+			    </div>
+			   
+			  </div>
+	 
+	 	     </section>
 
-            </div>
-           </div>
-
-
-        </div>
-       <Nav/>
+		   </main>
+	     <Nav/>
+	    </div>
     </>
     )
 }

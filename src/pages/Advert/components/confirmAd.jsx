@@ -1,11 +1,11 @@
 import React from 'react';
 
-export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset,createBuyAd,createSellAd}) {
+export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,currency,price,factor,priceType,assetPrice,currencyRate,lowerLimit,upperLimit,deadline,totalAsset,createBuyAd,createSellAd}) {
     return (
         <>
-            <div className="modal fade" id="confirmPostModal" tabIndex="-1" aria-labelledby="confirmPostModalLabel" aria-hidden="true">
+        <div className="modal fade" id="confirmPostModal" tabIndex="-1" aria-labelledby="confirmPostModalLabel" aria-hidden="true">
         <div className="modal-dialog">
-          <div className="modal-content" style={{background:"#ccc"}}>
+          <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">Confirm to Post</h5>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -31,13 +31,13 @@ export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lo
                  <span className="label">Pricing Type</span>
                  <h4 className="value">{priceType}</h4>
                 </div>
-                {/* <div className="col col-4 col-xs-4">
-                  <span className="label">Asset</span>
-                  <h4 className="value">100%</h4>
-                </div> */}
+                 <div className="col col-4 col-xs-4">
+                  <span className="label">Estimated Amount</span>
+                  <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(Number(price) * Number(totalAsset)) } {currency.symbol}</h4>
+                </div>
                 <div className="col col-4 col-xs-4">
                     <span className="label">Rate</span>
-                    <h4 className="value">{currencyRate}</h4>
+                    <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(Number(assetPrice) * Number(currencyRate) * Number(factor / 100)) } {currency.symbol}</h4>
                 </div>
               </div>
 
@@ -48,11 +48,11 @@ export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lo
                 </div>
                 <div className="col col-4 col-xs-4">
                   <span className="label">Total Trading Asset</span>
-                  <h4 className="value">{totalAsset} USDT</h4>
+                  <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((totalAsset))} USDT</h4>
                 </div>
                 <div className="col col-4 col-xs-4">
                     <span className="label">Estimated Fee</span>
-                    <h4 className="value">0.21</h4>
+                    <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(Number(price) * Number(totalAsset) * 0.01) } {currency.symbol} </h4>
                 </div>
               </div>
 
@@ -66,17 +66,18 @@ export default function ConfirmAd({type,asset,currency,priceType,currencyRate,lo
               <div className="row form-row mb-20">
                 <div className="col col-4 col-xs-4">
                     <span className="label">Payment Method</span>
-                    <h4 className="value">Bank Deposit</h4>
-                    <h4 className="value">Paypal</h4>
+                    {
+                      type==='buy'? <h4 className="value">{prefferedMethod}</h4>: <h4 className="value">{ selectedMethod.details? selectedMethod.paymentMethod.name: 'N/A' }</h4>
+                    }
                   </div>
                   <div className="col col-8 col-xs-8">
                       <span className="label"> Payment Time Limit</span>
-                      <h4 className="value">15 min</h4>
+                      <h4 className="value">{deadline} min</h4>
                   </div>
               </div>
               <div className="row form-row mb-20">     
                 <div className="col col-xs-12 text-end">
-                <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal">Cancel</button>
+                <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" style={{color:'#fff'}}>Cancel</button> &nbsp;
                 <button className="btn-dex-small btn-dex-default" type='submit' onClick={(e)=>{
                    e.preventDefault();
                    if(type==='buy'){

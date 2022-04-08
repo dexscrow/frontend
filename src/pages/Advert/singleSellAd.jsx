@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
+import socketClient from "socket.io-client";
 import {Link,useNavigate,useParams} from "react-router-dom";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
@@ -10,38 +11,25 @@ import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
 
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
 const SELL_AD_URL= process.env.REACT_APP_SERVER_URL+"/sell/singleadvert";
-const BUY_TRADE_URL = process.env.REACT_APP_SERVER_URL+"buy/trade";
-const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
+const BUY_TRADE_URL = process.env.REACT_APP_SERVER_URL+"/buy/trade";
 
 export default function SingleSellAd(){
   const [account,_]= useContext(AccountContext);
   const [ad,setAd] = useState(null);
   const [tradeWarning,setTradeWarning] = useState('');
-  const [currentAd,setCurrentAd] = useState({});
   const [error,setError] = useState("");
-  const [currency,setCurrency] = useState("");
   const [amount,setAmount]= useState(0);
-  const [asset,setAsset] = useState("");
-  const [methods,setMethods] = useState([]);
-  const [method,setMethod] = useState("");
   const [unit,setUnit] = useState(0);
   const navigate = useNavigate();
   const {id} = useParams();
 
   const initSellTrade = ()=>{
     const run = async ()=>{
-
-      toast.error("You cannot perform trade yet, check back later", {
-        position: 'middle-center',
-      });
-
-      return
-
       try{
         const {data:response} = await axios.post(BUY_TRADE_URL+"/"+id,{
-          unit,
-          price:amount
+          unit
         },{
             headers:{
                 "Authorization":`Bearer ${token}`
@@ -54,10 +42,16 @@ export default function SingleSellAd(){
             setError(response.message)
         }
         console.log(response);
-        navigate("/trade");
+        //subscribe to Initialize trade, waiting for blockchain transaction to process
+        const inittrade = socketClient("http://127.0.0.1:8000/inittrade");
+        inittrade.on('connect', () => {
+          inittrade.emit('joininittrade',response.result._id);
+        });
+      
+        //navigate("/trade/"+response.result._id);
     }catch(err){
         setError(err.message)
-    }
+     }
     }
     run();
   }
@@ -83,84 +77,34 @@ export default function SingleSellAd(){
     }
   })
 
-const fetchMethods = useCallback(async() => {
-  try{
-    const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
-      headers:{
-        "Authorization":`Bearer ${token}`
-      }
-    })
-
-    if(response.error){
-      setError(response.error);
-    }
-
-    if(!response.success){
-      setError(response.message);
-    }
-    setMethods(response.data);
-  }catch(error){
-    setError(error.message)
-  }
-})
-
-  useEffect(()=>{
+ useEffect(()=>{
     fetchAd();
-    fetchMethods();
   },[token])
     return (
         <>
-         <Toaster containerStyle={{ position: 'absolute' }} />
-    <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
-     <div className="modal-dialog modal-sm">
-      <div className="modal-content" style={{background:"#ccc"}}>
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-20">
-            <div className="col col-12 col-xs-12">
-              Once taken offline, the Ad will not be able to take in orders from users.
-            </div>
-          </div>
-
-          <div className="row form-row mb-20">     
-            <div className="col col-xs-12 text-end">
-            <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            <button className="btn-dex-small btn-dex-default">Confirm</button>
-            </div>
-        </div> 
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <div className="container-fluid body">
-      <div className="row flex-nowrap">
-        <Sidebar account={account}/>
-          <div className="col py-3 main">
-                  <div className="row p-0">
-                    <Header account={account}/>
-                    </div>
-
-                    <div className="row mb-30 mt-20">
+    <Toaster containerStyle={{ position: 'absolute' }} />
+    <Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			 <main style={{width:'100%'}}>
+		
+				
+				<section className="sell-nfts-area mb-50 mt-120">
+				  <div className="container">
+				   <div className="row mb-30 mt-20">
                     <div className="col col-6 col-xs-6 col-sm-6">
-                       <h3 className="page-title"> Ad #{id}</h3>
+                       <h3 className="page-title">Ad #{id}</h3>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                    <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                              Ad Management
-                            </button>
-                            <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                              <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                              <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
-                            </ul>
+                    
                     </div>
-                   </div>
-
-                   <div className="row">
+                  </div>
+				  
+				  
+				   <div className="row p-10">
                        {
                           ad!=null?
                          <div className="trade-record-card pt-10 pb-10 mb-10">
@@ -171,26 +115,25 @@ const fetchMethods = useCallback(async() => {
                                 <img src="{Avatar}" style={{width:"30px", height:"30px"}} />
                               </div>
                               <div className="col col-10 col-xs-10 text-start"> 
-                                <div className="row">
-                                    <div className="col col-12 col-xs-12">
-                                        <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                 <div className="row">
+                                        <div className="col col-12 col-xs-12">
+                                            <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
+                                        </div>
+                                        <div className="col col-6 col-xs-6 text-end d-flex">
+                                            <span className="value">{ad.unit["$numberDecimal"]}</span> &nbsp;
+                                            <span className="label">Orders</span>
+                                            &nbsp; &nbsp; 
+                                            <span className="value">Completion</span>&nbsp;
+                                            <span className="label">92%</span>
+                                        </div>
                                     </div>
-                                    <div className="col col-6 col-xs-6 text-end d-flex">
-                                        <span className="value">{ad.unit["$numberDecimal"]}</span>
-                                        <span className="label">Orders</span>
-                                        &nbsp; &nbsp; 
-                                        <span className="value">Completion</span>
-                                        <span className="label">92%</span>
-                                    </div>
-                                </div>
                               </div>
                             
                               <div class="col col-12 col-xs-12 text-start"> 
-                                    <span class="label"> Payment Method</span> <br/><br/>
-                                        { 
-                                          methods.filter(method => method._id === ad.paymentMethod.paymentMethod)
-                                          .map(method =>  <span class="btn-dex-small btn-dex-danger">{method.name}</span>) 
-                                        }
+                                     <span class="label"> Payment Method</span> <br/>
+                                     <span class="btn-dex-small btn-dex-default">
+                                        { ad.paymentMethod.paymentMethod.name }
+                                      </span>
                               </div>
 
                               <div className="col col-12 col-xs-12 col-sm-12 mb-20 pt-20">
@@ -207,7 +150,7 @@ const fetchMethods = useCallback(async() => {
                           <div className="col col-12 col-xs-12 col-sm-4 mb-20 pt-20">
                           <div className="row">
                             <div className="col col-12 col-xs-12 mb-10">
-                                <span className="value number">{ad.amount["$numberDecimal"]} {ad.currency}</span><br/>
+                                <span className="value number">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100)) }  {ad.currency.symbol}</span><br/>
                                 <span className="label">Price</span>
                             </div>
                             <div className="col col-12 col-xs-12 mb-10">
@@ -215,7 +158,7 @@ const fetchMethods = useCallback(async() => {
                                 <span className="label">Amount</span>
                             </div>
                             <div className="col col-12 col-xs-12 mb-10">
-                                <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
+                                <span className="value number">{ad.lowerLimit} - {ad.upperLimit} {ad.currency.symbol}</span><br/>
                                 <span className="label">Limit</span>
                             </div>
                             <div className="col col-12 col-xs-12 mb-10">
@@ -232,10 +175,10 @@ const fetchMethods = useCallback(async() => {
                                 <div class="input-group">
                                     <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>{
                                            setAmount(e.target.value);
-                                           const unit = e.target.value / ad.amount["$numberDecimal"];
+                                           const unit = e.target.value / (ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100))
                                            setUnit(unit)
                                           }} />
-                                    <span class="input-group-text">{ad.currency}</span>
+                                    <span class="input-group-text">{ad.currency.symbol}</span>
                                 </div>
                                 <span class="rate-info float-end">&nbsp; </span>
                             </div>
@@ -247,7 +190,7 @@ const fetchMethods = useCallback(async() => {
                                 <div class="input-group">
                                     <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>{
                                       setUnit(e.target.value);
-                                      const amount = e.target.value * ad.amount["$numberDecimal"];
+                                      const amount = e.target.value *  (ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100));
                                       setAmount(amount);
                                       }}/>
                                     <span class="input-group-text">{ad.asset.symbol}</span>
@@ -268,11 +211,11 @@ const fetchMethods = useCallback(async() => {
                                   if(amount<ad.lowerLimit){
                                     setTradeWarning('Amount lesser than lower limit');
                                   }
-                                  else if(amount>ad.lowerLimit){
+                                  else if(amount>ad.upperLimit){
                                     setTradeWarning('Amount greater than upper limit');
                                   }
                                   else{
-                                  initSellTrade()
+                                  initSellTrade();
                                   }
                                 }}
                               >Buy {ad.asset.symbol}</button>
@@ -292,12 +235,13 @@ const fetchMethods = useCallback(async() => {
                           </div>
                         </div>
                      }
+                    </div>
                   </div>
-                  <NavSocial/>
-              </div>
-            </div>
-          </div>
-        <Nav/>
-        </>
+				</section>
+		     </main>
+	       <Nav/>
+	     </div>
+			  
+        </>	  
     )
 }

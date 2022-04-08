@@ -1,17 +1,20 @@
 import { useState,useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import axios from "axios";
-import {BrowserRouter as Router,Routes,Route,HashRouter,} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,HashRouter} from "react-router-dom";
 import AccountContext from "./contexts/account";
 import AuthContext from "./contexts/auth";
 import Landing from "./pages/Landing/landing";
 import Home from "./pages/Home/home";
 import CreateAd from "./pages/Advert/createAd";
+import EditBuyAd from "./pages/Advert/editBuyAd";
+import EditSellAd from "./pages/Advert/editSellAd";
 import Wallet from "./pages/wallets/wallet";
 import Adlist from "./pages/AdvertList/adlist";
 import Trades from "./pages/Trades/trades";
 import Profile from "./pages/profile/profile";
 import SellAd from "./pages/Advert/sellAd";
+import FundAd from "./pages/Advert/fundAd";
 import BuyAd from "./pages/Advert/buyAd";
 import SingleBuyAd from "./pages/Advert/singleBuyAd";
 import SingleSellAd from "./pages/Advert/singleSellAd";
@@ -19,6 +22,9 @@ import Trade from "./pages/Trade/trade";
 import Staking from "./pages/Staking/staking";
 import AddPaymentMethod from "./pages/paymentMethod/addPaymentMethod";
 import "./styles.css";
+import "./responsive.css";
+import "./default.css";
+import "./ui-icons.css";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUser,faFile, faEnvelope} from '@fortawesome/free-solid-svg-icons';
 import {fab} from '@fortawesome/free-brands-svg-icons';
@@ -52,7 +58,6 @@ library.add(fab,faUser,faEnvelope, faFile);
             window.location.reload();
         }
         //setError(null)
-        
     }catch(error){
         setAuthToken(null);
         // setError(error.message);
@@ -65,28 +70,32 @@ library.add(fab,faUser,faEnvelope, faFile);
     walletAddress && setAccount(walletAddress);
     jwtToken && setAuthToken(jwtToken);
    }, []);
+   
   return (
-    <AuthContext.Provider value={[token,setAuthToken]}>
+     <AuthContext.Provider value={[token,setAuthToken]}>
       <AccountContext.Provider value={[account,setAccount]}>
         <HashRouter>
           <Routes>
-          <Route path="/" element={<Landing/>}/>
-          <Route path="/ad/create" element={<CreateAd/>}/>
-          <Route path="/method/payment" element={<Wallet/>}/>
-          <Route path="/ad/list" element={<Adlist/>}/>
-          <Route path="/trades" element={<Trades/>}/>
-          <Route path="/ad/sell" element={<SellAd/>}/>
-          <Route path="/ad/buy" element={<BuyAd/>}/>
-          <Route path="/ad/buyad/:id" element={<SingleBuyAd/>}/>
-          <Route path="/ad/sellad/:id" element={<SingleSellAd/>}/>
-          <Route path="/trade" element={<Trade/>}/>
-          <Route path="/profile" element={<Profile/>}/>
-          <Route path="/staking" element={<Staking/>}/>
-          <Route path = "/methods/payment/new" element={<AddPaymentMethod />}/>
+          <Route path="/" element={<Landing/>} />
+          <Route path="/ad/create" element={<CreateAd/>} />
+          <Route path="/ad/editbuyad/:id" element={<EditBuyAd/>} />
+          <Route path="/ad/editsellad/:id" element={<EditSellAd/>} />
+          <Route path="/method/payment" element={<Wallet/>} />
+          <Route path="/ad/list" element={<Adlist/>} />
+          <Route path="/trades" element={<Trades/>} />
+          <Route path="/ad/sell" element={<SellAd/>} />
+          <Route path="/ad/fundad/:id" element={<FundAd/>} />
+          <Route path="/ad/buy" element={<BuyAd/>} />
+          <Route path="/ad/buyad/:id" element={<SingleBuyAd/>} />
+          <Route path="/ad/sellad/:id" element={<SingleSellAd/>} />
+          <Route path="/trade/:id" element={<Trade/>} />
+          <Route path="/profile" element={<Profile/>} />
+          <Route path="/staking" element={<Staking/>} />
+          <Route path = "/methods/payment/new" element={<AddPaymentMethod />} />
           </Routes>
       </HashRouter>
       </AccountContext.Provider>
-    </AuthContext.Provider>
+     </AuthContext.Provider>
   )
 }
 

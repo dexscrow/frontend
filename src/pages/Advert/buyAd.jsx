@@ -23,6 +23,7 @@ export default function BuyAd(){
     const [error,setError] = useState("");
     const [currency,setCurrency] = useState("");
     const [asset,setAsset] = useState("");
+    const [cryptoAsset,setCryptoAsset] = useState({});
     const [currencies,setCurrencies] = useState([]);
     const [assets,setAssets] = useState([]);
     const [methods,setMethods] = useState([]);
@@ -56,7 +57,6 @@ export default function BuyAd(){
         }catch(error){
           setError(error.message)
         }
-      
     });
 
     const fetchAds = useCallback(async() => {
@@ -95,6 +95,7 @@ export default function BuyAd(){
         }
         setAssets(response.data);
         setAsset(response.data[0]._id);
+        setCryptoAsset(response.data[0]);
     }catch(err){
         setError(err.message)
     }
@@ -120,7 +121,6 @@ export default function BuyAd(){
     }
   });
 
-  
   const fetchMethods = useCallback(async() => {
     try{
       const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
@@ -200,102 +200,111 @@ export default function BuyAd(){
           </div>
         </div>
 
-       <div className="container-fluid body">
-        <div className="row flex-nowrap">
-          <Sidebar account={account}/>
-           <div className="col py-3 main">
-                  <div className="row p-0">
-                    <Header account={account}/>
-                   </div>
-                   <div className="row mb-30 mt-20">
-                    <div className="col col-6 col-xs-6 col-sm-6">
-                       <h3 className="page-title">Sell Ads</h3>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                    <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                              Ad Management
-                            </button>
-                            <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                              <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                              <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
-                            </ul>
-                    </div>
-                   </div>
 
 
-                   <form>
-                   <div className="row">
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                       <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10 pl-30">Buy</Link>
-                       &nbsp;&nbsp;
-                       <Link to="/ad/buy" className="btn-dex btn-dex-default p-10 pr-30">Sell</Link> 
-                    </div>
+       <Sidebar account={account}/>
+			 <div className="offcanvas-overly"></div>
+			 
+			  <div className="main-content">
+			  
+				<Header account={account}/>
+				 <main style={{width:'100%'}}>
+			
+					
+					<section className="sell-nfts-area mb-50 mt-120">
+					  <div className="container">
+					   <div className="row">
+						 <div className="row">
+                           <div className="col col-6 col-xs-6 col-sm-6">
+							   <h3 className="page-title">Sell Ads</h3>
+							</div>
+							<div className="col col-6 col-xs-6 col-sm-6 text-end">
+								   <button className="btn-dex btn-dex-default dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+									  Ad Management
+									</button>
+									<ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+									  <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+									  <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
+									</ul>
+							</div>
+                        </div>   
+					</div>
+					
+					
+          <form>
+					   <div className="row mt-30 mb-20">
+						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
+						   <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10">Buy</Link>
+						   &nbsp;&nbsp;
+						   <Link to="/ad/buy" className="btn-dex btn-dex-default p-10">Sell</Link> 
+						</div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                           
-                    </div>
+						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
+							   
+						</div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
-                        <option value="">All Assets</option>
-                           {
-                              assets && assets.map((asset)=>(
-                                <>
-                                  <option value={asset._id}>{asset.symbol}</option>
-                                </>
-                              ))
-                            }
-                        </select>
-                    </div>
+						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
+							<select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
+							<option value="">All Assets</option>
+							   {
+								  assets && assets.map((asset)=>(
+									<>
+									  <option value={asset._id}>{asset.symbol}</option>
+									</>
+								  ))
+								}
+							</select>
+						</div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2">
-                        <select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
-                          <option value="">All Currencies</option>
-                           {
-                              currencies && currencies.map((currency)=>(
-                                <>
-                                  <option value={currency.symbol}>{currency.symbol}</option>
-                                </>
-                              ))
-                            }
-                        </select>
-                    </div>
+						<div className="col col-6 col-xs-6 col-sm-2">
+							<select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
+							  <option value="">All Currencies</option>
+							   {
+								  currencies && currencies.map((currency)=>(
+									<>
+									  <option value={currency.symbol}>{currency.symbol}</option>
+									</>
+								  ))
+								}
+							</select>
+						</div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                        <select className="form-control no-radius" value={method} onChange={(e)=>setMethod(e.target.value)}>
-                            <option value="">All Payment Methods</option>
-                            {
-                              methods && methods.map((method)=>(
-                                <>
-                                <option value={method._id}>{(method.name).toString()}</option>
-                                </>
-                              ))
-                            }
-                        </select>
-                    </div>
+						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
+							<select className="form-control no-radius" value={method} onChange={(e)=>setMethod(e.target.value)}>
+								<option value="">All Payment Methods</option>
+								{
+								  methods && methods.map((method)=>(
+									<>
+									<option value={method._id}>{(method.name).toString()}</option>
+									</>
+								  ))
+								}
+							</select>
+						</div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      <span  onClick={(e)=>{
-                        e.preventDefault();
-                        runQuery();
-                      }} >Filter</span>
-                       &nbsp;&nbsp;
-                      <span onClick={(e)=>{
-                        setAsset("");
-                        setCurrency("");
-                        setMethod("");
-                      }} >Reset</span>
-                    </div>
+						<div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
+						  <span  onClick={(e)=>{
+							e.preventDefault();
+							runQuery();
+						  }} >Filter</span>
+						   &nbsp;&nbsp;
+						  <span onClick={(e)=>{
+							setAsset("");
+							setCurrency("");
+							setMethod("");
+						  }} >Reset</span>
+						</div>
 
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      
-                    </div>
-                  </div>
-                </form>
-
-                  <div className="row">
+						<div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
+						  
+						</div>
+					  </div>
+					</form>
+					
+				  
+				   <div className="row p-20">
                        {
-                         ads.length>0 ? ads.map((ad)=>{
+                         ads ? ads.map((ad)=>{
                           return (
                            <>
                             <div className="trade-record-card pt-10 pb-10 mb-10" key="{ad._id}">
@@ -307,15 +316,17 @@ export default function BuyAd(){
                                   </div>
                                   <div className="col col-10 col-xs-10 text-start"> 
                                     <div className="row">
-                                        <div className="col col-12 col-xs-12">
-                                            <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                        <div className="col col-12 col-xs-12 p-10">
+                                            <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
                                         </div>
-                                        <div className="col col-6 col-xs-6 text-end d-flex p-0">
+                                        <div className="col col-12 col-xs-12 p-10 d-flex mb-0 pb-0">
+                                            <span className="label">Orders</span>  &nbsp;
                                             <span className="value">{ad.unit["$numberDecimal"]}</span>
-                                            <span className="label">Orders</span>
-                                            &nbsp; &nbsp; 
-                                            <span className="value">Completion</span>
-                                            <span className="label">92%</span>
+                                        </div>
+
+                                        <div className="col col-12 col-xs-12 p-10 d-flex mt-0 pt-0">
+                                           <span className="label">Completion</span>&nbsp;
+                                            <span className="value">92%</span>
                                         </div>
                                     </div>
                                  </div>
@@ -326,7 +337,7 @@ export default function BuyAd(){
                             <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                               <div className="row">
                                 <div className="col col-6 col-xs-6">
-                                    <span className="value number p-0">{ad.amount["$numberDecimal"]} {ad.currency}</span><br/>
+                                    <span className="value number p-0">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100)) }  {ad.currency.symbol}</span><br/>
                                     <span className="label p-0">Price</span>
                                 </div>
 
@@ -338,7 +349,7 @@ export default function BuyAd(){
                             </div>
 
                             <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                              <span className="value number p-0">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
+                              <span className="value number p-0">{new Intl.NumberFormat('en-US', {style: 'decimal'}).format(ad.lowerLimit)} - {new Intl.NumberFormat('en-US', {style: 'decimal'}).format(ad.upperLimit)} {ad.currency.symbol}</span><br/>
                               <span className="label p-0">Limit</span>
                             </div>
 
@@ -366,12 +377,16 @@ export default function BuyAd(){
                         </div>
                        </div>
                      }
-              </div>
-             <NavSocial/>
-            </div>
-          </div>
-         </div>
-         <Nav/>
+                  </div>
+				
+				
+				</div>
+			 </section>
+		   	
+		   </main>
+	      <Nav/>
+	     </div>
+		
         </>
     )
 }

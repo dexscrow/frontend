@@ -1,0 +1,695 @@
+import React ,{useContext,useState,memo,useEffect} from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import Sidebar from '../Landing/components/sidebar'
+import {Link,Navigate,useNavigate,useParams} from "react-router-dom";
+import { calculateFactor, calculatePrice } from '../../helpers/utils';
+import Header from '../Landing/components/header'
+import Nav from "../Landing/components/nav"
+import AccountContext from '../../contexts/account'
+import PaymentModal from './components/paymentModal'
+import Progressbar from './components/progressbar'
+import Misc from './components/misc'
+import ConfirmAd from './components/confirmAd'
+import axios from 'axios'
+
+const COUNTRIES_URL=process.env.REACT_APP_SERVER_URL+"/countries";
+const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
+const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
+const PAYMENT_ALL_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
+const CREATE_SELL_AD_URL = process.env.REACT_APP_SERVER_URL+"/sell/advert";
+
+const SELL_AD_URL= process.env.REACT_APP_SERVER_URL+"/sell/singleadvert";
+
+const EditBuyAd = () => {
+    const [account,_] = useContext(AccountContext);
+    const [type,setType] = useState("sell");
+    const [ad,setAd] = useState({currency:'',asset:{symbol:''}});
+    const [step,setStep] = useState(1);
+    const [registerChecked,setRegisterChecked] = useState(true);
+    const [priceType,setPriceType] = useState("floating");
+    const [factor,setFactor] = useState(100);
+    const [assets,setAssets] = useState([]);
+    const [asset,setAsset] = useState("usdt");
+    const [currency,setCurrency] = useState({name:"nigeria",currency:"naira",symbol:"NGN",rateToDollar:{$numberDecimal:412.2765},shortCode:"ngn"});
+    const [currencyRate,setCurrencyRate] = useState(1);
+    const [assetPrice,setAssetPrice] = useState(1);
+    const [price,setPrice] = useState(0);
+    const [currencies,setCurrencies] = useState([]);
+    const [upperLimit, setUpperLimit] = useState(0);
+    const [lowerLimit,setLowerLimit] = useState(0);
+    const [totalAsset,setTotalAsset] = useState(0);
+    const [online,setOnline] = useState('now');
+    const [autoreply,setAutoReply] = useState('');
+    const [error,setError] = useState("");
+    const authToken = localStorage.getItem("authToken");
+    const [paymentMethods,setPaymentMethods] = useState([]);
+    const [methods,setMethods] = useState([]);
+    const [prefferedMethod,setPrefferedMethod] = useState("");
+    const [selectedMethod,setSelectedMethod] = useState("");
+    const [deadline,setDeadline] = useState(0);
+    const [notes,setNotes] = useState("");
+    const [registered,setRegistered] = useState("");
+    const {id} = useParams();
+
+    const navigate = useNavigate();
+
+    const createSellAd = ()=>{
+        const run = async ()=>{
+            try{
+                if(authToken==='null' || authToken===null || authToken==='undefined'){
+                    toast.error("Please connect wallet first", {
+                        position: 'middle-center',
+                    });
+                    return
+                }
+
+                const {data:response} = await axios.post(CREATE_SELL_AD_URL+"/"+id,{
+                    asset:(assets.find((a)=>a.symbol == asset))._id,
+                    paymentMethod:selectedMethod._id,
+                    currency:currency.symbol,
+                    currencyRate,
+                    factor,
+                    priceType,
+                    lowerLimit,
+                    upperLimit,
+                    deadline,
+                    balance:price,
+                    unit:totalAsset,
+                    amount:price,
+                    status: "active",
+                    notes,
+                    autoreply,
+                    conditions:{
+                        registerChecked,
+                        registered,
+                        baseOwnershipAmount:0,
+                        status:online
+                    }
+                },{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
+                }
+                if(!response.success){
+                    setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
+                   }
+              else{
+                    toast.success("Ad has been edited successfully", {
+                        position: 'middle-center',
+                    });
+                   navigate("ad/fundad/"+id);
+                   window.location.reload(); 
+                }
+            }catch(error){
+                setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
+            }
+        };
+        run();
+    }
+
+    const confirmDetails = {type,asset,currency,priceType,currencyRate,lowerLimit,upperLimit,totalAsset,createSellAd}
+    
+    useEffect(()=>{
+
+        const fetchAd = async() => {
+            try{
+              const {data:response} = await axios.get(SELL_AD_URL+"/"+id,{
+                headers:{
+                  "Authorization":`Bearer ${authToken}`
+                }
+              })
+        
+              if(response.error){
+                setError(response.error);
+              }
+          
+              if(!response.success){
+                setError(response.message);
+              }
+
+              setAd(response.data);
+              setPrice(Number(response.data.currencyRate["$numberDecimal"] * response.data.asset.rateToDollar["$numberDecimal"] * (response.data.factor["$numberDecimal"]/100)).toFixed(2));
+              setAsset(response.data.asset.symbol);
+              setAssetPrice(response.data.asset.rateToDollar["$numberDecimal"] * response.data.factor["$numberDecimal"]);
+              setCurrencyRate(response.data.currencyRate["$numberDecimal"]);
+              setTotalAsset(response.data.unit["$numberDecimal"]);
+              setLowerLimit(response.data.lowerLimit);
+              setUpperLimit(response.data.upperLimit);
+              setDeadline(response.data.deadline);
+              setSelectedMethod(response.data.paymentMethod);
+              setNotes(response.data.notes);
+              setFactor(Number(response.data.factor["$numberDecimal"]).toFixed(2));
+              setAutoReply(response.data.autoreply);
+              setRegistered(response.data.conditions.registered);
+              setOnline(response.data.conditions.status);
+
+            }catch(error){
+              setError(error.message)
+            }
+        }
+
+        const fetchCountries = async ()=>{
+            try{
+                const {data:response} = await axios.get(COUNTRIES_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error);
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
+                }
+                if(!response.success){
+                    setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
+                }
+                setCurrencies(response.data);
+                response.data.filter(currency => currency.symbol == ad.currency)
+                .map(currency => { 
+                  setCurrency(currency);
+                })
+
+            }catch(error){
+                setError(error.message);
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
+            }
+        }
+        const fetchAssets = async ()=>{
+            try{
+              
+                const {data:response} = await axios.get(ASSETS_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
+                }
+                if(!response.success){
+                    setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
+                }
+                setAssets(response.data);                
+            }catch(error){
+                setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
+            }
+        }
+        const fetchPaymentMethods= async ()=>{
+            try{
+                if(authToken==='null' || authToken===null || authToken==='undefined'){
+                    return
+                }
+                const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
+                }
+                if(!response.success){
+                    setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
+                }
+                setPaymentMethods(response.data);
+            }catch(error){
+                setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
+            }
+        }
+
+        const fetchMethods= async ()=>{
+            try{
+                const {data:response} = await axios.get(PAYMENT_ALL_METHOD_URL,{
+                    headers:{
+                        "Authorization":`Bearer ${authToken}`
+                    }
+                });
+                if(response.error){
+                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                    });
+                  
+                }
+                if(!response.success){
+                    setError(response.message);
+                    toast.error(response.message, {
+                        position: 'middle-center',
+                    });
+                }
+                setMethods(response.data);
+            }catch(error){
+                setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                });
+            }
+        }
+        fetchAd();
+        fetchAssets();
+        fetchCountries();
+        fetchPaymentMethods();
+        fetchMethods();
+        
+    },[authToken]);
+    
+    return (
+        <>
+        <PaymentModal />
+        <Toaster containerStyle={{ position: 'absolute' }} />
+        <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
+        <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title" id="exampleModalLabel">Select Payment Method</h5>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <div className="row">
+                            <div className="col col-12 col-xs-12 text-end">
+                                <Link to="/methods/payment/new" className="btn-dex btn-dex-default p-10">+ Add New</Link>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="card payment-method-card">
+                                {
+                                    paymentMethods && paymentMethods.map((method)=>{
+
+                                        let det = JSON.parse(method.details);
+                                       return (<>
+                                        <div className="row">
+                                    <div className="col col-6 col-xs-6 text-start">
+                                        <button className="btn-dex-small btn-dex-primary" onClick={(e)=>{setSelectedMethod(method)
+                                        }} type="button"> {method.paymentMethod?.name}</button>
+                                    </div>
+                                    <div className="col col-6 col-xs-6 text-end">
+                                        X
+                                    </div>
+                                </div>
+                                {
+                                    
+                                    Object.entries(det).map(([name,index])=>(
+                                        <>
+                                             <div className="row" key={index}>
+                                    <div className="col col-6 col-xs-6 label dim text-end">
+                                        <b>{name} </b> :
+                                    </div>
+                                    <div className="col col-6 col-xs-6 value">
+                                       <b> {det[name]}</b>
+                                    </div>
+                                </div>
+                                        </>
+                                    ))
+                                }
+                                        </>)
+                                    })
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div className="modal fade" id="epaymentMethodModal" tabIndex="-1" aria-labelledby="epaymentMethodModalLabel" aria-hidden="true">
+		<div className="modal-dialog">
+		  <div className="modal-content">
+			<div className="modal-header">
+			  <h5 className="modal-title" id="exampleModalLabel">Select Payment Method</h5>
+			  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div className="modal-body">
+			  <div className="row">
+				<div className="col-xs-12 col-sm-12">
+				  <div className="col-xs-12 payment-method">
+					  <select className="form-control" value={prefferedMethod} onChange={(e)=>{
+						  console.log(e.target.value)
+						  setPrefferedMethod(e.target.value)}}>
+						<option value="">--Select an Option--</option>
+						{
+							methods && methods.map((m)=>(
+								<option value={m.name} key={m._id}>{m.name}</option>
+							))
+						}
+					  </select>
+				  </div>
+				</div>
+			   </div>
+			 </div>
+			</div>
+		  </div>
+		</div>
+        <ConfirmAd {...confirmDetails}/>
+		
+		<Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			 <main style={{width:'100%'}}>
+			 
+			   <section className="sell-nfts-area mb-50 mt-120">
+				<div className="container">
+				
+				   <div className="row mb-30 mt-20">
+                            <div className="col col-6 col-xs-6 col-sm-6">
+                                <h3 className="page-title">Create Ad</h3>
+                            </div>
+                            <div className="col col-6 col-xs-6 col-sm-6 text-end">
+                                <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Ad Management
+                                        </span>
+                                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+                                        <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
+                                        </ul>
+                            </div>
+                            </div>
+
+                            <Progressbar step={step} />
+                            <div className="col col-12">
+                                <ul className="nav nav-tabs" id="myTab" role="tablist">
+                                   
+                                    <li className="nav-item" role="presentation" style={{ width: "100%" }}>
+                                        <button className="nav-link" id="sell-tab" data-bs-toggle="tab" data-bs-target="#sell" type="button" role="tab" aria-controls="sell" aria-selected="false" onClick={()=>setType("sell")}>I WANT TO SELL</button>
+                                    </li>
+                                </ul>
+                                <div className="tab-content" id="myTabContent">
+                                <div className="tab-pane fade show active" id="sell" role="tabpanel" aria-labelledby="sell-tab">
+                                <form action="" method="">
+                                 <div className={`row form-row sell-step-1 ${step !== 1 ? "d-none":""}`}>     
+                                    <div className="col col-12 col-xs-12 col-sm-12">
+                                    <div className="label"><b>Assets</b></div>
+                                </div>
+                                <div className="col col-12 col-xs-12 col-sm-12">
+                                   {
+                                      assets && assets.map((a)=>(
+                                           <>
+                                           <input type="radio" name="asset" value={a.symbol} key={a._id} checked={a.symbol === ad.asset.symbol} onChange={(e)=>{
+                                               setAsset(e.target.value);
+                                               setAssetPrice(a.rateToDollar["$numberDecimal"]);
+                                               setPrice(Number(a.rateToDollar["$numberDecimal"] * currencyRate).toFixed(2))
+                                            }}
+                                            />
+                                           {a.symbol.toUpperCase()} &nbsp;
+                                           </>
+                                       ))
+                                   }
+                                </div>
+                                </div>  
+    
+                                <div className={`row form-row sell-step-1 ${step !== 1 ? "d-none":""}`}>     
+                                    <div className="col col-12 col-xs-12 col-sm-12">
+                                        <div className="label"><b>With Cash</b></div>
+                                    </div>
+                                    <div className="col col-12 col-xs-12 col-sm-12">
+                                    {
+                                     currencies &&  currencies.map((c)=>(
+                                           <>
+                                           <input type="radio" name="currency" value={c} key={c._id} onChange={(e)=>{
+                                               setCurrency(c);
+                                                setPrice((c.rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
+                                                setCurrencyRate(c.rateToDollar["$numberDecimal"]);
+                                            }}
+                                            checked={c.symbol==ad.currency}
+                                            />
+                                           {c.symbol} &nbsp;
+                                           </>
+                                       ))
+                                   }
+                                 </div>
+                                </div>  
+    
+    
+                                <div className={`row form-row sell-step-1 ${step !== 1 ? "d-none":""}`}>     
+                                <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
+                                  <div className="label"><b>Your Price</b></div>
+                                  <div className="d-flex"><h5 className="currency">{currency.symbol}</h5>&nbsp;<h5>{price}</h5></div>
+                                </div>
+                                
+                                <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster d-none mb-20">
+                                    <div className="label"><b>Highest Order Price</b></div>
+                                    <div className="d-flex"><h4 className="currency">{currency.symbol}</h4>&nbsp;<h4>411.34</h4></div>
+                                </div>
+    
+                                 {
+                                   /*
+                                    <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
+                                        <div className="label"><b>Price Type</b></div>
+                                        <div>
+                                        <input type="radio" name="priceType" onChange={()=>{
+                                            setFactor(100);
+                                            setPriceType("fixed");
+                                        }
+                                        } checked={priceType === "fixed"}/>Fixed &nbsp;
+                                         <input type="radio" name="priceType" onChange={()=>{
+                                             setFactor(0);
+                                             setPriceType("floating")
+                                         }} checked={priceType === "floating"} />Floating &nbsp;
+                                    </div>
+                                    </div>
+                                   */
+                                 }
+    
+                                    <div className={`col col-xs-12 col-sm-12 col-md-6 form-cluster mb-20`}>
+                                  
+                                  <div className={`${priceType === "fixed" ? "d-none":""}`}>
+                                      <div className="label"><b>Set Price Factor</b></div>
+                                  <div>
+                                    <div className="value-button" id="decrease" value="Decrease Value"
+                                     onClick={(e)=>{
+                                        let newfactor = Number(factor) - 0.01; 
+                                        setFactor(Number(newfactor).toFixed(2));
+                                        let factorPrice = calculatePrice(currencyRate,newfactor);
+                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
+                                      }}
+                                    >-</div>
+                                    <input type="number" id="number" placeholder="100" value={factor} onChange={(e)=>{
+                                        setFactor(Number(e.target.value));
+                                        let factorPrice = calculatePrice(currencyRate,e.target.value);
+                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
+                                    }}/>
+                                    <div className="value-button" id="increase" value="Increase Value"
+                                    onClick={(e)=>{
+                                        let newfactor = Number(factor) + 0.01; 
+                                        setFactor(Number(newfactor).toFixed(2));
+                                        let factorPrice = calculatePrice(currencyRate,newfactor);
+                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
+                                       
+                                      }}
+                                      >+</div>
+
+                                    <div className="pricing-formula"> <span>Pricing Formula</span> &nbsp;  {price} * {factor}% = <b> {currency.symbol} {price} </b> </div>
+                                  </div>
+    
+                                  <div className={`${priceType === "floating" ? "d-none":""}`}>
+                                  <div className="label"><b>Set Fixed Price</b></div>
+                                  <div className={`value-button`} id="decrease"value="Decrease Value"
+                                   onClick={(e)=>{
+                                    price = Number(price) - 1;
+                                    setCurrencyRate(price);
+                                    setFactor(calculateFactor(price,currency.rateToDollar["$numberDecimal"]));
+                                    setPrice(price.toFixed(2));
+                                  }}
+                                  >-</div>
+                                    <input type="number" id="number" onChange={(e)=>{
+                                        setCurrencyRate(e.target.value);
+                                        setFactor(calculateFactor(e.target.value,currency.rateToDollar["$numberDecimal"]));
+                                        
+                                    }} />
+                                    <div className="value-button" id="increase"value="Increase Value"
+                                    onClick={(e)=>{
+                                        price = Number(price) + 1;
+                                        setCurrencyRate(price);
+                                        setFactor(calculateFactor(price,currency.rateToDollar["$numberDecimal"]));
+                                        setPrice(price.toFixed(2));
+                                    }}
+                                    >+</div>
+                                  </div>
+                                </div>
+                                  </div>  
+                                    </div>
+    
+                                  <div className={`row buy-step-2 ${step !== 2 ? "d-none":""} `}>     
+                                <div className="col col-12 col-xs-12 col-sm-6">
+                                    <div className="row form-row"> 
+                                        <div className="col col-12 col-xs-12 col-sm-8">
+                                            <label>Total Amount</label>
+                                            <div className="input-group mb-3">
+                                                <input type="text" className="form-control" aria-label="" 
+                                                name="totalAsset" value={totalAsset} required onChange={(e)=>{
+                                                    setTotalAsset(e.target.value);
+                                                    setPrice(Number((e.target.value * assetPrice) * currencyRate))
+                                                }}/>
+                                                <span className="input-group-text"> <b>{(asset).toUpperCase()}</b></span>
+                                            </div>
+                                            <span className="rate-info float-end"> = {price} {currency.symbol}</span>
+                                        </div>
+
+                                     </div>
+    
+                                         <div className="row form-row"> 
+    
+                                            <div className="col col-xs-5 col-sm-5 mt-10">
+                                                <label>Order Limit</label>
+                                                <div className="input-group mb-3">
+                                                <input type="text" className="form-control" aria-label="" value={lowerLimit} onChange={(e)=>setLowerLimit(e.target.value)}/>
+                                                <span className="input-group-text">{currency.symbol}</span>
+                                            </div>
+                                            <span className="rate-info p-0"> Min limit must not be 0 {currency.symbol}</span>
+                                        </div>
+    
+                                            <div className="col col-xs-2 col-sm-2 mt-10 text-center">
+                                                <br/><br/>
+                                                ~
+                                            </div>
+    
+                                            <div className="col col-xs-5 col-sm-5 mt-10">
+                                            <label>&nbsp;</label>
+                                            <div className="input-group mb-3">
+                                                <input type="text" className="form-control" aria-label="Amount (to the nearest dollar)" value={upperLimit} onChange={(e)=>setUpperLimit(e.target.value)}/>
+                                                <span className="input-group-text">{currency.symbol}</span>
+                                            </div>
+                                            <span className="rate-info p-0"> Max limit must be greater than {lowerLimit} {currency.symbol}</span>
+                                        </div>
+                                     </div>
+               
+                                         <div className="row form-row">                          
+                                            <div className="col col-12 col-xs-12 col-sm-8 mt-20">
+                                                <label>Payment Time Limit</label>
+                                                <select className="form-control" value={deadline} onChange={(e)=>{
+                                                    setDeadline(Number(e.target.value));
+                                                }} selectedValue={deadline}>
+                                                    <option value="15">15 Min</option>
+                                                    <option value="30">30 Min</option>
+                                                    <option value="45">45 Min</option>
+                                                    <option value="60">60 Min</option>
+                                                </select>
+                                            </div>
+                                        </div>
+    
+                                        <div className="row form-row"> 
+                                            <div className="col col-xs-12 col-sm-8">
+                                                {/* <span className="dim">Estimated Fee:</span> {Number(totalAsset) * 0.001} {asset} */}
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    <div className="col col-12 col-xs-12 col-sm-6">
+                                        <div className="col col-xs-12 col-sm-12">
+                                            <div className="label"><b>Payment Method</b></div>
+                                        </div>
+                                        <div className="col col-6 col-xs-6">
+                                           <small> Select a payment method </small> 
+                                        </div>
+                                        <div className="col col-6 col-xs-6">
+                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#addedPaymentMethodModal" type="button">+ ADD</button>
+                                        </div>
+
+                                    {
+                                        selectedMethod.details && 
+                                        (()=>{
+                                            let det = JSON.parse(selectedMethod.details);
+                                            return (
+                                                <>
+                                                <div className="col col-xs-12 col-sm-12 p-20">
+                                                    <div className="card payment-method-card">
+                                                                    <div className="row">
+                                                    <div className="col col-6 col-xs-6 text-start">
+                                                        <span className="btn-dex-small btn-dex-primary">{selectedMethod.paymentMethod.name}</span>
+                                                    </div>
+                                                    <div className="col col-6 col-xs-6 text-end"
+                                                    onClick={(e)=>setSelectedMethod({})}>
+                                                        X
+                                                    </div>
+                                                    </div>
+                                                    {
+                                                        Object.entries(det).map(([key,index])=>(
+                                                            <div className="row" key={index}>
+                                                    <div className="col col-6 col-xs-6 label dim text-end">
+                                                        {key} :
+                                                    </div>
+                                                    <div className="col col-6 col-xs-6 value">
+                                                        {det[key]}
+                                                    </div>
+                                                    </div>
+                                                        ))
+                                                    }
+                                                    
+                                                    </div>
+                                                </div>
+                                                    </>
+                                                )
+                                            })()
+                                           }
+                                        
+                                        </div>
+                                        </div>  
+                                        <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} registerChecked={registerChecked} setRegisterChecked={setRegisterChecked} asset={asset} online={online} setOnline={setOnline} autoreply={autoreply} setAutoReply={setAutoReply} />
+                                        <div className="row form-row">     
+                                            <div className="col col-xs-12 text-end">
+                                            <button className="btn-dex btn-dex-primary buy-step1-next" onClick={(e)=>{
+                                                e.preventDefault();
+                                                step === 1 ? setStep(1) : setStep(step-1)
+                                                }}>Prev</button>
+                                            <button className={`btn-dex ${step === 3 ? "d-none" : ""} btn-dex-default buy-step1-next`} onClick={(e)=>{
+                                                e.preventDefault();
+                                            step ===3 ? setStep(3) : setStep(step+1)}
+                                            }>Next</button>
+                                            <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>{
+                                            e.preventDefault();
+                                            }}>Submit</button>
+                                        </div>
+                                        </div> 
+                                    </form>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+				
+				 </section>
+
+		   </main>
+	      <Nav/>
+	     </div>
+	   </>		
+				
+    )
+}
+
+export default EditBuyAd;

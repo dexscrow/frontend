@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
+import socketIOClient from "socket.io-client";
 import {Link,useNavigate,useParams} from "react-router-dom";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
@@ -10,8 +11,9 @@ import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
 
+const SOCKET_ENDPOINT = process.env.SOCKET_ENDPOINT;
 const BUY_AD_URL = process.env.REACT_APP_SERVER_URL+"/buy/singleadvert";
-const SELL_TRADE_URL = process.env.REACT_APP_SERVER_URL+"sell/trade";
+const SELL_TRADE_URL = process.env.REACT_APP_SERVER_URL+"/sell/trade";
 const MY_PAYMENT_METHODS_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
 
 export default function SingleBuyAd(){
@@ -28,19 +30,12 @@ export default function SingleBuyAd(){
     const {id} = useParams();
 
     const initSellTrade = ()=>{
+
       const run = async ()=>{
-
-        toast.error("You cannot perform trade yet, check back later", {
-          position: 'middle-center',
-        });
-
-        return
-
         try{
           const {data:response} = await axios.post(SELL_TRADE_URL+"/"+id,{
             unit,
-            paymentMethod:selectedMethod,
-            price:amount
+            paymentMethod:selectedMethod
           },{
               headers:{
                   "Authorization":`Bearer ${token}`
@@ -53,7 +48,14 @@ export default function SingleBuyAd(){
               setError(response.message)
           }
           console.log(response);
-          navigate("/trade");
+          
+          //subscribe to Initialize trade, waiting for blockchain transaction to process
+          const initTrade = socketIOClient(SOCKET_ENDPOINT+"/initTrade");
+          initTrade.on("connect", function(){
+            initTrade.emit('joinInitTrade',response.result._id);
+          });
+
+          //navigate("/trade/"+response.result._id);
       }catch(err){
           setError(err.message)
       }
@@ -98,6 +100,7 @@ export default function SingleBuyAd(){
         setError(response.message);
       }
       setPaymentMethods(response.data);
+	  
     }catch(error){
       setError(error.message)
     }
@@ -112,48 +115,29 @@ export default function SingleBuyAd(){
     return (
         <>
          <Toaster containerStyle={{ position: 'absolute' }} />
-       <div className="container-fluid body">
-        <div className="row flex-nowrap">
-          <Sidebar account={account}/>
-           <div className="col py-3 main">
-                  <div className="row p-0">
-                    <Header account={account}/>
-                   </div>
-                   <div className="row mb-30 mt-20">
+		 
+		 <Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			 <main style={{width:'100%'}}>
+		
+				
+				<section className="sell-nfts-area mb-50 mt-120">
+				  <div className="container">
+					   <div className="row mb-30 mt-20">
                     <div className="col col-6 col-xs-6 col-sm-6">
-                     <h3 className="page-title">Ad #{id}</h3>
+                       <h3 className="page-title">Ad #{id}</h3>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                    <button className="btn-dex btn-dex-primary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                              Ad Management
-                            </button>
-                            <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                              <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                              <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
-                            </ul>
+                    
                     </div>
                    </div>
 
 
-                   <form>
-                   <div className="row mb-20">
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                       <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10 pl-30">Buy</Link>
-                       &nbsp;&nbsp;
-                       <Link to="/ad/buy" className="btn-dex btn-dex-default p-10 pr-30">Sell</Link> 
-                    </div>
-
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10">
-                           
-                    </div>
-
-                    <div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
-                      
-                    </div>
-                  </div>
-                </form>
-
-                  <div className="row">
+                  <div className="row p-10">
                        {
                          ad!=null?
                           <div className="trade-record-card pt-10 pb-10 mb-10">
@@ -166,24 +150,24 @@ export default function SingleBuyAd(){
                                   <div className="col col-10 col-xs-10 text-start"> 
                                     <div className="row">
                                         <div className="col col-12 col-xs-12">
-                                            <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
+                                            <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
                                         </div>
                                         <div className="col col-6 col-xs-6 text-end d-flex">
-                                            <span className="value">{ad.unit["$numberDecimal"]}</span>
+                                            <span className="value">{ad.unit["$numberDecimal"]}</span> &nbsp;
                                             <span className="label">Orders</span>
                                             &nbsp; &nbsp; 
-                                            <span className="value">Completion</span>
+                                            <span className="value">Completion</span>&nbsp;
                                             <span className="label">92%</span>
                                         </div>
                                     </div>
                                   </div>
 
                                   <div class="col col-12 col-xs-12 text-start"> 
-                                        <span class="label"> Payment Method</span> <br/><br/>
-                                        <span class="btn-dex-small btn-dex-danger">{ad.paymentMethod.name}</span>
+                                        <span class="label"> Payment Method</span> <br/>
+                                        <span class="btn-dex-small btn-dex-default">{ad.paymentMethod.name}</span>
                                   </div>
 
-                                  <div className="col col-12 col-xs-12 col-sm-12 mb-20 pt-10">
+                                  <div className="col col-12 col-xs-12 col-sm-12 mb-20 mt-10 pt-10">
                                       <span className="label p-0"> 
                                       <b>Please Read Terms Carefully</b> <br/><br/>
                                       ✔ {ad.notes}
@@ -196,21 +180,21 @@ export default function SingleBuyAd(){
 
                             <div className="col col-12 col-xs-12 col-sm-4 mb-10 pt-20">
                               <div className="row">
-                                <div className="col col-12 col-xs-12">
+                                <div className="col col-12 col-xs-12 mb-10">
                                     <span className="label p-0">Price</span><br/>
-                                    <span className="value number p-0">{ad.amount["$numberDecimal"]} {ad.currency}</span><br/>
+                                    <span className="value number p-0">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100)) }  {ad.currency.symbol}</span><br/>
                                 </div>
-                                <div className="col col-12 col-xs-12">
+                                <div className="col col-12 col-xs-12 mb-10">
                                    <span className="label p-0">Amount</span><br/>
                                    <span className="value number p-0">{ad.unit["$numberDecimal"]} {ad.asset.symbol}</span><br/>
                                    
                                 </div>
-                                <div className="col col-12 col-xs-12">
+                                <div className="col col-12 col-xs-12 mb-10">
                                     <span className="label p-0">Limit</span><br/>
-                                    <span className="value number p-0">{ad.lowerLimit} - {ad.upperLimit} {ad.currency}</span><br/>
+                                    <span className="value number p-0">{ad.lowerLimit} - {ad.upperLimit} {ad.currency.symbol}</span><br/>
                                    
                                 </div>
-                                <div className="col col-12 col-xs-12">
+                                <div className="col col-12 col-xs-12 mb-10">
                                     <span className="label p-0">Payment Time</span><br/>
                                     <span class="value number p-0">{ad.deadline} Minutes</span>
                                 </div>
@@ -227,10 +211,10 @@ export default function SingleBuyAd(){
                                       <div class="input-group">
                                           <input type="number" class="form-control" value={amount} aria-label="" onChange={(e)=>{
                                            setAmount(e.target.value);
-                                           const unit = e.target.value / ad.amount["$numberDecimal"];
+                                           const unit = e.target.value /  (ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100));
                                            setUnit(unit)
                                           }}/>
-                                          <span class="input-group-text"> {ad.currency}</span>
+                                          <span class="input-group-text"> {ad.currency.symbol}</span>
                                       </div>
                                       <span class="rate-info text-center text-danger"> {tradeWarning} </span>
                                   </div>
@@ -242,14 +226,14 @@ export default function SingleBuyAd(){
                                       <div class="input-group">
                                           <input type="number" class="form-control" aria-label="" value={unit} onChange={(e)=>{
                                             setUnit(e.target.value);
-                                            const amount = e.target.value * ad.amount["$numberDecimal"];
+                                            const amount = e.target.value *  (ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100));
                                             setAmount(amount);
                                             }}/>
-                                          <span class="input-group-text"><span class="text-primary" onClick={(e)=>{
+                                          <span class="input-group-text"><span class="text-white" onClick={(e)=>{
                                             setUnit(assetBalance);
-                                            const amount = ad.amount["$numberDecimal"] * assetBalance;
+                                            const amount =  (ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100)) * assetBalance;
                                             setAmount(amount);
-                                          }}>All</span> {ad.asset.symbol}</span>
+                                          }}>All &nbsp; </span> {ad.asset.symbol}</span>
                                       </div>
                                       <span class="rate-info float-end"> &nbsp; </span>
                                   </div>
@@ -257,17 +241,19 @@ export default function SingleBuyAd(){
                               <div class="row"> 
                                   <div class="col col-12 col-xs-12 col-sm-12">
                                     <label class="mb-10"> Payment Method</label>
-                                    <select name="paymentmethod" class="form-control" value={selectedMethod} onChange={(e)=>setSelectedMethod(e.target.value)}>
+                                    <select name="paymentmethod" class="form-control" onChange={(e)=>{ setSelectedMethod(e.target.value)}}>
+                                    <option value="">--Select Payment Method-- </option>
                                         {
-                                          paymentMethods && paymentMethods.map((method)=>(
+                                          paymentMethods && paymentMethods.map((method)=>{
+                                          let details = JSON.parse(method.details);
+                                          //console.log(Object.entries(details))
+                                          return (
                                             <>
-                                             method.paymentMethod!=null && (
-                                             <>
-                                              <option value={method._id}>{method.paymentMethod.name} ({method.details.name}) </option>
-                                              </>
-                                             )
+                                            <option value={method._id}>{method.paymentMethod.name} ({Object.entries(details)[0][1]}) </option>
                                             </>
-                                          ))
+                                          )
+                                          }
+                                          )
                                         }
                                     </select>
                                       <span class="rate-info float-end"> &nbsp; </span>
@@ -286,7 +272,7 @@ export default function SingleBuyAd(){
                                         if(amount<ad.lowerLimit){
                                           setTradeWarning('Amount lesser than lower limit');
                                         }
-                                        else if(amount>ad.lowerLimit){
+                                        else if(amount>ad.upperLimit){
                                           setTradeWarning('Amount greater than upper limit');
                                         }
                                         else{
@@ -310,11 +296,12 @@ export default function SingleBuyAd(){
                        </div>
                      }
               </div>
-              <NavSocial/>
-           </div>
-          </div>
-         </div>
-         <Nav/>
+	        </div> 
+			</section>
+		   </main>
+	     <Nav/>
+	     </div>
+			  
         </>
     )
 }

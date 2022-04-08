@@ -47,16 +47,18 @@ export default function Wallet() {
     return (
             
     <>
-     <Toaster containerStyle={{ position: 'absolute' }} />
-    <div className="container-fluid body">
-            <div className="row flex-nowrap">
-                <Sidebar account={account}/>
-                <div className="col py-3 main">
-                    <div className="row p-0">
-                        <Header account={account} />
-                    </div>
-
-                    <div className="row mb-30 mt-20">
+	 <Toaster containerStyle={{ position: 'absolute' }} />
+	  <Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			 <main style={{width:'100%'}}>
+			 
+			 <section className="sell-nfts-area mb-50 mt-120">
+				<div className="container">
+	               <div className="row mb-30 mt-20">
                         <div className="col col-6 col-xs-6 col-sm-6">
                         <h3 className="page-title">Payment Methods</h3>
                         </div>
@@ -92,25 +94,24 @@ export default function Wallet() {
                      </div>
                    </div>
 
-                    <div className="row">
-
-                        <div class="col col-12 col-sm-12 col-lg-12 text-end">
-                           <Link to="/methods/payment/new" style={{textDecoration:"none"}}>
-                               Add Payment Method
+                    <div className="row p-10">
+					  
+					   <div class="col col-12 col-sm-12 col-lg-12 text-end">
+                           <Link to="/methods/payment/new" style={{textDecoration:"none", color:'#fff'}}>
+                               Add Payment Method +
                             </Link>
                         </div>
                         
-                        {
-                                    paymentMethods.length>0 ? paymentMethods.map((method)=>{
-
-                                        let det = JSON.parse(method.details);
-                                       return (<>
-                                        <div className="trade-record-card pt-10 pb-20">
-                                        <div className="row">
-                                    <div className="col col-6 col-xs-6 text-start">
-                                        <button className="btn-dex-small btn-dex-primary"type="button"> {method.paymentMethod?.name}</button>
-                                    </div>
-                                </div>
+                          {
+							 paymentMethods.length>0 ? paymentMethods.map((method)=>{
+							   let det = JSON.parse(method.details);
+							   return (<>
+								<div className="trade-record-card pt-10 pb-20">
+								<div className="row">
+								<div className="col col-6 col-xs-6 text-start">
+									<button className="btn-dex-small btn-dex-primary"type="button"> {method.paymentMethod?.name}</button>
+								</div>
+								</div>
                                 {
                                     
                                     Object.entries(det).map(([name,index])=>(
@@ -138,17 +139,16 @@ export default function Wallet() {
                                         </span>
                                       </div>
                                     </div>
-                        }
+                          }
                       
                     </div>
+                  </div>
+              </section>
 
-
-                </div>
-            </div>
-
-
-        </div>
-        <Nav/>
+		   </main>
+	      <Nav/>
+	     </div>
+			
         </>
     )
 }

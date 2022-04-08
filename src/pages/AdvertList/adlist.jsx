@@ -142,78 +142,84 @@ export default function Adlist() {
 
     return (
         <>
-         <Toaster containerStyle={{ position: 'absolute' }} />
-        <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
-    <div className="modal-dialog modal-sm">
-      <div className="modal-content" style={{background:"#ccc"}}>
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-20">
-            <div className="col col-12 col-xs-12">
-              Once taken offline, the Ad will not be able to take in orders from users.
-            </div>
-          </div>
+		<Toaster containerStyle={{ position: 'absolute' }} />
+          <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
+			<div className="modal-dialog modal-sm">
+			  <div className="modal-content" style={{background:"#ccc"}}>
+				<div className="modal-header">
+				  <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
+				  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div className="modal-body">
+				  <div className="row mb-20">
+					<div className="col col-12 col-xs-12">
+					  Once taken offline, the Ad will not be able to take in orders from users.
+					</div>
+				  </div>
 
-          <div className="row form-row mb-20">     
-            <div className="col col-xs-12 text-end">
-            <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            <button className="btn-dex-small btn-dex-default">Confirm</button>
-            </div>
-        </div> 
+				  <div className="row form-row mb-20">     
+					<div className="col col-xs-12 text-end">
+					<button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+					<button className="btn-dex-small btn-dex-default">Confirm</button>
+					</div>
+				</div> 
 
-        </div>
-      </div>
-    </div>
-</div>
+				</div>
+			  </div>
+			</div>
+		</div>
 
-    <div className="container-fluid body">
-        <div className="row flex-nowrap">
-        <Sidebar account={account}/>
-            <div className="col py-3 main">
-                  <div className="row p-20">
-                    <Header account={account}/>
-                    </div>
+ 
+ 
+    <Sidebar account={account}/>
+			 <div className="offcanvas-overly"></div>
+			 
+			  <div className="main-content">
+			  
+				<Header account={account}/>
+				 <main style={{width:'100%'}}>
+			
 
-                    <div className="row mb-30 mt-20">
-                    <div className="col col-6 col-xs-6 col-sm-6">
-                        <h3 className="page-title">Advert List</h3>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                        <span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                Ad Management
-                                </span>
-                                <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
-                                <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
-                                </ul>
-                    </div>
-                    </div>
-
-                   <div className="row">
-                    <div className="col col-12 col-xs-12">
-                     <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
-                         <li >
-                             <Link to="/profile" style={{textDecoration:"none"}}>
-                             Profile
-                             </Link>
-                             </li>
-                         <li>
-                             <Link to="/trades" style={{textDecoration:"none"}}>
-                               Trade History 
-                              </Link>
-                         </li>
-                         
-                         <li>
-                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
-                         </li>
-                     </ul>
-                     </div>
-                   </div>
-
-                   <form>
+        	<section className="sell-nfts-area mb-50 mt-120">
+					  <div className="container">
+					   <div className="row">
+             <div className="col col-6 col-xs-6 col-sm-6">
+								<h3 className="page-title">Advert List</h3>
+							</div>
+							<div className="col col-6 col-xs-6 col-sm-6 text-end">
+								<span className="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+								Ad Management
+								</span>
+								<ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+								<li><Link className="dropdown-item" to="/ad/create">Create Ad</Link></li>
+								<li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
+								</ul>
+							</div>
+					  </div>
+					  
+					 <div className="row mt-20 mb-20">
+						<div className="col col-12 col-xs-12">
+						 <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+							 <li >
+								 <Link to="/profile" style={{textDecoration:"none"}}>
+								 Profile
+								 </Link>
+								 </li>
+							 <li>
+								 <Link to="/trades" style={{textDecoration:"none"}}>
+								   Trade History 
+								  </Link>
+							 </li>
+							 
+							 <li>
+								 <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+							 </li>
+						 </ul>
+						 </div>
+					   </div>
+					   
+					   
+					<form>
                    <div className="row mb-20 mt-20">
                     <div className="col col-6 col-xs-6 col-sm-2">
                         <label>Asset</label>
@@ -268,9 +274,11 @@ export default function Adlist() {
                     </div>
                   </div>
                 </form>
-                <div className="row">
-                   
-                    {
+					
+					
+					<div className="row p-10">
+					
+					   {
                      (sellAds && sellAds !==[]) ? sellAds.map((advert)=>(
                       <>
                      <div className="trade-record-card pt-10 pb-20 mb-10">
@@ -279,23 +287,23 @@ export default function Adlist() {
                            <b>Sell</b><br/>
                            <b><u>{advert.uid}</u></b><br/>
                            <span className="label">Asset</span><br/>
-                           <span className="value"> {advert.asset?.symbol}/{advert.currency}</span>
+                           <span className="value"> {advert.asset?.symbol}/{advert.currency.symbol}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-3">
-                            <span className="label p-0">Amount</span><br/>
-                            <span className="value p-0">{advert.unit["$numberDecimal"]} {advert.asset?.symbol}</span><br/>
-                            <span className="label p-0">Limit</span><br/>
-                            <span className="value p-0">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
-                        </div>
+                              <span className="label p-0">Amount</span><br/>
+                              <span className="value p-0">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((advert.unit["$numberDecimal"]))} {advert.asset?.symbol}</span><br/>
+                              <span className="label p-0">Limit</span><br/>
+                              <span className="value p-0">{advert.lowerLimit} - {advert.upperLimit} {advert.currency.symbol}</span>
+                          </div>
 
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
                             <span className="label p-0">Price</span><br/>
-                            <span className="value p-0">{advert.amount["$numberDecimal"]} {advert.currency}</span>
+                            <span className="value p-0">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(advert.asset.rateToDollar["$numberDecimal"] * advert.currency.rateToDollar["$numberDecimal"] *  (advert.factor["$numberDecimal"]/100)) } {advert.currency.symbol}</span>
                         </div>
 
                         <div className="col col-6 col-xs-6  col-sm-2">
                           <span className="label p-0">Payment Method</span><br/>
-                            <br/><span className="value p-0">{advert.paymentMethod.name}</span>
+                            <br/><span className="value p-0">{advert.paymentMethod.paymentMethod.name}</span>
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
@@ -306,7 +314,7 @@ export default function Adlist() {
                         <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
                             <img src={Delete} style={{width:"20px", height:"20px"}}/>
                              &nbsp;&nbsp;
-                            <img src={Edit} style={{width:"20px", height:"20px"}}/>
+						              <Link to={{pathname:'/ad/editsellad/'+advert._id, state:{id:advert._id}}}><img src={Edit} style={{width:"20px", height:"20px"}} /> </Link>
                         </div>
  
                     </div>
@@ -328,18 +336,18 @@ export default function Adlist() {
                              <b>Buy</b><br/>
                              <b><u>{advert.uid}</u></b><br/>
                              <span className="label">Asset</span><br/>
-                             <span className="value"> {advert.asset?.symbol}/{advert.currency}</span>
+                             <span className="value"> {advert.asset?.symbol}/{advert.currency.symbol}</span>
                           </div>
                           <div className="col col-6 col-xs-6 col-sm-3">
                               <span className="label p-0">Amount</span><br/>
-                              <span className="value p-0">{advert.unit["$numberDecimal"]} {advert.asset?.symbol}</span><br/>
+                              <span className="value p-0">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((advert.unit["$numberDecimal"]))} {advert.asset?.symbol}</span><br/>
                               <span className="label p-0">Limit</span><br/>
-                              <span className="value p-0">{advert.lowerLimit} - {advert.upperLimit} {advert.currency}</span>
+                              <span className="value p-0">{advert.lowerLimit} - {advert.upperLimit} {advert.currency.symbol}</span>
                           </div>
   
                           <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
                               <span className="label p-0">Price</span><br/>
-                              <span className="value p-0">{advert.amount["$numberDecimal"]} {advert.currency}</span>
+                              <span className="value p-0">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(advert.asset.rateToDollar["$numberDecimal"] * advert.currency.rateToDollar["$numberDecimal"] *  (advert.factor["$numberDecimal"]/100)) } {advert.currency.symbol}</span>
                           </div>
   
                           <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
@@ -355,7 +363,7 @@ export default function Adlist() {
                           <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
                               <img src={Delete} style={{width:"20px", height:"20px"}}/>
                                &nbsp;&nbsp;
-                              <img src={Edit} style={{width:"20px", height:"20px"}}/>
+                              <Link to={{pathname:'/ad/editbuyad/'+advert._id, state:{id:advert._id}}}><img src={Edit} style={{width:"20px", height:"20px"}} /> </Link>
                           </div>
    
                       </div>
@@ -376,12 +384,17 @@ export default function Adlist() {
                        :
                        ""
                       }
-                
-              </div>
-            </div>
-           </div>
-     </div>
-     <Nav/>
+
+                    </div>
+
+
+                  </div>
+
+			 </section>
+		   	
+		   </main>
+	     <Nav/>
+	    </div>
         </>
     )
 }

@@ -3,7 +3,7 @@
 export default function Chat(){
 
     return (
-        <div className="col col-12 col-xs-12 col-sm-4 p-0" style={{background:"#333",minHeight:"100%"}}>
+        <div className="col col-4 col-xs-12 col-sm-4 p-0 trade-record-card" style={{minHeight:"100%"}}>
                          
         <div className="box direct-chat direct-chat-success" style={{background: "transparent", minHeight:"100%",overflowY:"scroll"}}>
            <div className="box-body">

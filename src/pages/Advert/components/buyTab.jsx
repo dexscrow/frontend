@@ -6,7 +6,7 @@ import useFetch from "../../../hooks/useFetch";
 const END_POINT = process.env.REACT_APP_SERVER_URL+'/assets';
 const TRADE_FEE = process.env.TRADE_FEE;
 const BuyTab = memo(({
-    step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,prefferedMethod,online,setOnline,autoreply,setAutoReply
+    step,setStep,priceType,factor,setFactor,assets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,notes,setNotes,registered,setRegistered,registerChecked,setRegisterChecked,prefferedMethod,online,setOnline,autoreply,setAutoReply
 }) =>{
     return (
         <>
@@ -23,7 +23,7 @@ const BuyTab = memo(({
                                            <input type="radio" name="asset" value={a.symbol} key={a._id} onChange={(e)=>{
                                                setAsset(e.target.value);
                                                setAssetPrice(a.rateToDollar["$numberDecimal"]);
-                                               setPrice(Number(a.rateToDollar["$numberDecimal"] * currencyRate).toFixed(2))
+                                               setPrice(Number(a.rateToDollar["$numberDecimal"] * currencyRate * Number(factor / 100)).toFixed(2))
                                             }}
                                             checked={a.symbol==asset}
                                             />
@@ -44,7 +44,7 @@ const BuyTab = memo(({
                                            <>
                                            <input type="radio" name="currency" value={c} key={currency._id} onChange={(e)=>{
                                                 setCurrency(c);
-                                                setPrice((c.rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
+                                                setPrice((c.rateToDollar["$numberDecimal"] * assetPrice * Number(factor / 100)).toFixed(2));
                                                 setCurrencyRate(c.rateToDollar["$numberDecimal"]);
                                             }
                                                }
@@ -60,7 +60,7 @@ const BuyTab = memo(({
                             <div className={`row form-row ${step !== 1 ? "d-none":""} buy-step-1`}>     
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster mb-20">
                                   <div className="label"><b>Your Price</b></div>
-                                  <div className="d-flex"><h5 className="currency">{currency.symbol}</h5>&nbsp;<h5>{price}</h5></div>
+                                  <div className="d-flex"><h5 className="currency">{currency.symbol}</h5>&nbsp;<h5>{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(Number(assetPrice) * Number(currencyRate) * Number(factor / 100)) }</h5></div>
                                 </div>
                                 
                                 <div className="col col-12 col-xs-12 col-sm-12 col-md-3 form-cluster d-none mb-20">
@@ -90,62 +90,65 @@ const BuyTab = memo(({
                                  */
                                 }
 
-                                <div className={`col col-xs-12 col-sm-12 col-md-6 form-cluster mb-20`}>
+                       <div className={`col col-xs-12 col-sm-12 col-md-6 form-cluster mb-20`}>
                                   
                                   <div className={`${priceType === "fixed" ? "d-none":""}`}>
                                       <div className="label"><b>Set Price Factor</b></div>
-                                    <div className="value-button" id="decrease" value="Decrease Value"
+                                  <div>
+                                   
+                                  <div className="value-button" id="decrease" value="Decrease Value"
                                      onClick={(e)=>{
-                                        factor = Number(factor) - 0.01; 
-                                        setFactor(Number(factor).toFixed(2));
-                                        let factorPrice = calculatePrice(currencyRate,factor);
-                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
-                                        price = Number(price) - 1;
+                                        let newfactor = Number(factor) - 0.01; 
+                                        setFactor(Number(newfactor).toFixed(2));
+                                        //let factorPrice = calculatePrice(currencyRate,newfactor);
+                                        setPrice(Number(assetPrice) * Number(currencyRate) * Number(newfactor / 100));
                                       }}
                                     >-</div>
-                                    <input type="number" id="number" placeholder="100" value={factor} onChange={(e)=>{
+                                    <input type="number" id="number" placeholder="100" className="text-dark" value={factor} onChange={(e)=>{
                                         setFactor(Number(e.target.value));
-                                        let factorPrice = calculatePrice(currencyRate,e.target.value);
-                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
+                                        //let factorPrice = calculatePrice(currencyRate,e.target.value);
+                                        setPrice(Number(assetPrice) * Number(currencyRate) * Number(e.target.value / 100));
                                     }}/>
                                     <div className="value-button" id="increase" value="Increase Value"
                                     onClick={(e)=>{
-                                        factor = Number(factor) + 0.01; 
-                                        setFactor(Number(factor).toFixed(2));
-                                        let factorPrice = calculatePrice(currencyRate,factor);
-                                        setPrice(Number(assetPrice * factorPrice).toFixed(2));
-                                        price = Number(price) - 1;
+                                        let newfactor = Number(factor) + 0.01; 
+                                        setFactor(Number(newfactor).toFixed(2));
+                                        //let factorPrice = calculatePrice(currencyRate,newfactor);
+                                        setPrice(Number(assetPrice) * Number(currencyRate) * Number(newfactor / 100));
                                       }}
                                       >+</div>
-
-                                    <div className="pricing-formula"> <span>Pricing Formula</span> &nbsp;  {price} * {factor}% = <b> {currency.symbol} {price} </b> </div>
+                                    <div className="pricing-formula"> <span>Pricing Formula</span> &nbsp;  {new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((price))} * {factor}% = <b> {currency.symbol} {new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((price)) } </b> </div>
                                   </div>
-
+    
                                   <div className={`${priceType === "floating" ? "d-none":""}`}>
-                                     <div className="label"><b>Set Fixed Price</b></div>
-                                    <div className={`value-button`} id="decrease"value="Decrease Value"
-                                       onClick={(e)=>{
-                                        price = Number(price) - 1;
-                                        setCurrencyRate(price);
-                                        setFactor(calculateFactor(price,currency.rateToDollar["$numberDecimal"]));
-                                        setPrice(price.toFixed(2));
-                                      }}
-                                    >-</div>
-                                    <input type="number" id="number" placeholder={price} onChange={(e)=>{
+                                  <div className="label"><b>Set Fixed Price</b></div>
+                                  
+                                  
+                                  <div className={`value-button`} id="decrease"value="Decrease Value"
+                                   onClick={(e)=>{
+                                    price = Number(price) - 1;
+                                    setCurrencyRate(price);
+                                    setFactor(calculateFactor(price,currency.rateToDollar["$numberDecimal"]));
+                                    setPrice(price.toFixed(2));
+                                  }}
+                                  >-</div>
+                                    <input type="number" id="number" onChange={(e)=>{
                                         setCurrencyRate(e.target.value);
                                         setFactor(calculateFactor(e.target.value,currency.rateToDollar["$numberDecimal"]));
-                                        setPrice(Number(e.target.value).toFixed(2));
                                         
                                     }} />
-                                    <div className="value-button" id="increase" value="Increase Value" onClick={(e)=>{
+                                    <div className="value-button" id="increase"value="Increase Value"
+                                    onClick={(e)=>{
                                         price = Number(price) + 1;
                                         setCurrencyRate(price);
                                         setFactor(calculateFactor(price,currency.rateToDollar["$numberDecimal"]));
                                         setPrice(price.toFixed(2));
-                                    }} >+</div>
+                                    }}
+                                    >+</div>
                                   </div>
                                 </div>
-                              </div>  
+                               </div>  
+                              </div>
 
 
                               <div className={`row buy-step-2 ${step !== 2 ? "d-none":""} `}>     
@@ -156,11 +159,10 @@ const BuyTab = memo(({
                                             <div className="input-group mb-3">
                                                 <input type="text" className="form-control" aria-label="" name="totalAsset" value={totalAsset} required onChange={(e)=>{
                                                     setTotalAsset(e.target.value);
-                                                    setPrice(Number((e.target.value * assetPrice) * currencyRate))
                                                 }}/>
                                                 <span className="input-group-text"> <b>{(asset).toUpperCase()}</b></span>
                                             </div>
-                                            <span className="rate-info float-end"> = {price} {currency.symbol}</span>
+                                            <span className="rate-info float-end"> = {new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(Number(price) * Number(totalAsset)) } {currency.symbol}</span>
                                         </div>
 
                                      </div>
@@ -207,7 +209,7 @@ const BuyTab = memo(({
 
                                     <div className="row form-row"> 
                                         <div className="col col-xs-12 col-sm-8">
-                                            <span className="dim">Estimated Fee:</span> {Number(totalAsset) * 0.001} {asset}
+                                            {/* <span className="dim">Estimated Fee:</span> {Number(totalAsset) * 0.001} {asset} */}
                                         </div>
                                     </div>
                                 </div>
@@ -220,12 +222,12 @@ const BuyTab = memo(({
                                            <small> Select a payment method </small> 
                                         </div>
                                         <div className="col col-6 col-xs-6 col-sm-6">
-                                        {prefferedMethod && <span className="btn-dex-small btn-dex-danger">{prefferedMethod}</span>}
+                                        {prefferedMethod && <span className="btn-dex-small btn-dex-default">{prefferedMethod}</span>} &nbsp;
                                             <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#epaymentMethodModal" type="button">+ ADD</button>
                                         </div>
                                     </div>
                             </div>  
-                           <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} asset={asset}  online={online} setOnline={setOnline} autoreply={autoreply} setAutoReply={setAutoReply}/>
+                           <Misc step={step} notes={notes} setNotes={setNotes} registered={registered} setRegistered={setRegistered} registerChecked={registerChecked} setRegisterChecked={setRegisterChecked} asset={asset}  online={online} setOnline={setOnline} autoreply={autoreply} setAutoReply={setAutoReply}/>
                             <div className="row form-row">     
                                 <div className="col col-xs-12 text-end">
                                     <button className="btn-dex btn-dex-primary buy-step1-next" onClick={(e)=>{

@@ -157,16 +157,17 @@ export default function Profile() {
     return (
         <>
          <Toaster containerStyle={{ position: 'absolute' }} />
-             <div className="container-fluid body">
-            <div className="row flex-nowrap">
-            <Sidebar account={account}/>
-
-            <div className="col py-3 main">
-                  <div className="row p-0">
-                   <Header account={account}/>
-                    </div>
-
-                    <div className="row mb-30 mt-20">
+		    <Sidebar account={account}/>
+			 <div className="offcanvas-overly"></div>
+			 
+			  <div className="main-content">
+			  
+				<Header account={account}/>
+				 <main style={{width:'100%'}}>
+				 
+				 <section className="sell-nfts-area mb-50 mt-120">
+					  <div className="container">
+					   <div className="row mb-30 mt-20">
                         <div className="col col-6 col-xs-6 col-sm-6">
                         <h3 className="page-title">Profile</h3>
                         </div>
@@ -179,11 +180,11 @@ export default function Profile() {
                             <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
                             </ul>
                         </div>
-                    </div>
+                      </div>
 
                     <div className="row">
-                    <div className="col col-12 col-xs-12">
-                    <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+                      <div className="col col-12 col-xs-12">
+                      <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
                          <li className="active">
                              <Link to="/profile" style={{textDecoration:"none"}}>
                              Profile
@@ -198,12 +199,12 @@ export default function Profile() {
                          <li>
                              <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
                          </li>
-                     </ul>
+                       </ul>
                      </div>
                    </div>
-       
-                <div className="row">
-                    <div className="trade-record-card pt-10 pb-20 mb-10">
+				  
+				   <div className="row p-10">
+				      <div className="trade-record-card pt-10 pb-20 mb-10">
                     <form action="" method="">
                      <div className="row">
                         <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
@@ -240,7 +241,10 @@ export default function Profile() {
                     </div>
                     </form>
                     </div>
-                    <div className="trade-record-card pt-10 pb-20 mb-10 col-sm-12">
+					
+					
+					
+					<div className="trade-record-card pt-10 pb-20 mb-10 col-sm-12">
                     <form action="" method="">
                      <div className="row">
                         <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
@@ -279,6 +283,8 @@ export default function Profile() {
                     </div>
                     </form>
                     </div>
+					
+					
                     <div className="trade-record-card pt-10 pb-20 mb-10">
                          <div className="row">
                             <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
@@ -314,84 +320,84 @@ export default function Profile() {
                     </div>
 
 
+					
+					 <div className="row">
 
-                    
-                        <div className="row">
-
-                          <div className="col col-6 col-xs-12 col-sm-6 p-0">
-                            <div className="trade-record-card pt-10 pb-20 mb-10">
-                             <div className="row">
-                                <div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
-                                    <br/>
-                                     <b>Account Level</b> 
-                                  </div>
-                                  <div className="col col-6 col-xs-6 col-sm-9">
-                                      <div className="row">
-                                          <div className="col">
-                                             <img src="images/level1.svg" /><br/>
-                                              <span className="label">Level 1</span>
-                                         </div>
-       
-                                         <div className="col">
-                                           <img src="images/level2.svg" /><br/>
-                                          <span className="label">Level 2</span>
-                                        </div>
-       
-                                        <div className="col">
-                                          <img src="images/level3.svg" /><br/>
-                                          <span className="label">Level 3</span>
-                                       </div>
-       
-                                    </div>
-                                 </div>
-                            </div>
-                          
-                           </div>
-                         </div>
-
-                          <div className="col col-6 col-xs-12 col-sm-6">
-
-                            <div className="trade-record-card pt-10 pb-20 mb-10">
-                                <div className="row">
-                                    <div className="col col-12 col-xs-12 col-sm-3 align-items-center text-center">
-                                        <br/>
-                                         <b>KYC</b> 
-                                      </div>
-                                      <div className="col col-12 col-xs-12 col-sm-9 p-20">
-                                          <div className="row">
-                                              <div className="col">
-                                                 <img src="images/approved.svg" style={{width:"40px", height:"40px"}}/>
-                                             </div>
-           
-                                             <div className="col">
-                                                 { user && (user.kycStatus === "pending" ? 
-                                                 <PendingKyc/> :(
-                                                     user.kycStatus === "invalid"?
-                                                     <InvalidKyc/> :
-                                                     <VerifiedKyc/>
-                                                 ))
-                                                }
-                                            </div>
-           
-                                            <div className="col text-center">
-                                                <button className="btn-dex-small btn-dex-primary">Update</button>
-                                           </div>
-           
-                                        </div>
-                                     </div>
-                                </div>
-                            </div>
+					  <div className="col col-6 col-xs-12 col-sm-6 p-0">
+						<div className="trade-record-card pt-10 pb-20 mb-10">
+						 <div className="row">
+							<div className="col col-6 col-xs-6 col-sm-3 align-items-center text-center">
+								<br/>
+								 <b>Account Level</b> 
+							  </div>
+							  <div className="col col-6 col-xs-6 col-sm-9">
+								  <div className="row">
+									  <div className="col">
+										 <img src="images/level1.svg" /><br/>
+										  <span className="label">Level 1</span>
+									 </div>
    
-                          </div>
-                        </div>
-                    </div>
-                   
-                    <NavSocial/>
-                   </div>
-              </div>
-            </div>
-    
-          <Nav/>
+									 <div className="col">
+									   <img src="images/level2.svg" /><br/>
+									  <span className="label">Level 2</span>
+									</div>
+   
+									<div className="col">
+									  <img src="images/level3.svg" /><br/>
+									  <span className="label">Level 3</span>
+								   </div>
+   
+								</div>
+							 </div>
+						</div>
+					  
+					   </div>
+					 </div>
+
+					  <div className="col col-6 col-xs-12 col-sm-6">
+
+						<div className="trade-record-card pt-10 pb-20 mb-10">
+							<div className="row">
+								  <div className="col col-12 col-xs-12 col-sm-3 align-items-center text-center">
+									<br/>
+									 <b>KYC</b> 
+								  </div>
+								  <div className="col col-12 col-xs-12 col-sm-9 p-20">
+									   <div className="row">
+										  <div className="col">
+											 <img src="images/approved.svg" style={{width:"40px", height:"40px"}}/>
+										  </div>
+	   
+										  <div className="col">
+											 { user && (user.kycStatus === "pending" ? 
+											 <PendingKyc/> :(
+												 user.kycStatus === "invalid"?
+												 <InvalidKyc/> :
+												 <VerifiedKyc/>
+											 ))
+											}
+									     </div>
+	   
+										 <div className="col text-center">
+											<button className="btn-dex-small btn-dex-primary">Update</button>
+									     </div>
+	   
+									  </div>
+								 </div>
+							</div>
+						</div>
+
+					  </div>
+
+                  </div>
+			    </div>
+               </div>
+			 </section>
+
+		   </main>
+	     <Nav/>
+	    </div>
+		 
         </>
     )
 }

@@ -1,5 +1,6 @@
 import React,{useContext,useState,useEffect} from "react";
 import {config} from "dotenv";
+import toast, { Toaster } from 'react-hot-toast';
 import {Navigate,useNavigate, Link} from "react-router-dom";
 import AccountContext from "../../contexts/account";
 import Header from "../Landing/components/header";
@@ -86,52 +87,55 @@ export default function AddPaymentMethod(){
 
     return (
         <>
-         <div className="container-fluid body">
-            <div className="row flex-nowrap">
-            <Sidebar account={account}/>
-
-                <div className="col py-3 main">
-                    <div className="row p-20">
-                    <Header account={account}/>
-                        </div>
+		<Toaster containerStyle={{ position: 'absolute' }} />
+	      <Sidebar account={account}/>
+			 <div className="offcanvas-overly"></div>
+			 
+			  <div className="main-content">
+			  
+				<Header account={account}/>
+				 <main style={{width:'100%'}}>
+				 
+				 <section className="sell-nfts-area mb-50 mt-120">
+					<div className="container">
+	                 
+                    <div className="row">
+						<div className="col col-12">
+							<h3 className="page-title">Add Payment Method</h3>
+						</div>
+                    </div>
 
                     <div className="row">
-                    <div className="col col-12">
-                        <h3 className="page-title">Add Payment Method</h3>
-                    </div>
-                    </div>
-
-                    <div className="row">
-                    <div className="col col-12 col-xs-12">
-                    <ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
-                         <li >
-                             <Link to="/profile" style={{textDecoration:"none"}}>
-                             Profile
-                             </Link>
-                        </li>
-                         <li>
-                             <Link to="/trades" style={{textDecoration:"none"}}>
-                               Trade History 
-                              </Link>
-                         </li>
-                         
-                         <li className="active">
-                             <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
-                         </li>
-                     </ul>
+                      <div className="col col-12 col-xs-12">
+						<ul className="d-flex inner-nav" style={{listStyle:"none", padding:"10px"}}>
+							 <li >
+								 <Link to="/profile" style={{textDecoration:"none"}}>
+								 Profile
+								 </Link>
+							</li>
+							 <li>
+								 <Link to="/trades" style={{textDecoration:"none"}}>
+								   Trade History 
+								  </Link>
+							 </li>
+							 
+							 <li className="active">
+								 <Link to="/method/payment" style={{textDecoration:"none"}}>Payment Methods</Link>
+							 </li>
+						 </ul>
                      </div>
                    </div>
-
-                    <div className="row" style={{minHeight:'200px'}}>
-                    <div className="trade-record-card pt-10 pb-20 mb-10 mt-0">
+					  
+				<div className="row" style={{minHeight:'200px'}}>  
+				   <div className="trade-record-card pt-10 pb-20 mb-10 mt-0">
                         <div className="row gap-2">
                         <div className="col col-12 col-xs-12 col-sm-12 mb-20">
                             {paymentMethods && paymentMethods.map((method)=>(
                                 <>
-                                    <button key={method._id} className="btn-dex-small btn-dex-primary m-2" onClick={(e)=>{
+                                    <button key={method._id} className="btn-dex-small btn-dex-default m-2" onClick={(e)=>{
                                         setCurrentMethod(method);
                                         setCurrentMethodDetails(JSON.parse(method.details));
-                                        }}>{method.name}</button>
+                                        }}>{method.name} +</button>
                                 </>
                             ))}
                         </div>
@@ -161,19 +165,16 @@ export default function AddPaymentMethod(){
                             </form>
 
                         </div>
+						
+				 </div>
+               </div>
+             </div>		
+             </div>				 
+		    </section>
 
-
-                    </div>
-                    </div>
-
-
-                </div>
-                </div>
-            </div>
-        </div>
-       
-
-     <Nav/>
-        </>
+		   </main>
+	     <Nav/>
+	    </div>
+       </>
     )
 }

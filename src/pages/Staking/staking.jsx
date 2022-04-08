@@ -145,7 +145,7 @@ export default function Staking() {
     const runWithdraw = useCallback(async() => {
         try{
             setLoading(true);
-            await withdraw(10);
+            await withdraw(20000);
              toast.success("Withdraw successful", {
                 position: 'middle-center',
              });
@@ -171,25 +171,24 @@ export default function Staking() {
       <> 
        <Toaster containerStyle={{ position: 'absolute' }} />
 
-      <div class="overlay" style={{display:loading?'block':'none'}}>
-            <div class="spinner"></div>
-            <br/>
-            Loading...
-     </div>
-
-
-       <div className="container-fluid body">
-            <div className="row flex-nowrap">
-              <Sidebar account={account}/>
-
-
-                <div className="col py-3 main">
-                    <div className="row p-0">
-                        <Header account={account} />
-                    </div>
-
-
-                    <div className="row mb-30 mt-20">
+		  <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+		 
+		  <Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			 <main style={{width:'100%'}}>
+			 
+			 <section className="sell-nfts-area mb-50 mt-120">
+				<div className="container">
+				
+				    <div className="row mb-30 mt-20">
                         <div className="col col-6 col-xs-6 col-sm-6">
                         <h3 className="page-title">Staking</h3>
                         </div>
@@ -199,7 +198,7 @@ export default function Staking() {
                     </div>
 
 
-                  <div className="row">                   
+                  <div className="row p-20">                   
                    <div className="col col-6 col-xs-6 col-sm-4 align-items-center text-center p-0">
                        <div className="trade-record-card pt-10 pb-20 mb-10">
                            <div className="row">
@@ -236,7 +235,7 @@ export default function Staking() {
 
 
                 
-                 <div className="row">
+                 <div className="row p-20">
                    <div className="col col-6 col-xs-6 col-sm-4 align-items-center text-center p-0">
                        <div className="trade-record-card pt-10 pb-20 mb-10">
                            <div className="row">
@@ -285,7 +284,7 @@ export default function Staking() {
                  </div>
 
 
-                 <div className="row">
+                 <div className="row p-10">
                     <div className="col col-12 mt-20 align-items-center text-center">
                         <h4>Stake Your DXW</h4>
                     </div>
@@ -317,7 +316,7 @@ export default function Staking() {
                     
                     <div className="col col-12">
                         
-                        <div className={`row form-row ${step === 1 ?"":"d-none"}`} style={{background:"#ccc"}}>     
+                        <div className={`row form-row ${step === 1 ?"":"d-none"}`}>     
 
                             <div className="col col-12 col-xs-12 col-sm-12 mb-20 mt-20">
                                 <h4>Instruction</h4>
@@ -330,37 +329,37 @@ export default function Staking() {
                                     <div className="cPanelContent row">
                                     
                                     
-                                    <div className="cPanelSection col col-xs-6">
+                                    <div className="cPanelSection col-12 col-xs-6 col-sm-3">
                                     <div className="cPanelArrowPulse"></div>
-                                    <h5>Connected with Wallet</h5>
+                                    <h5>1. Connected with Wallet</h5>
                                     <p>If not connected, click the "Connect Wallet" button in the top right corner</p>
                                     </div>
                                 
                                    
-                                    <div className="cPanelSection col col-xs-6">
+                                    <div className="cPanelSection col-12 col-xs-6 col-sm-3">
                                     <div className="cPanelArrowPulse"></div>
-                                    <h5>DXW available to deposit</h5>
+                                    <h5>2. DXW available to deposit</h5>
                                     <p>Current Balance: 0.0000</p>
                                     </div>
                                     
                                    
-                                    <div className="cPanelSection col col-xs-6">
+                                    <div className="cPanelSection col-12 col-xs-6 col-sm-3">
                                     <div className="cPanelArrowPulse"></div>
-                                    <h5>BNB available</h5>
+                                    <h5>3. BNB available</h5>
                                     <p>BNB is required to pay transaction fees on the Binance Smart Chain network.
                                         BNB Balance: 0.0000</p>
                                     </div>
                                 
                                     
-                                    <div className="cPanelSection col col-xs-6">
-                                    <h5> Stake</h5>
-                                    <p>Enter amount of DXW you want to stake and approve transaction</p>
+                                    <div className="cPanelSection col-12 col-xs-6 col-sm-3">
+                                    <h5>4. Stake</h5>
+                                    <p> Enter amount of DXW you want to stake and approve transaction</p>
                                     </div>
                                     
                                     </div>
                                 
                                 
-                                    <div className="cPanelFooter">
+                                    <div className="cPanelFooter mt-30">
                                         <div className="col col-xs-12 text-center">
                                             <span>
                                                 <input type="checkbox" value="1" name="terms" onClick={(e)=>{
@@ -386,12 +385,13 @@ export default function Staking() {
                         </div>
 
 
-                        <div className={`row form-row p-20 stake-step-2 ${step === 2 ?"": "d-none"}`} style={{background:"#ccc"}}>      
-                        <div className="col col-12 col-xs-12 col-sm-12 mb-20 mt-20">
-                                <h4>Amount</h4>
-                        </div>
+                        <div className={`row form-row p-20 stake-step-2 ${step === 2 ?"": "d-none"}`}>      
+                       
                         
                         <div className="col col-12 col-xs-12 col-sm-6 offset-sm-3 col-md-6 offset-md-3 form-cluster mb-20">
+						{/*<div className="col col-12 col-xs-12 col-sm-12 mb-20 mt-20">
+                                <h4>Amount</h4>
+                        </div>*/}
                          <form>
                             <div className="row form-row"> 
                                 <div className="col col-12 col-xs-12 col-sm-12">
@@ -427,18 +427,17 @@ export default function Staking() {
 
                             </form>
                             
-                        </div>
-                     </div>
-
+	                   </div>
                     </div>
 
-                  </div>
- 
-                  <NavSocial/>
-                </div>
-              </div>
-          </div>
-        <Nav/>
-        </>
+				  </div>
+		        </div>
+		        </div>
+			  </section>
+
+		   </main>
+	      <Nav/>
+	     </div>
+	   </>		
     )
 }
