@@ -1,17 +1,9 @@
 import {Contract,ethers} from "ethers";
-import advert from "../contracts/Advert.json";
-import trade from "../contracts/Trade.json";
-
 export const getBlockchain = async ()=>{
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const networkId = provider.prepareRequest({method:"net_version"});
-  const Advert = new Contract(advert.networks[networkId].address,advert.abi,signer);
-  const Trade = new Contract(trade.networks[networkId].address,trade.abi,signer);
-
-  return {Advert,Trade};
 }
-
 
 export const setMetamaskConnection = async ()=>{
   if(!window.ethereum) alert("install metamask");
@@ -19,8 +11,8 @@ export const setMetamaskConnection = async ()=>{
   if(!provider) throw new Error("install metamask");
   const account = await provider.request({method:"eth_requestAccounts"});
   const networkId = await provider.request({method:"net_version"})
-  if(networkId !== "56" && networkId !== "0x38"){
-  //if(networkId !== "97"){
+  //if(networkId !== "56" && networkId !== "0x38"){
+  if(networkId !== "97"){
     throw new Error("please select binance smart chain network");
   }
   localStorage.setItem("account",account);

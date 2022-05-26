@@ -3,13 +3,13 @@ import toast, { Toaster } from 'react-hot-toast';
 import AccountContext from "../../contexts/account";
 import {setBinanceWalletConnection} from "../../helpers/scrow";
 import {Link} from "react-router-dom";
-import Header from "../Landing/components/header";
+import Header from "../components/header";
 import Avatar from "../../assets/avatar.png"
-import Sidebar from "../Landing/components/sidebar";
+import Sidebar from "../components/sidebar";
 import InvalidKyc from "./components/invalidKyc";
 import PendingKyc from "./components/pendingKyc";
-import Nav from "../Landing/components/nav";
-import NavSocial from "../Landing/components/navsocial";
+import Nav from "../components/nav";
+import NavSocial from "../components/navsocial";
 import VerifiedKyc from "./components/verifiedKyc";
 import axios from "axios";
 const token = localStorage.getItem("authToken");
@@ -25,11 +25,13 @@ export default function Profile() {
     const [usernameUpdate,setUsernameUpdate] = useState(true);
     const [emailUpdate,setEmailUpdate] = useState(true);
     const [email,setEmail] = useState('');
+    const [loading,setLoading] = useState(false);
     const [error,setError] = useState(null);
 
     const updateUsername = ()=>{
         const run = async ()=>{
             try{    
+            setLoading(true);
             if(token==='null' || token===null || token==='undefined'){
                 toast.error("Please connect wallet first", {
                     position: 'middle-center',
@@ -49,7 +51,6 @@ export default function Profile() {
                return;
             }
             if(!response.success){
-                setError(response.error);
                 toast.error(response.error, {
                     position: 'middle-center',
                   });
@@ -59,14 +60,14 @@ export default function Profile() {
               });
               getUser();
             }
+            setLoading(false);
             return;
             }catch(error){
-                setError(error.message)
+                setLoading(false);
                 toast.error(error.message, {
                     position: 'middle-center',
                   });
             }
-
         }
         run();
     }
@@ -74,6 +75,7 @@ export default function Profile() {
     const updateEmail = ()=>{
         const run = async ()=>{
             try{
+            setLoading(true);
             if(token==='null' || token===null || token==='undefined'){
                 toast.error("Please connect wallet first", {
                     position: 'middle-center',
@@ -86,14 +88,12 @@ export default function Profile() {
                 }
             });
             if(!response){
-                setError(response.error);
                 toast.error("An error occured with the request", {
                     position: 'middle-center',
                   });
                 return;
             }
             if(!response.success){
-                setError(response.error);
                 toast.error(response.error, {
                     position: 'middle-center',
                 });
@@ -103,9 +103,10 @@ export default function Profile() {
                });
                getUser();
             }
+            setLoading(false);
             return;
             }catch(error){
-                setError(error.message);
+                setLoading(false);
                 toast.error(error.message, {
                     position: 'middle-center',
                  });
@@ -116,6 +117,7 @@ export default function Profile() {
 
     const getUser = useCallback(async() => {
         try{
+            setLoading(true);
             if(token==='null' || token===null || token==='undefined'){
                 toast.error("Please connect wallet first", {
                     position: 'middle-center',
@@ -129,34 +131,47 @@ export default function Profile() {
             });
 
             if(!response || response.error){
-                setError(response.error)
+                toast.error(response.error, {
+                    position: 'middle-center',
+                  });
             }
             if(!response.success){
-                setError(response.message)
-            }
+                toast.error(response.message, {
+                    position: 'middle-center',
+                  });
+            }else{
             console.log(response.data)
             setUser(response.data);
             setUsername(response.data.username);
             setEmail(response.data.email);
-
             if(response.data.username!=''){
                 setUsernameUpdate(false);
             }
             if(response.data.email!=''){
                 setEmailUpdate(false);
             }
+           }
+           setLoading(false);
         }catch(error){
-            setError(error.message)
+            setLoading(false);
+            toast.error(error.message, {
+                position: 'middle-center',
+              });
         }
     });
-
-
+    
     useEffect(()=>{
         getUser();
     },[])
     return (
         <>
          <Toaster containerStyle={{ position: 'absolute' }} />
+
+           <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		    </div>
 		    <Sidebar account={account}/>
 			 <div className="offcanvas-overly"></div>
 			 

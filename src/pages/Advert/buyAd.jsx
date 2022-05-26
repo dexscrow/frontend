@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
+import toast, { Toaster } from 'react-hot-toast';
 import {Link,useNavigate} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
@@ -28,11 +29,13 @@ export default function BuyAd(){
     const [assets,setAssets] = useState([]);
     const [methods,setMethods] = useState([]);
     const [method,setMethod] = useState("");
+    const [loading,setLoading] = useState(false);
     const [paymentMethods,setPaymentMethods]= useState([]);
     const navigate = useNavigate();
     
 
     const runQuery = useCallback(async() => {
+        setLoading(true);
         try{
         const filters = {
           currency,paymentMethod:method,asset
@@ -47,20 +50,31 @@ export default function BuyAd(){
         })
         
         if(response.error){
-          setError(response.error);
+          toast.error(response.error, {
+            position: 'middle-center',
+          });
         }
 
         if(!response.success){
-          setError(response.message);
+          toast.error(response.message, {
+            position: 'middle-center',
+          });
         }
-        setAds(response.data);
+        else{
+         setAds(response.data);
+         }
+         setLoading(false);
         }catch(error){
-          setError(error.message)
+          toast.error(error.message, {
+            position: 'middle-center',
+          });
+          setLoading(false);
         }
     });
 
     const fetchAds = useCallback(async() => {
       try{
+        setLoading(true);
         const {data:response} = await axios.get(BUY_ADS_URL,{
           headers:{
             "Authorization":`Bearer ${token}`
@@ -68,15 +82,24 @@ export default function BuyAd(){
         })
 
         if(response.error){
-          setError(response.error);
+          toast.error(response.error, {
+            position: 'middle-center',
+          });
         }
 
         if(!response.success){
-          setError(response.message);
-        }
+          toast.error(response.message, {
+            position: 'middle-center',
+          });
+        }else{
         setAds(response.data);
+        }
+        setLoading(false);
       }catch(error){
-        setError(error.message)
+        toast.error(error.message, {
+          position: 'middle-center',
+        });
+        setLoading(false);
       }
     });
 
@@ -88,16 +111,23 @@ export default function BuyAd(){
             }
         });
         if(response.error){
-            setError(response.error)
+          toast.error(response.error, {
+            position: 'middle-center',
+          });
         }
         if(!response.success){
-            setError(response.message)
-        }
+          toast.error(response.message, {
+            position: 'middle-center',
+          });
+        }else{
         setAssets(response.data);
         setAsset(response.data[0]._id);
         setCryptoAsset(response.data[0]);
+        }
     }catch(err){
-        setError(err.message)
+       toast.error(err.message, {
+         position: 'middle-center',
+       });
     }
   })
 
@@ -109,15 +139,22 @@ export default function BuyAd(){
         }
     });
     if(response.error){
-        setError(response.error)
+      toast.error(response.error, {
+        position: 'middle-center',
+      });
     }
     if(!response.success){
-        setError(response.message)
-    }
+      toast.error(response.message, {
+        position: 'middle-center',
+      });
+    }else{
     setCurrencies(response.data);
-    setCurrency(response.data[0].symbol);
+    setCurrency(response.data[0]._id);
+    }
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
   });
 
@@ -130,17 +167,24 @@ export default function BuyAd(){
       })
 
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
 
       if(!response.success){
-        setError(response.message);
-      }
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
       setMethods(response.data);
       setMethod(response.data[0]._id);
       await runQuery();
+      }
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
   });
 
@@ -153,15 +197,22 @@ export default function BuyAd(){
       })
 
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
 
       if(!response.success){
-        setError(response.message);
-      }
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
       setPaymentMethods(response.data);
+      }
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
   })
 
@@ -200,8 +251,12 @@ export default function BuyAd(){
           </div>
         </div>
 
-
-
+        <Toaster containerStyle={{ position: 'absolute' }} />
+        <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		   </div>
        <Sidebar account={account}/>
 			 <div className="offcanvas-overly"></div>
 			 
@@ -215,7 +270,7 @@ export default function BuyAd(){
 					  <div className="container">
 					   <div className="row">
 						 <div className="row">
-                           <div className="col col-6 col-xs-6 col-sm-6">
+              <div className="col col-6 col-xs-6 col-sm-6">
 							   <h3 className="page-title">Sell Ads</h3>
 							</div>
 							<div className="col col-6 col-xs-6 col-sm-6 text-end">
@@ -227,16 +282,16 @@ export default function BuyAd(){
 									  <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
 									</ul>
 							</div>
-                        </div>   
+             </div>   
 					</div>
 					
 					
           <form>
 					   <div className="row mt-30 mb-20">
 						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
-						   <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10">Buy</Link>
+						   <Link to="/ad/sell" className="btn-dex btn-dex-default p-10">Buy</Link>
 						   &nbsp;&nbsp;
-						   <Link to="/ad/buy" className="btn-dex btn-dex-default p-10">Sell</Link> 
+						   <Link to="/ad/buy" className="btn-dex btn-dex-primary p-10">Sell</Link> 
 						</div>
 
 						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
@@ -262,7 +317,7 @@ export default function BuyAd(){
 							   {
 								  currencies && currencies.map((currency)=>(
 									<>
-									  <option value={currency.symbol}>{currency.symbol}</option>
+									  <option value={currency._id}>{currency.symbol}</option>
 									</>
 								  ))
 								}
@@ -312,7 +367,7 @@ export default function BuyAd(){
                               <div className={`col col-12 col-xs-12 col-sm-3 mb-20 pt-10`}>
                                 <div className="row">
                                   <div className="col col-2 col-xs-2">
-                                    <img src={Avatar} style={{width:"30px", height:"30px"}} />
+                                    <img src={Avatar} style={{width:"45px", height:"45px"}} />
                                   </div>
                                   <div className="col col-10 col-xs-10 text-start"> 
                                     <div className="row">
@@ -321,12 +376,12 @@ export default function BuyAd(){
                                         </div>
                                         <div className="col col-12 col-xs-12 p-10 d-flex mb-0 pb-0">
                                             <span className="label">Orders</span>  &nbsp;
-                                            <span className="value">{ad.unit["$numberDecimal"]}</span>
+                                            <span className="value">{ad.owner.completedTrades}</span>
                                         </div>
 
                                         <div className="col col-12 col-xs-12 p-10 d-flex mt-0 pt-0">
                                            <span className="label">Completion</span>&nbsp;
-                                            <span className="value">92%</span>
+                                            <span className="value">{isNaN((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))? "0":  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades)) } %</span>
                                         </div>
                                     </div>
                                  </div>

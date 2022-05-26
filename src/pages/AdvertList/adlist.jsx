@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from 'react'
+import socketClient from "socket.io-client";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from '../Landing/components/header'
 import Delete from "../../assets/delete.svg"
@@ -7,12 +8,16 @@ import {Link} from "react-router-dom";
 import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account';
 import Sidebar from '../Landing/components/sidebar';
+import {close} from '../../helpers/sellad';
 import axios from "axios";
 const token = localStorage.getItem("authToken");
 
+
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
 const BUY_AD_URL = process.env.REACT_APP_SERVER_URL+'/buy/adverts/me';
 const SELL_AD_URL = process.env.REACT_APP_SERVER_URL+'/sell/adverts/me';
 const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
+const BASE_URL= process.env.REACT_APP_SERVER_URL;
 
 
 export default function Adlist() {
@@ -25,7 +30,13 @@ export default function Adlist() {
     const [priceType,setPriceType] = useState("");
     const [asset,setAsset] = useState("");
     const [assets,setAssets] = useState([]);
-
+    const [advertStatusHeading,setAdvertStatusHeading] = useState("");
+    const [advertStatusBody,setAdvertStatusBody] = useState("");
+    const [adID,setAdID] = useState("");
+    const [adURL,setAdURL] = useState("");
+    const [loading,setLoading] = useState(false);
+   
+   
     const runQuery = ()=>{
         const run = async ()=>{
           try{
@@ -48,24 +59,27 @@ export default function Adlist() {
           })
           
           if(response.error){
-            setError(response.error);
+            toast.error(response.error, {
+              position: 'middle-center',
+            }); 
           }
   
           if(!response.success){
-            setError(response.message);
+            toast.error(response.message, {
+              position: 'middle-center',
+            });
           }
-          console.log(response)
             if(priceType === "buy"){
               setBuyAds(response.data);
             }else if(priceType === "sell"){
               setSellAds(response.data);
             }
           }catch(error){
-            setError(error.message)
+            toast.error(error.message, {
+              position: 'middle-center',
+            });
           }
         };
-
-        
         run();
       }
 
@@ -80,15 +94,22 @@ export default function Adlist() {
             }
         });
         if(response.error){
-            setError(response.error)
+          toast.error(response.error, {
+            position: 'middle-center',
+          }); 
         }
         if(!response.success){
-            setError(response.message)
+          toast.error(response.message, {
+            position: 'middle-center',
+          });
+        }else{
+          setBuyAds(response.data);
         }
-        console.log(response)
-        setBuyAds(response.data);
+        
     }catch(err){
-        setError(err.message)
+       toast.error(err.message, {
+         position: 'middle-center',
+       });
     }
    })
 
@@ -103,16 +124,23 @@ export default function Adlist() {
             }
         });
         if(response.error){
-            setError(response.error)
+          toast.error(response.error, {
+            position: 'middle-center',
+          }); 
         }
         if(!response.success){
-            setError(response.message)
+          toast.error(response.message, {
+            position: 'middle-center',
+          }); 
+        }else{
+          setSellAds(response.data);
         }
-        console.log(response)
-        setSellAds(response.data);
+       
     }catch(err){
-        setError(err.message)
-    }
+       toast.error(err.message, {
+         position: 'middle-center',
+       }); 
+     }
    })
 
    const fetchAssets  = useCallback(async() => {
@@ -123,14 +151,113 @@ export default function Adlist() {
             }
         });
         if(response.error){
-            setError(response.error)
+          toast.error(response.error, {
+            position: 'middle-center',
+          }); 
         }
         if(!response.success){
-            setError(response.message)
+          toast.error(response.message, {
+            position: 'middle-center',
+          }); 
+        }else{
+          setAssets(response.data);
         }
-        setAssets(response.data);
+        
     }catch(err){
-        setError(err.message)
+       toast.error(err.message, {
+          position: 'middle-center',
+        }); 
+     }
+   });
+
+   
+  const changeStatus = useCallback(async() => {
+    try{
+      setLoading(true);
+      const {data:response} = await axios.patch(BASE_URL+"/"+adURL+"/advert/"+adID,{},{
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
+
+      if(response.error){
+        toast.error(response.error, {
+          position: 'middle-center',
+        }); 
+      }
+  
+      if(!response.success){
+        toast.error(response.message, {
+          position: 'middle-center',
+        });  
+      }else{
+        toast.success("Ad Status Changed", {
+          position: 'middle-center',
+        }); 
+      }
+      setLoading(false);
+      window.location.reload();
+    }catch(error){
+      toast.error(error.message, {
+        position: 'middle-center',
+      }); 
+    }
+  })
+
+
+  const closeAd = useCallback(async() => {
+    try{
+      if(adURL==="sell"){
+        setLoading(true);
+        const initAd = socketClient(SOCKET_ENDPOINT+"/initAd");
+        initAd.on("connect", function(){
+          initAd.emit('initadroom',adID);
+        });
+
+        initAd.on('adclosed', (data) => {
+          toast.success("Ad closed successfully", {
+            position: 'middle-center'
+          });
+          setLoading(false);
+          window.location.reload();
+        });
+
+        toast.success("Waiting for confirmation", {
+          position: 'middle-center',
+        });
+        await close(adID);
+        //window.location.reload();
+      }
+      else if(adURL==="buy"){
+      setLoading(true);
+      const {data:response} = await axios.patch(BASE_URL+"/"+adURL+"/advert/"+adID,{status:'closed'},{
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
+
+      if(response.error){
+        toast.error(response.error, {
+          position: 'middle-center',
+        }); 
+      }
+  
+      if(!response.success){
+        toast.error(response.message, {
+          position: 'middle-center',
+        });  
+      }else{
+        toast.success("Ad closed successfully", {
+          position: 'middle-center',
+        });   
+      }
+      setLoading(false);
+      window.location.reload();
+     }
+    }catch(error){
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
    })
 
@@ -143,24 +270,34 @@ export default function Adlist() {
     return (
         <>
 		<Toaster containerStyle={{ position: 'absolute' }} />
-          <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
-			<div className="modal-dialog modal-sm">
-			  <div className="modal-content" style={{background:"#ccc"}}>
+      
+         <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
+       <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
+			  <div className="modal-dialog modal-sm">
+			  <div className="modal-content">
 				<div className="modal-header">
-				  <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
+				  <h5 className="modal-title" id="exampleModalLabel">{advertStatusHeading}</h5>
 				  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div className="modal-body">
 				  <div className="row mb-20">
 					<div className="col col-12 col-xs-12">
-					  Once taken offline, the Ad will not be able to take in orders from users.
+					  {advertStatusBody}.
 					</div>
 				  </div>
 
 				  <div className="row form-row mb-20">     
 					<div className="col col-xs-12 text-end">
-					<button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-					<button className="btn-dex-small btn-dex-default">Confirm</button>
+					<button className="btn-dex-small btn-dex-danger text-white" data-bs-dismiss="modal" aria-label="Close">Cancel</button> &nbsp;
+					<button className="btn-dex-small btn-dex-default" onClick={(e)=>{
+                e.preventDefault();
+                changeStatus(adID);
+              }}>Confirm</button>
 					</div>
 				</div> 
 
@@ -168,6 +305,34 @@ export default function Adlist() {
 			  </div>
 			</div>
 		</div>
+
+
+    <div className="modal fade" id="closeAdModal" tabIndex="-1" aria-labelledby="closeAdModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-sm">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="exampleModalLabel">Confirm Ad Closing</h5>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div className="modal-body">
+            <div className="row">
+              <div className="col-xs-12 col-sm-12">
+                  Are you sure you want to close this ad? Click on the Proceed Button below 
+              </div>
+
+              <div className="col-xs-12 col-sm-12 text-center mt-20">
+                  <button className="btn-dex btn-success btn-dex-primary"
+                  onClick={(e)=>{
+                  e.preventDefault();
+                  closeAd();
+                }}
+                >Proceed</button>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
 
  
  
@@ -306,14 +471,37 @@ export default function Adlist() {
                             <br/><span className="value p-0">{advert.paymentMethod.paymentMethod.name}</span>
                         </div>
 
-                        <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
+                        <div className="col  col-6 col-xs-6 col-sm-2">
                             <span className="label p-0">Status</span><br/>
-                            <span className="value p-0" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">{advert.status}</span><br/><br/>
+                            <span className="value p-0" data-bs-toggle="modal" data-bs-target="#confirmPublishModal"
+                            onClick={(e)=>{
+                              e.preventDefault();
+                              setAdID(advert._id);
+                              setAdURL("sell");
+                              if(advert.status=='active'){
+                                setAdvertStatusHeading("Confirm to take Ad offline")
+                                setAdvertStatusBody("Once taken offline, the Ad will not be able to take in orders from users.")
+                              }
+                              else{
+                                setAdvertStatusHeading("Confirm to take Ad online")
+                                setAdvertStatusBody("Once taken online, the Ad will be able to take in orders from users.")
+                              }
+                            }}
+                            ><u>{advert.status}</u></span><br/><br/>
+
+                            <span className="label p-0">Escrow</span><br/>
+                            <Link to={{pathname:'/ad/fundad/'+advert._id, state:{id:advert._id}}}> <span className="value p-0" style={{textDecoration:'underline'}}>{advert.balance} {advert.asset?.symbol}</span></Link><br/><br/>
                         </div>
 
                         <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
-                            <img src={Delete} style={{width:"20px", height:"20px"}}/>
-                             &nbsp;&nbsp;
+                            <img src={Delete} style={{width:"20px", height:"20px"}} data-bs-toggle="modal" data-bs-target="#closeAdModal"
+                             onClick={(e)=>{
+                              e.preventDefault();
+                              setAdID(advert._id);
+                              setAdURL("sell");
+                            }}
+                            />
+                           &nbsp; &nbsp;
 						              <Link to={{pathname:'/ad/editsellad/'+advert._id, state:{id:advert._id}}}><img src={Edit} style={{width:"20px", height:"20px"}} /> </Link>
                         </div>
  
@@ -357,11 +545,28 @@ export default function Adlist() {
   
                           <div className="col  col-6 col-xs-6 col-sm-2"><br/><br/>
                               <span className="label p-0">Status</span><br/>
-                              <span className="value p-0" data-bs-toggle="modal" data-bs-target="#confirmPublishModal">{advert.status}</span><br/><br/>
+                              <span className="value p-0" data-bs-toggle="modal" data-bs-target="#confirmPublishModal" onClick={(e)=>{
+                                e.preventDefault();
+                                setAdID(advert._id);
+                                setAdURL("buy");
+                                if(advert.status=='active'){
+                                  setAdvertStatusHeading("Confirm to take Ad offline")
+                                  setAdvertStatusBody("Once taken offline, the Ad will not be able to take in orders from users.")
+                                }
+                                else{
+                                  setAdvertStatusHeading("Confirm to take Ad online")
+                                  setAdvertStatusBody("Once taken online, the Ad will be able to take in orders from users.")
+                                }
+                              }}><u>{advert.status}</u></span><br/><br/>
                           </div>
   
                           <div className="col  col-6 col-xs-6 col-sm-1"><br/><br/>
-                              <img src={Delete} style={{width:"20px", height:"20px"}}/>
+                              <img src={Delete} style={{width:"20px", height:"20px"}}  data-bs-toggle="modal" data-bs-target="#closeAdModal" 
+                              onClick={(e)=>{
+                                e.preventDefault();
+                                setAdID(advert._id);
+                                setAdURL("buy");
+                              }}/>
                                &nbsp;&nbsp;
                               <Link to={{pathname:'/ad/editbuyad/'+advert._id, state:{id:advert._id}}}><img src={Edit} style={{width:"20px", height:"20px"}} /> </Link>
                           </div>

@@ -1,0 +1,93 @@
+export default function Details(){
+    return(
+        <>
+		<section className="betting-details mt-30" style={{marginTop:"30px"}}>
+	 	 <div className="row cus-mar betting-content">
+			
+			<div className="col-lg-12">
+				<div className="time-area text-center mt-60 mb-60">
+					<div className="countdown d-flex align-items-center justify-content-center">
+						<h3>
+							<span className="days">00</span><span className="ref">d</span><span
+								className="seperator">:</span>
+						</h3>
+						<h3>
+							<span className="hours">00</span><span className="ref">h</span><span
+								className="seperator">:</span>
+						</h3>
+						<h3>
+							<span className="minutes">00</span><span className="ref">m</span><span
+								className="seperator">:</span>
+						</h3>
+						<h3>
+							<span className="seconds">00</span><span className="ref">s</span>
+						</h3>
+					</div>
+					<div className="bet-id">
+						<p>Bet Id: #18574b25-dda0-4523-be24-a8df2cf69ca1</p>
+					</div>
+				</div>
+				<div className="table-responsive">
+					<table className="table">
+						<tbody>
+							<tr>
+								<th scope="row">
+									<span className="xlr">Match</span>
+								</th>
+								<td>
+									<img src="assets/images/icon/sol-btc.png" alt="icon"/>
+									<span className="xlr">Arsenal-Chelsea</span>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><span className="xlr">Stake Amount</span></th>
+								<td><span className="xlr">0.05 BNB</span></td>
+							</tr>
+							<tr>
+								<th scope="row"><span className="xlr">Total Stake</span></th>
+								<td><span className="xlr">0.00 BTC</span></td>
+							</tr>
+							<tr>
+								<th scope="row"><span className="xlr">Stake Close date - (last date where users can
+										stake the bet)</span></th>
+								<td>
+									<span className="xlr">Local Time: 26 Nov 2022 19:38:00</span>
+									<span className="xlr">UTC Time: 26 Nov 2022 13:38:00</span>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><span className="xlr">Match date 
+								</span></th>
+								<td>
+									<span className="xlr">Local Time: 26 Nov 2022 19:38:00</span>
+									<span className="xlr">UTC Time: 26 Nov 2022 13:38:00</span>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><span className="xlr">Escrow Fee From The Winner</span></th>
+								<td><span className="xlr">5%</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div className="escrow-bet-single">
+					<div className="left-area">
+						<h5>Dividend (0.05 BNB)</h5>
+						<p>The amount you are going to get if your outcome </p>
+					</div>
+					<div className="right-area">
+						<p>Your Dividend</p>
+						<button type="button" className="btn-dex-small btn-dex-default" data-bs-toggle="modal" data-bs-target="#loginMod">
+							Withdraw
+						</button>
+					</div>
+				</div>
+			
+				
+			</div>
+		 </div>
+	    </section>
+					
+      </>
+    )
+}

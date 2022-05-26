@@ -8,20 +8,22 @@ import Nav from "../Landing/components/nav"
 import axios from "axios";
 
 const TRADES_URL = process.env.REACT_APP_SERVER_URL+"/trades"
-const FILTERED_TRADE_URL = `${process.env.REACT_APP_SEREVER_URL}/trades`
+const FILTERED_TRADE_URL = process.env.REACT_APP_SERVER_URL+"/trades"
 
 export default function Trades(){
     const [account,_] = useContext(AccountContext);
     const [trades,setTrades] = useState([]);
     const [error,setError] = useState("");
     const [date,setDate]= useState("");
-    const [status,setStatus] = useState("");
+    const [status,setStatus] = useState("active");
     const [priceType,setPriceType] = useState("");
     const [asset,setAsset] = useState("");
+    const [loading,setLoading] = useState(false);
     const token = localStorage.getItem("authToken");
 
     const runQuery = ()=>{
         const run = async ()=>{
+          setLoading(true);
           try{
           if(token==='null' || token===null || token==='undefined'){
               toast.error("Please connect wallet first", {
@@ -34,7 +36,6 @@ export default function Trades(){
           }
           Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
           const q = new URLSearchParams(filters).toString();
-          console.log(q)
           const {data:response} = await axios.get(`${FILTERED_TRADE_URL}/?${q}`,{
             headers:{
               "Authorization":`Bearer ${token}`
@@ -42,23 +43,32 @@ export default function Trades(){
           })
           
           if(response.error){
-            setError(response.error);
+            toast.error(response.error, {
+              position: 'middle-center'
+            });
           }
   
           if(!response.success){
-            setError(response.message);
+            toast.error(response.message, {
+              position: 'middle-center'
+            });
+          }else{
+           setTrades(response.data);
           }
-          console.log(response.data);
-          setTrades(response.data);
+          setLoading(false);
           }catch(error){
-            setError(error.message)
+            toast.error(error.message, {
+              position: 'middle-center'
+            });
+            setLoading(false);
           }
         }
         run();
       }
 
     useEffect(()=>{
-        const run = async ()=>{
+        /*const run = async ()=>{
+            setLoading(true);
             if(token==='null' || token===null || token==='undefined'){
               return
             }
@@ -72,14 +82,22 @@ export default function Trades(){
             }
             if(!response.success){
                 setError(response.message)
-            }
+            }else{
             setTrades(response.data);
+            }
+            setLoading(false);
         }
-        run();
+        run();*/
     },[])
     return(
     <>
      <Toaster containerStyle={{ position: 'absolute' }} />
+     <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
 	    <Sidebar account={account}/>
 			 <div className="offcanvas-overly"></div>
 			 
@@ -135,7 +153,7 @@ export default function Trades(){
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <label>Asset</label>
                         <select className="form-control no-radius"  value={asset} onChange={(e)=>setAsset(e.target.value)}>
-                            <option value="">All Asset</option>
+                            <option value="">--Select Asset--</option>
                             <option value="BTCB">BTCB</option>
                             <option value="ETH">ETH</option>
                             <option value="SOL">SOL</option>
@@ -147,7 +165,7 @@ export default function Trades(){
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <label>Order Type</label>
                         <select className="form-control no-radius"  value={priceType} onChange={(e)=>setPriceType(e.target.value)}>
-                            <option value="">All</option>
+                        <option value="">--Select Type--</option>
                             <option value="buy">Buy</option>
                             <option value="sell">Sell</option>
                         </select>
@@ -156,6 +174,7 @@ export default function Trades(){
                     <div className="col col-6 col-xs-6 col-sm-2 mb-10">
                         <label>Status</label>
                         <select className="form-control no-radius"  value={status} onChange={(e)=>setStatus(e.target.value)}>
+                            <option value="">--Select Status--</option>
                             <option value="active">Active</option>
                             <option value="closed">Closed</option>
                         </select>
@@ -183,40 +202,51 @@ export default function Trades(){
                 </form>
 	 
 	 
-	           <div className="row p-10">
-				    {trades.length>0 ? trades.map((trade)=>(
+	                <div className="row p-10">
+				            {
+                    
+                     trades.length>0 ? trades.map((trade)=>(
                      <>
                      <div className="trade-record-card pt-10 pb-20">
                      <div className="row">
                          
                         <div className="col col-6 col-xs-6 col-sm-2">
-                           <b>{trade.advert.priceType}</b> | 2021-12-17 15:11:52
-                           <b><u>{trade.uid}</u></b><br/>
+                           <b>{trade.type}</b> <br/>
+                           <b><u> <Link className="text-white"
+                              to={{ pathname:'/trade/'+trade._id, state:{id:trade._id}}}> 
+                              #{trade._id}
+                            </Link></u></b><br/>
                            <span className="label">Asset</span><br/>
-                           <span className="value"> {trade.advert.asset}</span>
+                           <span className="value"> {trade.advert.asset.symbol}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
-                            <span className="label">Fiat Amount</span><br/>
-                            <span className="value">{trade.advert.price} NGN</span>
+                            <span className="label">Rate</span><br/>
+                            <span className="value">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(trade.rate["$numberDecimal"])} &nbsp; {trade.advert.currency.symbol}</span>
+                        </div>
+                       
+                        <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
+                            <span className="label">Quantity </span><br/>
+                            <span className="value">{  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(trade.unit["$numberDecimal"])} {trade.advert.asset.symbol}</span>
                         </div>
                         <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
                             <span className="label">Price</span><br/>
-                            <span className="value">{trade.advert.currencyRate} NGN</span>
-                        </div>
-                        <div className="col col-6 col-xs-6 col-sm-2"><br/><br/>
-                            <span className="label">Crypto Amount</span><br/>
-                            <span className="value">{trade.unit} {trade.advert.asset}</span>
+                            <span className="value">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(trade.price["$numberDecimal"]) } &nbsp;  {trade.advert.currency.symbol}</span>
                         </div>
                         <div className="col col-6 col-xs-6  col-sm-2"><br/><br/>
                             <span className="label">Counterparty</span><br/>
-                            <span className="value">{trade.advert.owner}</span>
+                            <span className="value">{trade.advert.owner.username}</span>
                         </div>
                         <div className="col  col-6 col-xs-3 col-sm-2"><br/><br/>
                             <span className="label">Status</span><br/>
                             <span className="value">{trade.status}</span><br/><br/>
 
                             <span className="label">Action</span><br/>
-                            <span className="value">View</span>
+                            <span className="value">
+                             <Link className=""
+                              to={{ pathname:'/trade/'+trade._id, state:{id:trade._id}}}> 
+                               View
+                            </Link>
+                            </span>
                         </div>
                       </div>
                      </div>

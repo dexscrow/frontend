@@ -1,4 +1,5 @@
 import React ,{useContext,useState,memo,useEffect} from 'react';
+import socketClient from "socket.io-client";
 import toast, { Toaster } from 'react-hot-toast';
 import Sidebar from '../Landing/components/sidebar'
 import {Link,Navigate,useNavigate} from "react-router-dom";
@@ -10,8 +11,10 @@ import Progressbar from './components/progressbar'
 import BuyTab from './components/buyTab'
 import SellTab from './components/sellTab'
 import ConfirmAd from './components/confirmAd'
+import {createAdvert,getAdBalance} from '../../helpers/sellad';
 import axios from 'axios'
 
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
 const COUNTRIES_URL=process.env.REACT_APP_SERVER_URL+"/countries";
 const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
@@ -44,9 +47,10 @@ const CreateAd = () => {
     const [methods,setMethods] = useState([]);
     const [prefferedMethod,setPrefferedMethod] = useState("");
     const [selectedMethod,setSelectedMethod] = useState("");
-    const [deadline,setDeadline] = useState(0);
+    const [deadline,setDeadline] = useState(15);
     const [notes,setNotes] = useState("");
     const [registered,setRegistered] = useState("");
+    const [loading,setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -59,6 +63,14 @@ const CreateAd = () => {
                     });
                     return
                 }
+
+                if(selectedMethod._id==null){
+                    toast.error("Please select a payment method", {
+                        position: 'middle-center',
+                    });
+                  return
+                }
+                setLoading(true);
                 const {data:response} = await axios.post(CREATE_SELL_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset))._id,
                     paymentMethod:selectedMethod._id,
@@ -69,7 +81,7 @@ const CreateAd = () => {
                     lowerLimit,
                     upperLimit,
                     deadline,
-                    balance:price,
+                    balance:totalAsset,
                     unit:totalAsset,
                     status: "active",
                     notes,
@@ -91,22 +103,33 @@ const CreateAd = () => {
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
                    }
               else{
-                    toast.success("Ad has been created successfully", {
-                        position: 'middle-center',
+                    let assetAddress = (assets.find((a)=>a.symbol == asset)).address;
+                    let initAd = socketClient(SOCKET_ENDPOINT+"/initAd");
+                    initAd.on("connect", function(){
+                        initAd.emit('initadroom',response.result._id);
+                    });
+            
+                    initAd.on('adfunded', (data) => {
+                     toast.success("Ad has been created successfully", {
+                            position: 'middle-center',
+                     });
+
+                     setLoading(false);
+                     navigate("/ad/list");
+                     window.location.reload();      
                     });
 
-                   navigate("/ad/fundad/"+response.result._id);
-                   window.location.reload(); 
+                    createAdvert(response.result._id,response.result.unit['$numberDecimal'],assetAddress);
+                   //navigate("/ad/fundad/"+response.result._id);
+                  // window.location.reload(); 
 
                 }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -125,6 +148,16 @@ const CreateAd = () => {
                     });
                     return
                 }
+                
+               // var methodSelected = (methods.find((m)=>m.name == prefferedMethod))._id;
+                if(prefferedMethod===null || prefferedMethod===""){
+                    toast.error("Please select a payment method", {
+                        position: 'middle-center',
+                    });
+                    setLoading(false);
+                  return
+                }
+                setLoading(true);
                 const {data:response} = await axios.post(CREATE_BUY_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset))._id,
                     paymentMethod:(methods.find((m)=>m.name == prefferedMethod))._id,
@@ -135,7 +168,7 @@ const CreateAd = () => {
                     lowerLimit,
                     upperLimit,
                     deadline,
-                    balance:price,
+                    balance:totalAsset,
                     unit:totalAsset,
                     status: "active",
                     notes,
@@ -152,13 +185,11 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
@@ -168,10 +199,10 @@ const CreateAd = () => {
                         position: 'middle-center',
                     });
                 }
+              setLoading(false);
               navigate("/ad/list");
               window.location.reload(); 
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -196,24 +227,21 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error);
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setCurrencies(response.data);
                 setCurrency(response.data[0]);
                 setPrice(Number(response.data[0].rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
                 setCurrencyRate(response.data[0].rateToDollar["$numberDecimal"]);
-
+              }
             }catch(error){
-                setError(error.message);
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -221,30 +249,26 @@ const CreateAd = () => {
         }
         const fetchAssets = async ()=>{
             try{
-              
                 const {data:response} = await axios.get(ASSETS_URL,{
                     headers:{
                         "Authorization":`Bearer ${authToken}`
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setAssets(response.data);
                 setAsset(response.data[0].symbol);
                 setAssetPrice(response.data[0].rateToDollar["$numberDecimal"]);
-                
+                }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -261,20 +285,18 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setPaymentMethods(response.data);
+                }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -289,37 +311,47 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                   
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setMethods(response.data);
+                }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
             }
         }
 
+        const getAdOwner= async ()=>{
+            var bal = await getAdBalance("625d7bd72e757099d143ef5d");
+            alert(bal);
+        }
+
         fetchAssets();
         fetchCountries();
         fetchPaymentMethods();
         fetchMethods();
+        //getAdOwner();
     },[authToken]);
     
     return (
         <>
         <PaymentModal />
         <Toaster containerStyle={{ position: 'absolute' }} />
+        <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
           <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
           <div className="modal-dialog">
                  <div className="modal-content">
@@ -437,10 +469,10 @@ const CreateAd = () => {
 					<div className="col col-12 mt-20">
 						<ul className="nav nav-tabs" id="myTab" role="tablist">
 							<li className="nav-item" role="presentation" style={{ width: "50%" }}>
-								<button className="nav-link active" id="buy-tab" data-bs-toggle="tab" data-bs-target="#buy" type="button" role="tab" aria-controls="buy" aria-selected="true" onClick={()=>setType("buy")}>I WANT TO BUY</button>
+								<button className={`nav-link ${type==="buy" ? "active" : ""}`} id="buy-tab" data-bs-toggle="tab" data-bs-target="#buy" type="button" role="tab" aria-controls="buy" aria-selected="true" onClick={()=>setType("buy")}>I WANT TO BUY</button>
 							</li>
 							<li className="nav-item" role="presentation" style={{ width: "50%" }}>
-								<button className="nav-link" id="sell-tab" data-bs-toggle="tab" data-bs-target="#sell" type="button" role="tab" aria-controls="sell" aria-selected="false" onClick={()=>setType("sell")}>I WANT TO SELL</button>
+								<button className={`nav-link ${type==="sell" ? "active" : ""}`} id="sell-tab" data-bs-toggle="tab" data-bs-target="#sell" type="button" role="tab" aria-controls="sell" aria-selected="false" onClick={()=>setType("sell")}>I WANT TO SELL</button>
 							</li>
 						</ul>
 						<div className="tab-content" id="myTabContent">

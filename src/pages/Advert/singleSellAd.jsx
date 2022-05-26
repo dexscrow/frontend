@@ -9,48 +9,117 @@ import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
+import {createBuyTrade} from '../../helpers/buytrade';
 const token = localStorage.getItem("authToken");
-
 const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
 const SELL_AD_URL= process.env.REACT_APP_SERVER_URL+"/sell/singleadvert";
 const BUY_TRADE_URL = process.env.REACT_APP_SERVER_URL+"/buy/trade";
+const initTrade = socketClient(SOCKET_ENDPOINT+"/initTrade");
 
 export default function SingleSellAd(){
   const [account,_]= useContext(AccountContext);
   const [ad,setAd] = useState(null);
+  const [tradeAmount,setTradeAmount] = useState(0);
   const [tradeWarning,setTradeWarning] = useState('');
   const [error,setError] = useState("");
   const [amount,setAmount]= useState(0);
   const [unit,setUnit] = useState(0);
+  const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
   const {id} = useParams();
 
-  const initSellTrade = ()=>{
+  const buyTrade = async(a,tradeID) => {
+  try{
+        initTrade.emit('inittraderoom',tradeID);
+        initTrade.on('tradeinitialized', (data) => {
+          navigate("/trade/"+tradeID);
+          setLoading(false);
+        });
+
+        await createBuyTrade(tradeID,ad._id,a);
+        toast.success("Waiting for confirmation", {
+            position: 'middle-center',
+          });
+          return;
+          //window.location.reload();
+   }catch(error){
+        toast.error(error.message, {
+          position: 'middle-center',
+        });
+        setLoading(false);
+   }
+};
+
+  const initBuyTrade = ()=>{
     const run = async ()=>{
       try{
-        const {data:response} = await axios.post(BUY_TRADE_URL+"/"+id,{
-          unit
-        },{
-            headers:{
-                "Authorization":`Bearer ${token}`
-            }
-        });
+        setLoading(true);  
+        var {data:response} = await axios.get(SELL_AD_URL+"/"+id,{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        })
+
         if(response.error){
-            setError(response.error)
+          toast.error(response.error, {
+            position: 'middle-center',
+          });
+          setLoading(false);
         }
         if(!response.success){
-            setError(response.message)
+          toast.error(response.message, {
+            position: 'middle-center',
+          });
+          setLoading(false);
+        }  
+        
+       if(response.success){
+            setAd(response.data);
+             if(unit > ad.balance){
+              toast.error("Ad require less amount than you specified", {
+                position: 'middle-center',
+              });
+              return;
+             }
+             if(ad.status!="active"){
+              toast.error("Ad is not active", {
+                position: 'middle-center',
+              });
+              setLoading(false);
+              return;
+           }
+  
+           var {data:response} = await axios.post(BUY_TRADE_URL+"/"+id,{
+            unit,
+            seller:ad.owner._id
+          },{
+              headers:{
+                  "Authorization":`Bearer ${token}`
+              }
+          });
+          
+          if(response.error){
+            toast.error(response.error, {
+              position: 'middle-center',
+            });
+            setLoading(false);
+          }
+          if(!response.success){
+            toast.error(response.message, {
+              position: 'middle-center',
+            });
+            setLoading(false);
+          }          
+          if(response.success){
+           buyTrade(response.result.amount,response.result._id);   
+          }  
         }
-        console.log(response);
-        //subscribe to Initialize trade, waiting for blockchain transaction to process
-        const inittrade = socketClient("http://127.0.0.1:8000/inittrade");
-        inittrade.on('connect', () => {
-          inittrade.emit('joininittrade',response.result._id);
-        });
-      
         //navigate("/trade/"+response.result._id);
     }catch(err){
-        setError(err.message)
+        toast.error(err.message, {
+          position: 'middle-center',
+        });
+        setLoading(false);
      }
     }
     run();
@@ -65,24 +134,37 @@ export default function SingleSellAd(){
       })
 
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
   
       if(!response.success){
-        setError(response.message);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+          setAd(response.data);
       }
-      setAd(response.data);
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
   })
 
  useEffect(()=>{
     fetchAd();
-  },[token])
+  },[])
     return (
-        <>
+    <>
     <Toaster containerStyle={{ position: 'absolute' }} />
+    <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Please Wait...
+		 </div>
+
     <Sidebar account={account}/>
 		 <div className="offcanvas-overly"></div>
 		 
@@ -90,18 +172,17 @@ export default function SingleSellAd(){
 		  
 			<Header account={account}/>
 			 <main style={{width:'100%'}}>
-		
-				
+			
 				<section className="sell-nfts-area mb-50 mt-120">
 				  <div className="container">
 				   <div className="row mb-30 mt-20">
-                    <div className="col col-6 col-xs-6 col-sm-6">
-                       <h3 className="page-title">Ad #{id}</h3>
-                    </div>
-                    <div className="col col-6 col-xs-6 col-sm-6 text-end">
-                    
-                    </div>
-                  </div>
+              <div className="col col-6 col-xs-6 col-sm-6">
+                  <h3 className="page-title">Ad #{id}</h3>
+              </div>
+              <div className="col col-6 col-xs-6 col-sm-6 text-end">
+              
+              </div>
+            </div>
 				  
 				  
 				   <div className="row p-10">
@@ -120,11 +201,11 @@ export default function SingleSellAd(){
                                             <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
                                         </div>
                                         <div className="col col-6 col-xs-6 text-end d-flex">
-                                            <span className="value">{ad.unit["$numberDecimal"]}</span> &nbsp;
+                                            <span className="value">{ad.owner.completedTrades}</span> &nbsp;
                                             <span className="label">Orders</span>
                                             &nbsp; &nbsp; 
                                             <span className="value">Completion</span>&nbsp;
-                                            <span className="label">92%</span>
+                                            <span className="label">{isNaN((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))? "0":  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))}% </span>
                                         </div>
                                     </div>
                               </div>
@@ -209,13 +290,19 @@ export default function SingleSellAd(){
                                 onClick={(e)=>{
                                   e.preventDefault();
                                   if(amount<ad.lowerLimit){
-                                    setTradeWarning('Amount lesser than lower limit');
+                                    toast.error("Amount lesser than ad lower limit", {
+                                      position: 'middle-center',
+                                   });
+                                   // setTradeWarning('Amount lesser than lower limit');
                                   }
                                   else if(amount>ad.upperLimit){
-                                    setTradeWarning('Amount greater than upper limit');
+                                    toast.error("Amount greater than ad upper limit", {
+                                      position: 'middle-center',
+                                   });
+                                   //setTradeWarning('Amount greater than upper limit');
                                   }
                                   else{
-                                  initSellTrade();
+                                  initBuyTrade();
                                   }
                                 }}
                               >Buy {ad.asset.symbol}</button>

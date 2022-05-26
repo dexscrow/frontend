@@ -7,17 +7,16 @@ import axios from "axios";
 import Nav from "../Landing/components/nav";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
-
 const URL = process.env.REACT_APP_SERVER_URL+'/methods/payment/';
-
 
 export default function Wallet() {
     const [account,setAccount] = useContext(AccountContext);
     const [paymentMethods,setPaymentMethods] = useState([]);
+    const [loading,setLoading] = useState(false);
     const [error,setError] = useState("");
-
     useEffect(()=>{
         const run = async()=>{
+            setLoading(true);
             try{
                 if(token==='null' || token===null || token==='undefined'){
                     toast.error("Please connect wallet first", {
@@ -31,16 +30,24 @@ export default function Wallet() {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center'
+                    });
                 }
                 if(!response.success){
-                    setError(response.message)
-                }
+                    toast.error(response.message, {
+                        position: 'middle-center'
+                    });
+                }else{
                 setPaymentMethods(response.data);
+                }
+                setLoading(false);
             }catch(err){
-                setError(err.message)
+                setLoading(false);
+                toast.error(err.message, {
+                    position: 'middle-center'
+                });
             }
-            
         }
        run();
     },[])
@@ -48,6 +55,12 @@ export default function Wallet() {
             
     <>
 	 <Toaster containerStyle={{ position: 'absolute' }} />
+     <div class="overlay" style={{display:loading?'block':'none'}}>
+        <div class="spinner"></div>
+        <br/>
+        Loading...
+     </div>
+
 	  <Sidebar account={account}/>
 		 <div className="offcanvas-overly"></div>
 		 

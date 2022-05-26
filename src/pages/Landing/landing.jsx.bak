@@ -1,29 +1,49 @@
-import React,{useEffect,useContext,useState} from 'react'
+import React,{useEffect,useContext,useState,useCallback} from 'react';
 import {Link} from "react-router-dom";
-import Sidebar from './components/sidebar'
-import Header from './components/header';
-import Nav from "./components/nav";
-import NavSocial from "./components/navsocial";
+import axios from "axios";
+import Sidebar from '../components/sidebar'
+import Header from '../components/header';
+import Nav from "../components/nav";
+import NavSocial from "../components/navsocial";
+import Hero from "./components/hero";
+import HowTo from "./components/howto";
+import Features from "./components/features";
+import Know from "./components/know";
+import RoadMap from "./components/roadmap";
+import Tokenomics from "./components/tokenomics";
+import Faq from "./components/faq";
+
 import AccountContext from '../../contexts/account';
+const token = localStorage.getItem("authToken");
+
+const ASSETS_URL= process.env.REACT_APP_SERVER_URL+"/assets";
 
 export default function Landing() {
     const [account,setAccount] = useContext(AccountContext);
-    // const [errors,setErrors] = useState("");
+    const [assets,setAssets] = useState([]);
+
+    const fetchAssets = useCallback(async() => {
+        try{
+          const {data:response} = await axios.get(ASSETS_URL,{
+              headers:{
+                  "Authorization":`Bearer ${token}`
+              }
+          });
+          if(response.error){
+          }
+         
+          if(!response.success){
+          }else{
+           setAssets(response.data);
+          }
+      }catch(err){
+      }
+    });
+  
 
     // setErrors(error);
-    useEffect(()=>{
-      window.ethereum && window.ethereum.on("accountsChanged",()=>{
-            setAccount(window.ethereum.selectedAddress);
-            localStorage.setItem("account",window.ethereum.selectedAddress);
-            window.location.reload();
-        });
-        window.BinanceChain && window.BinanceChain.on('accountsChanged',async()=>{
-          const account = await window.BinanceChain.request({method:"eth_accounts"});
-          setAccount(account);
-          localStorage.setItem("account",account);
-          window.location.reload();
-        });
-        
+    useEffect(async()=>{
+        await fetchAssets();
     },[account]);
 
 
@@ -41,12 +61,12 @@ export default function Landing() {
                     <div className="banner-area">
                         <div className="container" style={{paddingLeft:'0px'}}>
                             <div className="row">
-                                <div className="col-lg-7 col-md-9" style={{border:"1px solid red",paddingLeft:'0px'}}>
+                                <div className="col-lg-7 col-md-9" style={{paddingLeft:'0px'}}>
                                     <div className="banner-content">
-                                        <h2 className="title">Buy & Sell <br /> <span>Crypto</span> in minutes with Cash but without Control</h2>
-                                        <p>Join the world’s hottest P2P DEX Exchange</p>
-                                        <Link to="/ad/sell" className="banner-btn">P2P<i className="fi-sr-arrow-right"></i></Link> &nbsp;&nbsp; 
-										<Link to="/staking" className="banner-btn">Staking<i className="fi-sr-arrow-right"></i></Link>
+                                        <h2 className="title">Decentralized Sport <br /> <span>Betting </span>With Proof of Stake</h2>
+                                        <p className="text-white">Fastest way to place bet on biggest matches in NBA, Soccer, UFC. Stake on your favorite team to win some beans</p>
+                                        <Link to="/matches" className="banner-btn">Place Bet<i className="fi-sr-arrow-right"></i></Link> &nbsp;&nbsp; 
+										<Link to="/staking" className="banner-btn">Stake<i className="fi-sr-arrow-right"></i></Link>
                                     </div>
                                 </div>
                             </div>
@@ -54,75 +74,49 @@ export default function Landing() {
                     </div>
                  </div>
 				 
+				<Hero/>
+				<Know/>
+				<HowTo/>
+				<Features/>
+				<RoadMap/>
+				<Tokenomics/>
+				<Faq/>
+					
+				 
 		
                 <section className="sell-nfts-area mb-50">
                     <div className="container">
-					
-					 <div className="row justify-content-center">
+                    { 
+                       (assets.length>0)?
+					  <div className="row justify-content-center">
 						<div className="col-xl-3 col-lg-4 col-sm-6">
 							<div className="top-seller-item text-center">
-							 <h3>BTCB</h3> 
+							<h3>{assets[0].symbol}</h3>
+                              <span>{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(assets[0].rateToDollar["$numberDecimal"])}</span>
 							</div>
 						</div>
 						<div className="col-xl-3 col-lg-4 col-sm-6">
 							<div className="top-seller-item text-center">
-							  <h3>BNB</h3> 
+                              <h3>{assets[1].symbol}</h3>
+                              <span>{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(assets[1].rateToDollar["$numberDecimal"])}</span>
 							</div>
 						</div>
 						<div className="col-xl-3 col-lg-4 col-sm-6">
 							<div className="top-seller-item text-center">
-							 <h3> BUSD</h3> 
+                            <h3>{assets[2].symbol}</h3>
+                              <span>{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(assets[2].rateToDollar["$numberDecimal"])}</span>
 							</div>
 						</div>
 						<div className="col-xl-3 col-lg-4 col-sm-6">
 							<div className="top-seller-item text-center">
-							 <h3>USDT</h3> 
+                            <h3>{assets[3].symbol}</h3>
+                              <span>{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(assets[3].rateToDollar["$numberDecimal"])}</span>
 							</div>
 						</div>
-					</div>
+					  </div>:""
+
+                      }
 								
-								
-                        <div className="row mt-40">
-                            <div className="col-lg-12">
-                                <div className="section-title mb-20">
-                                    <h2 className="title"> How Dexscrow Works<img src="" alt="" /></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row justify-content-center">
-                            <div className="col-xl-3 col-lg-4 col-md-6">
-                                <div className="sell-nfts-item">
-                                    <img src="" alt="" className="icon" />
-                                    <span className="step-count">Step 1</span>
-                                    <h5 className="title">Connect Wallet</h5>
-                                    <p>Connect your wallet using Metamask or Binance Smart Chain wallet</p>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-4 col-md-6">
-                                <div className="sell-nfts-item">
-                                    <img src="" alt="" className="icon" />
-                                    <span className="step-count">Step 2</span>
-                                    <h5 className="title">Search or Create Ad</h5>
-                                    <p>Go to P2P section to find an Ad, specify amount you want to trade.</p>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-4 col-md-6">
-                                <div className="sell-nfts-item">
-                                    <img src="" alt="" className="icon" />
-                                    <span className="step-count">Step 3</span>
-                                    <h5 className="title">Open a Trade</h5>
-                                    <p>Click Buy/Sell button to see more information about the offer and trade partner</p>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-4 col-md-6">
-                                <div className="sell-nfts-item">
-                                    <img src="" alt="" className="icon" />
-                                    <span className="step-count">Step 4</span>
-                                    <h5 className="title">Complete Trade</h5>
-                                    <p>After opening a trade, follow onscreen instructions to complete it</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </section>
                

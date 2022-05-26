@@ -490,7 +490,6 @@
 }
 .main-content {
 	width:100%;
-	border:2px solid red;
 	padding-left:0px;
 }
 .scroll-top {
@@ -629,6 +628,25 @@
 
 
 @media (max-width: 460px) {
+h1 {
+	font-size: 30px;
+}
+h2 {
+	font-size: 25px;
+}
+h3 {
+	font-size: 18px;
+}
+h4 {
+	font-size: 17px;
+}
+h5 {
+	font-size: 17px;
+}
+h6 {
+	font-size: 14px;
+}
+
 .header-form {
     display: none;
 }
@@ -661,6 +679,7 @@
 
 /* Small devices (landscape phones, 576px and up) */
 @media only screen and (min-width: 576px) and (max-width: 767px) {
+
 .custom-container,
 .container {
     max-width: 540px;

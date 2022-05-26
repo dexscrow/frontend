@@ -1,12 +1,15 @@
 import React, {useContext,useState,useEffect,useCallback} from 'react';
+import socketClient from "socket.io-client";
 import toast, { Toaster } from 'react-hot-toast';
-import Header from "../Landing/components/header";
-import Sidebar from "../Landing/components/sidebar";
-import Nav from "../Landing/components/nav";
-import NavSocial from "../Landing/components/navsocial";
+import Header from "../components/header";
+import Sidebar from "../components/sidebar";
+import Nav from "../components/nav";
+import NavSocial from "../components/navsocial";
 import AccountContext from "../../contexts/account";
 import {totalStakers,totalStaked,stakeOf,createStake,createStakeHolder,rewardOf,withdrawReward,removeStake,withdraw} from '../../helpers/staking';
 const token = localStorage.getItem("authToken");
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
+const initStake = socketClient(SOCKET_ENDPOINT+"/initStake");
 
 export default function Staking() {
     const [account,setAccount] = useContext(AccountContext);
@@ -62,7 +65,6 @@ export default function Staking() {
                 toast.success("Page refreshing, please wait", {
                     position: 'middle-center',
                   });
-                window.location.reload();
                }else{
                 await createStakeHolder(amount);
                 getTotalStaked();
@@ -73,7 +75,6 @@ export default function Staking() {
                 toast.success("Staked successfully", {
                  position: 'middle-center',
                 });
-               window.location.reload();
              }     
             }catch(error){
                toast.error(error.message, {
@@ -96,7 +97,6 @@ export default function Staking() {
                 toast.success("Staked successfully", {
                     position: 'middle-center',
                  });
-                 window.location.reload();
          }catch(error){
                toast.error(error.message, {
                  position: 'middle-center',
@@ -117,7 +117,6 @@ export default function Staking() {
                 toast.success("Unstaked successfully", {
                     position: 'middle-center',
                   });
-                window.location.reload();
             }catch(error){
                 toast.error(error.message, {
                     position: 'middle-center',
@@ -134,7 +133,6 @@ export default function Staking() {
              toast.success("Withdraw successful", {
                 position: 'middle-center',
              });
-             window.location.reload();
             }catch(error){
               toast.error(error.message, {
                 position:'middle-center',
@@ -145,7 +143,7 @@ export default function Staking() {
     const runWithdraw = useCallback(async() => {
         try{
             setLoading(true);
-            await withdraw(20000);
+            await withdraw(108994);
              toast.success("Withdraw successful", {
                 position: 'middle-center',
              });
@@ -158,6 +156,14 @@ export default function Staking() {
     });
 
     useEffect(() => {
+        initStake.emit('initstakeroom',"123");
+        initStake.on('stakeinitialized', (data) => {
+            getTotalStaked();
+            getStakeOf();
+            getRewardOf();
+            getTotalStakers();
+            setLoading(false);
+        });
         //runWithdraw();
         getTotalStaked();
         getStakeOf();

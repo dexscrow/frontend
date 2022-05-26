@@ -1,0 +1,78 @@
+import axios from "axios";
+import { useEffect,useContext,useState,useCallback } from "react";
+import toast, { Toaster } from 'react-hot-toast';
+import Sidebar from '../components/sidebar'
+import Header from '../components/header';
+import Nav from "../components/nav";
+import InnerNav from "../components/innernav";
+import FilterTab from "./filterTab";
+import Bets from "./bets";
+import ErrorContext from "../../contexts/error";
+import AccountContext from '../../contexts/account';
+const token = localStorage.getItem("authToken");
+
+const GAMES_URL = "http://localhost:4001/stakes/me";
+export default function History(){
+	const [account,setAccount] = useContext(AccountContext);
+	const [error,setError] = useContext(ErrorContext);
+    const [games,setGames] = useState([]);
+	const [loading,setLoading] = useState(false);
+    const token = localStorage.getItem("authToken");
+	
+	const getHistory = useCallback(async() => {
+	try{
+		 const {data:response} = await axios.get(GAMES_URL,{
+				headers:{
+					"Authorization":`Bearer ${token}`
+				}
+			});
+			if(!response){
+				setError("something went wrong");
+			}
+			if(response.error){
+				throw new Error(response.error);
+			}
+			setGames(response.data);
+		}catch(error){
+			setError("something went wrong");
+			console.log(error.message)
+		}
+	});
+				
+    useEffect(()=>{
+       getHistory();
+    },[])
+    return(
+        <>
+		<Toaster containerStyle={{ position: 'absolute' }} />
+      
+         <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+		 
+		<Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			  <main style={{width:'100%'}}>
+			   <section className="sell-nfts-area mb-50 mt-120">
+                <div className="container">
+				 <InnerNav/>
+			      <div className="row flex-nowrap">
+					<div className="col all-soccer-bets">
+					    <FilterTab/>
+                        <Bets games={games}/>
+					</div>
+				</div>
+               </div>
+			  </section>
+             </main>
+		   <Nav/>
+         </div>   
+        </>
+    )
+}

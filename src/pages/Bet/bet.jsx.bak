@@ -1,0 +1,104 @@
+import axios from "axios";
+import { useEffect,useContext,useState,useCallback } from "react";
+import toast, { Toaster } from 'react-hot-toast';
+import Sidebar from '../components/sidebar'
+import Header from '../components/header';
+import Nav from "../components/nav";
+import InnerNav from "../components/innernav"
+
+import AccountContext from '../../contexts/account';
+const token = localStorage.getItem("authToken");
+
+export default function Bet(){
+	const [account,setAccount] = useContext(AccountContext);
+	const [loading,setLoading] = useState(false);
+
+
+    return(
+        <>
+         <Toaster containerStyle={{ position: 'absolute' }} />
+      
+         <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+		 
+		<Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			  <main style={{width:'100%'}}>
+			   <section className="sell-nfts-area mb-50 mt-120">
+                <div className="container">
+				
+				<InnerNav/>
+			      
+				   <div className="row flex-nowrap">
+				
+				     <div className="col">
+				  
+						<div className="row p-20">
+						
+						 <div className="col-12 col-xs-12 col-sm-12 mt-30 text-center">
+						   <h3> Enter Stake</h3>
+						 </div>
+									
+						 <div className="col-12 col-xs-12 col-sm-8 offset-md-2 inner mt-30 text-center">
+
+											
+							<div className="row justify-content-center">
+								<div className="col-xxl-8 col-xl-9 col-lg-11 betpop mt-20 mb-20">
+							
+									<div className="top-item mt-20">
+										<button className="btn-dex-small btn-dex-default">Team A Win</button>
+									</div>
+									
+
+									<div className="mid-area">
+										<div className="single-area">
+											<div className="item-title d-flex align-items-center justify-content-between">
+												<span>Your Stake Amount:</span>
+											</div>
+											<div className="d-flex in-dec-val">
+												<input type="text" value="2" className="InDeVal1"/> <span>BNB</span>		
+											</div>
+											<div className="d-flex mt-10"><br/>
+												<span className="btn-dex-small btn-dex-primary">Stake</span>
+											</div>
+										</div>
+									</div>
+									
+									<div className="bottom-area">
+										<div className="fee-area">
+										  <div className="row">
+											 <div className="col-6 col-xs-12 col-sm-6">
+											  <p><b>Your Potential Win:</b><span className="amount"> 4  BNB </span><br/><i><small>Your potential wins changes until match start</small></i></p>
+											  <p className="fee"><b>Outcome Total Stake:</b> <span className="amount">100 BNB</span></p>
+											 </div>
+											 <div className="col-6 col-xs-12 col-sm-6">
+											  <p className="date-area"><b>Match Start:</b> <span className="amount">March 21,2021 - 1:00 Am</span> </p>
+											 </div>
+										  </div>
+										</div>	
+						
+									</div>
+	
+								</div>
+							</div>
+					    </div>
+                     </div>
+		  		  
+				    </div>
+			     </div>
+
+               </div>
+			  </section>
+             </main>
+		   <Nav/>
+         </div>   
+        </>
+    )
+}

@@ -9,7 +9,7 @@
 @media (max-width: 1500px) {
 .custom-container,
 .container {
-	max-width: 1170px;
+	max-width: 100%;
 }
 .banner-content {
     margin-left: 0;
@@ -113,7 +113,7 @@
 @media (max-width: 1199.98px) {
 .custom-container,
 .container {
-    max-width: 960px;
+    max-width: 100%;
 }
 
 .sidebar-logo {
@@ -289,7 +289,7 @@
 @media (max-width: 991.98px) {
 .custom-container,
 .container {
-    max-width: 720px;
+    max-width: 100%;
 }
 .menu-area {
 	padding: 25px 0;
@@ -628,6 +628,7 @@
 
 
 @media (max-width: 460px) {
+
 .header-form {
     display: none;
 }
@@ -662,7 +663,7 @@
 @media only screen and (min-width: 576px) and (max-width: 767px) {
 .custom-container,
 .container {
-    max-width: 540px;
+    max-width: 100%;
 }
 .banner-content .title {
     font-size: 56px;

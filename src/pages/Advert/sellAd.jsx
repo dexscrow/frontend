@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
+import toast, { Toaster } from 'react-hot-toast';
 import {Link,useNavigate} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
@@ -27,10 +28,12 @@ export default function SellAd(){
   const [methods,setMethods] = useState([]);
   const [method,setMethod] = useState("");
   const [methodName,setMethodName] = useState("");
+  const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
 
   const runQuery = useCallback(async() => {
       try{
+      setLoading(true);
       const filters = {
         currency,paymentMethod:method,asset
       }
@@ -43,20 +46,30 @@ export default function SellAd(){
       })
       
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
 
       if(!response.success){
-        setError(response.message);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+        setAds(response.data);
       }
-      setAds(response.data);
-      }catch(error){
-        setError(error.message)
+      setLoading(false);
+    }catch(error){
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
+      setLoading(false);
       }
   });
 
   const fetchAds = useCallback(async() => {
     try{
+      setLoading(true);
       const {data:response} = await axios.get(SELL_ADS_URL,{
         headers:{
           "Authorization":`Bearer ${token}`
@@ -64,16 +77,23 @@ export default function SellAd(){
       })
 
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
-
       if(!response.success){
-        setError(response.message);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      } else{
+        setAds(response.data);
       }
-      console.log(response.data)
-      setAds(response.data);
+      setLoading(false);
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
+      setLoading(false);
     }
   });
 
@@ -85,15 +105,22 @@ export default function SellAd(){
           }
       });
       if(response.error){
-          setError(response.error)
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
       if(!response.success){
-          setError(response.message)
-      }
-      setAssets(response.data);
-      setAsset(response.data[0]._id);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+        setAssets(response.data);
+        setAsset(response.data[0]._id);
+      } 
   }catch(err){
-      setError(err.message)
+      toast.error(err.message, {
+        position: 'middle-center',
+      });
   }
 });
 
@@ -105,15 +132,22 @@ const fetchCurrencies = useCallback(async() => {
       }
   });
   if(response.error){
-      setError(response.error)
+    toast.error(response.error, {
+      position: 'middle-center',
+    });
   }
   if(!response.success){
-      setError(response.message)
+    toast.error(response.message, {
+      position: 'middle-center',
+    });
+  }else{
+    setCurrencies(response.data);
+    setCurrency(response.data[0]._id);
   }
-  setCurrencies(response.data);
-  setCurrency(response.data[0].symbol);
-  }catch(error){
-    setError(error.message)
+ }catch(error){
+    toast.error(error.message, {
+      position: 'middle-center',
+    });
   }
 });
 
@@ -127,18 +161,25 @@ const fetchMethods = useCallback(async() => {
     })
 
     if(response.error){
-      setError(response.error);
+      toast.error(response.error, {
+        position: 'middle-center',
+      });
     }
 
     if(!response.success){
-      setError(response.message);
+      toast.error(response.message, {
+        position: 'middle-center',
+      });
+    }else{
+      setMethods(response.data);
+      setMethod(response.data[0]._id);
+      setMethodName(response.data[0].name);
+      await runQuery();
     }
-    setMethods(response.data);
-    setMethod(response.data[0]._id);
-    setMethodName(response.data[0].name);
-    await runQuery();
   }catch(error){
-    setError(error.message)
+    toast.error(error.message, {
+      position: 'middle-center',
+    });
   }
 });
 
@@ -149,7 +190,16 @@ const fetchMethods = useCallback(async() => {
   },[token])
     return (
         <>
-        <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
+      <Toaster containerStyle={{ position: 'absolute' }} />
+
+      <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
+
+      <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
 			<div className="modal-dialog modal-sm">
 			  <div className="modal-content" style={{background:"#ccc"}}>
 				<div className="modal-header">
@@ -208,9 +258,9 @@ const fetchMethods = useCallback(async() => {
                    <form>
 					   <div className="row mt-30 mb-20">
 						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
-						   <Link to="/ad/sell" className="btn-dex btn-dex-default p-10">Buy</Link> 
+						   <Link to="/ad/sell" className="btn-dex btn-dex-primary p-10">Buy</Link> 
 						   &nbsp;&nbsp;
-						   <Link to="/ad/buy" className="btn-dex btn-dex-primary p-10">Sell</Link>
+						   <Link to="/ad/buy" className="btn-dex btn-dex-default p-10">Sell</Link>
 						</div>
 
 						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
@@ -300,13 +350,13 @@ const fetchMethods = useCallback(async() => {
                                             <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
                                         </div>
                                         <div className="col col-12 col-xs-12 p-10 d-flex mb-0 pb-0">
-                                            <span className="label">Orders</span>  &nbsp;
-                                            <span className="value">{ad.unit["$numberDecimal"]}</span>
+                                            <span className="label">Orders</span>&nbsp;
+                                            <span className="value">{ad.owner.completedTrades}</span>
                                         </div>
 
                                         <div className="col col-12 col-xs-12 p-10 d-flex mt-0 pt-0">
                                            <span className="label">Completion</span>&nbsp;
-                                            <span className="value">92%</span>
+                                           <span className="value">{isNaN((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))? "0":  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))}%</span>
                                         </div>
                                     </div>
                                  </div>
@@ -317,7 +367,7 @@ const fetchMethods = useCallback(async() => {
                             <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
                               <div className="row">
                                 <div className="col col-6 col-xs-6">
-                                    <span className="value number p-0">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100)) } {ad.currency.symbol}</span><br/>
+                                    <span className="value number p-0">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100))} {ad.currency.symbol}</span><br/>
                                     <span className="label p-0">Price</span>
                                 </div>
 
@@ -329,7 +379,7 @@ const fetchMethods = useCallback(async() => {
                             </div>
 
                             <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                              <span className="value number p-0">{ad.lowerLimit} - {ad.upperLimit} {ad.currency.symbol}</span><br/>
+                              <span className="value number p-0">{new Intl.NumberFormat('en-US', {style: 'decimal'}).format(ad.lowerLimit)} - {new Intl.NumberFormat('en-US', {style: 'decimal'}).format(ad.upperLimit)} {ad.currency.symbol} </span><br/>
                               <span className="label p-0">Limit</span>
                             </div>
 

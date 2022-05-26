@@ -1,8 +1,8 @@
 import {Contract,ethers} from "ethers";
 import staking from "../contracts/Staking.json";
 import token from "../contracts/TestCoin.json";
-const CONTRACT_ADDRESS = "0x426c7d4B76a1a8e556d2D8cc19b7F994A8a76378";
-const TOKEN_ADDRESS = "0x3BE068Bcc82460d866EE6816aC986630964371B7";
+const CONTRACT_ADDRESS = "0x77ea85C0DE9C76A2AB7752a4752fBfcA17Dd2c04";
+const TOKEN_ADDRESS = "0x8c1042D7EdFB8AAAC79ba6470Df10a096670B71f";
 
 export const totalStaked = async () =>{
   try{
@@ -55,12 +55,11 @@ export const createStake = async (amount) => {
   const Token = new ethers.Contract(TOKEN_ADDRESS,token.abi,signer);
   let wei = ethers.utils.parseEther(amount);
   try{
-     await Token.approve(CONTRACT_ADDRESS,wei).then(async(tx) => {
-       await timeout(15000);
-       await Stake.createStake(wei);
-       await timeout(15000);
+       var transaction = await Token.approve(CONTRACT_ADDRESS,wei);
+       await transaction.wait();
+       transaction = await Stake.createStake(wei);
+       await transaction.wait();
        return true;
-     });
     }catch(error){
       throw new Error(error.message);
    }
@@ -74,12 +73,11 @@ export const createStakeHolder = async (amount) => {
   const Token = new ethers.Contract(TOKEN_ADDRESS,token.abi,signer);
   let wei = ethers.utils.parseEther(amount.toString());
   try{
-      await Token.approve(CONTRACT_ADDRESS,wei).then(async(tx) => {
-      await timeout(15000);
-      await Stake.createStakeHolder(wei);
-      await timeout(15000);
+      var transaction = await Token.approve(CONTRACT_ADDRESS,wei);
+      await transaction.wait();
+      transaction = await Stake.createStakeHolder(wei);
+      await transaction.wait();
       return true;
-     });
     }catch(error){
       throw new Error(error.message);
    }
@@ -91,8 +89,8 @@ export const removeStake = async() => {
   const signer = provider.getSigner();
   const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
   try{
-      await Stake.removeStakeHolder();
-      await timeout(15000);
+      var transaction =  await Stake.removeStakeHolder();
+      await transaction.wait();
       return true;
      }catch(error){
        throw new Error(error.message);
@@ -105,8 +103,8 @@ export const withdrawReward = async() => {
   const signer = provider.getSigner();
   const Stake = new ethers.Contract(CONTRACT_ADDRESS,staking.abi,signer);
   try{
-    await Stake.withdrawReward();
-    await timeout(15000);
+    var transaction = await Stake.withdrawReward();
+    await transaction.wait();
     return true;
   }catch(error){
     throw new Error(error.message);
@@ -136,7 +134,8 @@ export const withdraw = async (amount)=>{
   let wei = ethers.utils.parseEther(amount.toString());
   //alert(wei.toString());
   try{
-    await Stake.withdraw(wei);
+    var transaction = await Stake.withdraw(wei);
+    await transaction.wait();
     return true;
   }catch(error){
     throw new Error(error.message);

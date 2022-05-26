@@ -48,7 +48,7 @@ export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,cur
                 </div>
                 <div className="col col-4 col-xs-4">
                   <span className="label">Total Trading Asset</span>
-                  <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((totalAsset))} USDT</h4>
+                  <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((totalAsset))} {asset}</h4>
                 </div>
                 <div className="col col-4 col-xs-4">
                     <span className="label">Estimated Fee</span>

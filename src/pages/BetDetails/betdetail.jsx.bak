@@ -1,0 +1,50 @@
+import axios from "axios";
+import { useEffect,useContext,useState,useCallback } from "react";
+import toast, { Toaster } from 'react-hot-toast';
+import Sidebar from '../components/sidebar'
+import Header from '../components/header';
+import Nav from "../components/nav";
+import InnerNav from "../components/innernav"
+import Details from "./details";
+
+import AccountContext from '../../contexts/account';
+const token = localStorage.getItem("authToken");
+
+export default function BetDetails(){
+	const [account,setAccount] = useContext(AccountContext);
+	const [loading,setLoading] = useState(false);
+
+    return(
+        <>
+		<Toaster containerStyle={{ position: 'absolute' }} />
+      
+         <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+		 
+		<Sidebar account={account}/>
+		 <div className="offcanvas-overly"></div>
+		 
+		  <div className="main-content">
+		  
+			<Header account={account}/>
+			  <main style={{width:'100%'}}>
+			  <section className="sell-nfts-area mb-50 mt-120">
+                <div className="container">
+			      <div className="row flex-nowrap">
+					<div className="col all-soccer-bets">
+					   <InnerNav/>
+						
+						
+					</div>
+				</div>
+               </div>
+			  </section>
+             </main>
+		   <Nav/>
+         </div>   
+        </>
+    )
+}
