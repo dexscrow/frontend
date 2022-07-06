@@ -87,13 +87,11 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
@@ -106,7 +104,6 @@ const EditBuyAd = () => {
               navigate("/ad/list");
               window.location.reload(); 
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -127,12 +124,16 @@ const EditBuyAd = () => {
               })
         
               if(response.error){
-                setError(response.error);
+                toast.error(response.error, {
+                    position: 'middle-center',
+                });
               }
           
               if(!response.success){
-                setError(response.message);
-              }
+                toast.error(response.message, {
+                    position: 'middle-center',
+                });
+              }else{
               setAd(response.data);
               setPrice(Number(response.data.currency.rateToDollar["$numberDecimal"] * response.data.asset.rateToDollar["$numberDecimal"] * (response.data.factor["$numberDecimal"]/100)).toFixed(2));
               setAsset(response.data.asset.symbol);
@@ -150,9 +151,11 @@ const EditBuyAd = () => {
               setAutoReply(response.data.autoreply);
               setRegistered(response.data.conditions.registered);
               setOnline(response.data.conditions.status);
-
+             }
             }catch(error){
-              setError(error.message)
+                toast.error(error.message,{
+                  position: 'middle-center',
+               });
             }
           }
 
@@ -164,21 +167,18 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error);
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
-                setCurrencies(response.data);
-
+                } else{
+                 setCurrencies(response.data);
+               }
             }catch(error){
-                setError(error.message);
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -193,20 +193,18 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setAssets(response.data);
+              }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -221,27 +219,24 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                   
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setMethods(response.data);
+              }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
             }
         }
-       
         fetchAd();
         fetchAssets();
         fetchCountries();

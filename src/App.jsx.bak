@@ -38,38 +38,52 @@ library.add(fab,faUser,faEnvelope, faFile);
    const [account,setAccount] = useState(null);
    const [token,setAuthToken] = useState("");
    
-   if((jwtToken==='null' || jwtToken===null || jwtToken==='undefined') && walletAddress!=null) {
+
+   const login = async ()=>{
     const run = async ()=>{
-    try{
-        const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
-        if(response.data.error){
+        try{
+            const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
+            if(response.data.error){
+                setAuthToken(null);
+                localStorage.setItem("authToken",null);
+                // setError(response.error);
+            }
+            if(!response.data.success){
+                setAuthToken(null);
+                localStorage.setItem("authToken",null);
+                // setError(response.message);
+            }
+            if(response.data.success){
+                setAuthToken(response.data.token);
+                localStorage.setItem("authToken",response.data.token);
+                window.location.reload();
+            }
+            //setError(null)
+        }catch(error){
             setAuthToken(null);
-            localStorage.setItem("authToken",null);
-            // setError(response.error);
+            // setError(error.message);
         }
-        if(!response.data.success){
-            setAuthToken(null);
-            localStorage.setItem("authToken",null);
-            // setError(response.message);
-        }
-        if(response.data.success){
-            setAuthToken(response.data.token);
-            localStorage.setItem("authToken",response.data.token);
-            window.location.reload();
-        }
-        //setError(null)
-    }catch(error){
-        setAuthToken(null);
-        // setError(error.message);
+       }
+      run();
     }
+
+
+   if((jwtToken==='null' || jwtToken===null || jwtToken==='undefined') && walletAddress!=null) {
+     login();
    }
-  run();
-  }
 
    useEffect(() => {
     walletAddress && setAccount(walletAddress);
     jwtToken && setAuthToken(jwtToken);
+
+    window.ethereum && window.ethereum.on("accountsChanged",()=>{
+        setAccount(window.ethereum.selectedAddress);
+        localStorage.setItem("account",window.ethereum.selectedAddress);
+        login();
+    });
+
    }, []);
+   
   return (
      <AuthContext.Provider value={[token,setAuthToken]}>
       <AccountContext.Provider value={[account,setAccount]}>
@@ -87,7 +101,7 @@ library.add(fab,faUser,faEnvelope, faFile);
           <Route path="/ad/buy" element={<BuyAd/>} />
           <Route path="/ad/buyad/:id" element={<SingleBuyAd/>} />
           <Route path="/ad/sellad/:id" element={<SingleSellAd/>} />
-          <Route path="/trade" element={<Trade/>} />
+          <Route path="/trade/:id" element={<Trade/>} />
           <Route path="/profile" element={<Profile/>} />
           <Route path="/staking" element={<Staking/>} />
           <Route path = "/methods/payment/new" element={<AddPaymentMethod />} />

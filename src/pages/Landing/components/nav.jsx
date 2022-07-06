@@ -1,8 +1,5 @@
 import {Link} from "react-router-dom";
-import Add from "../../../assets/add.svg";
-import Avatar from "../../../assets/avatar.png";
-import P2P from "../../../assets/p2p.svg";
-import Logo from "../../../assets/logo-small.png";
+import Logo from "../../../assets/logosmallwhite.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function Nav(){
@@ -46,10 +43,10 @@ export default function Nav(){
 						<div className="footer-widget">
 							<h4 className="fw-title">Website</h4>
 							<ul className="fw-links">
-								<li><a href="https://dexscrow.com">Home</a></li>
-								<li><a href="https://dexscrow.com/#featured">Features</a></li>
-								<li><a href="https://dexscrow.com/#token">Tokenomics</a></li>
-								<li><a href="https://dexscrow.com/#road">Roadmap</a></li>
+								<li><a href="https://scrowed.com">Home</a></li>
+								<li><a href="https://scrowed.com/#featured">Features</a></li>
+								<li><a href="https://scrowed.com/#token">Tokenomics</a></li>
+								<li><a href="https://scrowed.com/#road">Roadmap</a></li>
 							</ul>
 						</div>
 					</div>
@@ -67,10 +64,10 @@ export default function Nav(){
 						<div className="footer-widget">
 							<h4 className="fw-title">Contact</h4>
 							<ul className="fw-links">
-								<li><a href="https://t.me/dexscrow">Whitepaper</a></li>
+								<li><a href="https://t.me/dexscrow">Telegram</a></li>
 								<li><a href="https://t.me/dexscrow_announcement">Announcement Channel</a></li>
 								<li><a href="https://www.twitter.com/dexscrow1">Twitter</a></li>
-								<li><a href="mailto:support@dexscrow.com">support@dexscrow.com</a></li>
+								<li><a href="mailto:support@dexscrow.com">support@scrowed.com</a></li>
 							</ul>
 						</div>
 					</div>
@@ -82,7 +79,7 @@ export default function Nav(){
 				<div className="row align-items-center">
 					<div className="col-md-6">
 						<div className="copyright-text">
-							<p>All rights reserved © 2022 by <a href="#">Dexscrow</a></p>
+							<p>All rights reserved © 2022 by <a href="#">Scrowed</a></p>
 						</div>
 					</div>
 					<div className="col-md-6">

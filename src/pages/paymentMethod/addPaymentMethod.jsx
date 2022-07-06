@@ -11,10 +11,7 @@ config();
 const token = localStorage.getItem("authToken");
 
 const PAYMENT_METHODS_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
-
 const ADD_PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
-
-
 export default function AddPaymentMethod(){
     const [account,_] = useContext(AccountContext);
     const [paymentMethods,setPaymentMethods] = useState([]);
@@ -22,16 +19,12 @@ export default function AddPaymentMethod(){
     const [currentMethod,setCurrentMethod] = useState([]);
     const [currentMethodDetails,setCurrentMethodDetails] = useState([]);
     const navigate = useNavigate();
-
-
     const handleSubmit = (event) =>{
         event.preventDefault();
         const data = new FormData(event.target);
         data.append("paymentMethod",currentMethod._id);
         addPaymentMethod(data)
     }
-
-
     const addPaymentMethod = (formdata)=>{
         if(token==='null' || token===null || token==='undefined'){
             return
@@ -46,19 +39,21 @@ export default function AddPaymentMethod(){
             })
             const response = await fetch(req);
             if(response.error){
-                setError(response.error)
+                toast.error(response.error, {
+                    position: 'middle-center',
+                 });
             }
             if(!response.success){
-                setError(response.message)
+                toast.error(response.message, {
+                    position: 'middle-center',
+                 });
             }
            navigate("/method/payment");
         }
         run();
     }
  
-
-    useEffect(()=>{
-        
+    useEffect(()=>{        
         const getMethods = async ()=>{
             try{
                 if(token==='null' || token===null || token==='undefined'){
@@ -70,20 +65,25 @@ export default function AddPaymentMethod(){
                     }
                 });
                 if(response.error){
-                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center',
+                     });
                 }
                 if(!response.success){
-                    setError("cannot make request")
-                }
+                    toast.error("cannot make request", {
+                        position: 'middle-center',
+                     });
+                }else{
                 setPaymentMethods(response.data);
-                
+              }  
             }catch(error){
-                setError(error.message)
+                toast.error(error.message, {
+                    position: 'middle-center',
+                 });
             }
         };
         getMethods();
     },[account])
-
 
     return (
         <>

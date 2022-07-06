@@ -28,11 +28,15 @@ export default function Trades(){
             });
             if(response.error){
                 setIsLoading(false);
-                setError(response.error)
+                toast.error(response.error, {
+                    position: 'middle-center'
+                });
             }
             if(!response.success){
                 setIsLoading(false);
-                setError(response.message)
+                toast.error(response.message, {
+                    position: 'middle-center'
+                });
             }
             setIsLoading(false);
             setUser(response.data);

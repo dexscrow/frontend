@@ -1,25 +1,23 @@
-import React,{useContext,useState,useEffect,useCallback} from "react";
-import {Link,useNavigate} from "react-router-dom";
+import React,{useContext,useState,useEffect} from "react";
+import toast, { Toaster } from 'react-hot-toast';
+import {Link} from "react-router-dom";
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
-import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
+import Paginate from '../Landing/components/pagination';
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
 
-const SELL_ADS_URL= process.env.REACT_APP_SERVER_URL+"/sell/adverts";
 const FILTERED_AD_URL = process.env.REACT_APP_SERVER_URL+"/sell/adverts";
 const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
 const CURRENCIES_URL = process.env.REACT_APP_SERVER_URL+"/countries";
-const BUY_TRADE_URL = process.env.REACT_APP_SERVER_URL+"buy/trade";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
 
 export default function SellAd(){
   const [account,_]= useContext(AccountContext);
   const [ads,setAds] = useState([]);
-  const [error,setError] = useState("");
   const [currency,setCurrency] = useState("");
   const [asset,setAsset] = useState("");
   const [currencies,setCurrencies] = useState([]);
@@ -27,57 +25,48 @@ export default function SellAd(){
   const [methods,setMethods] = useState([]);
   const [method,setMethod] = useState("");
   const [methodName,setMethodName] = useState("");
-  const navigate = useNavigate();
+  const [loading,setLoading] = useState(false);
 
-  const runQuery = useCallback(async() => {
+  const [pageCount, setPageCount] = useState(0);
+	const [limit,setLimit] = useState(20);
+  const [from, setFrom] = useState(0);
+
+  const getRecords = async() => {
       try{
+      setLoading(true);
       const filters = {
         currency,paymentMethod:method,asset
       }
       Object.keys(filters).forEach(k => (!filters[k] && filters[k] !== undefined) && delete filters[k]);
       const q = new URLSearchParams(filters).toString();
-      const {data:response} = await axios.get(`${FILTERED_AD_URL}/?${q}`,{
+      const {data:response} = await axios.post(`${FILTERED_AD_URL}/?${q}`,{from,limit},{
         headers:{
           "Authorization":`Bearer ${token}`
         }
       })
-      
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
-
       if(!response.success){
-        setError(response.message);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+        setAds(response.data.ads);
+        setPageCount((response.data.count/limit))
       }
-      setAds(response.data);
-      }catch(error){
-        setError(error.message)
-      }
-  });
-
-  const fetchAds = useCallback(async() => {
-    try{
-      const {data:response} = await axios.get(SELL_ADS_URL,{
-        headers:{
-          "Authorization":`Bearer ${token}`
-        }
-      })
-
-      if(response.error){
-        setError(response.error);
-      }
-
-      if(!response.success){
-        setError(response.message);
-      }
-      console.log(response.data)
-      setAds(response.data);
+      setLoading(false);
     }catch(error){
-      setError(error.message)
-    }
-  });
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
+      setLoading(false);
+      }
+  };
 
-  const fetchAssets = useCallback(async() => {
+  const fetchAssets = async() => {
     try{
       const {data:response} = await axios.get(ASSETS_URL,{
           headers:{
@@ -85,19 +74,30 @@ export default function SellAd(){
           }
       });
       if(response.error){
-          setError(response.error)
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
       if(!response.success){
-          setError(response.message)
-      }
-      setAssets(response.data);
-      setAsset(response.data[0]._id);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+        setAssets(response.data);
+        if(asset==="" && (localStorage.getItem("asset")!==null || localStorage.getItem("asset")!=='undefined')){
+          setAsset(localStorage.getItem("asset"));
+        }else{
+          setAsset(response.data[0]._id);
+        }
+      } 
   }catch(err){
-      setError(err.message)
+      toast.error(err.message, {
+        position: 'middle-center',
+      });
   }
-});
+};
 
-const fetchCurrencies = useCallback(async() => {
+const fetchCurrencies = async() => {
   try{
     const {data:response} = await axios.get(CURRENCIES_URL,{
       headers:{
@@ -105,20 +105,30 @@ const fetchCurrencies = useCallback(async() => {
       }
   });
   if(response.error){
-      setError(response.error)
+    toast.error(response.error, {
+      position: 'middle-center',
+    });
   }
   if(!response.success){
-      setError(response.message)
+    toast.error(response.message, {
+      position: 'middle-center',
+    });
+  }else{
+    setCurrencies(response.data);
+    if(currency==="" && (localStorage.getItem("currency")!==null || localStorage.getItem("currency")!=='undefined')){
+      setCurrency(localStorage.getItem("currency"));
+    }else{
+      setCurrency(response.data[0]._id);
+    }
   }
-  setCurrencies(response.data);
-  setCurrency(response.data[0].symbol);
-  }catch(error){
-    setError(error.message)
+ }catch(error){
+    toast.error(error.message, {
+      position: 'middle-center',
+    });
   }
-});
+};
 
-
-const fetchMethods = useCallback(async() => {
+const fetchMethods = async() => {
   try{
     const {data:response} = await axios.get(PAYMENT_METHOD_URL,{
       headers:{
@@ -127,29 +137,53 @@ const fetchMethods = useCallback(async() => {
     })
 
     if(response.error){
-      setError(response.error);
+      toast.error(response.error, {
+        position: 'middle-center',
+      });
     }
 
     if(!response.success){
-      setError(response.message);
+      toast.error(response.message, {
+        position: 'middle-center',
+      });
+    }else{
+      setMethods(response.data); 
+      setMethodName(response.data[0].name);
+      if(method==="" && (localStorage.getItem("method")!==null || localStorage.getItem("method")!=='undefined')){
+        setMethod(localStorage.getItem("method"));
+      }else{
+        setMethod(response.data[0]._id);
+      }
     }
-    setMethods(response.data);
-    setMethod(response.data[0]._id);
-    setMethodName(response.data[0].name);
-    await runQuery();
   }catch(error){
-    setError(error.message)
+    toast.error(error.message, {
+      position: 'middle-center',
+    });
   }
-});
+};
 
-  useEffect(()=>{
-    fetchAssets();
-    fetchCurrencies();
-    fetchMethods();
-  },[token])
+useEffect(async()=>{ 
+  fetchAssets();
+  fetchCurrencies();
+  fetchMethods();
+},[token])
+
+useEffect(async()=>{ 
+  getRecords();
+},[methods,from])
+
     return (
         <>
-        <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
+      <Toaster containerStyle={{ position: 'absolute' }} />
+
+      <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
+
+      <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
 			<div className="modal-dialog modal-sm">
 			  <div className="modal-content" style={{background:"#ccc"}}>
 				<div className="modal-header">
@@ -182,14 +216,12 @@ const fetchMethods = useCallback(async() => {
 			  <div className="main-content">
 			  
 				<Header account={account}/>
-				 <main style={{width:'100%'}}>
-			
-					
+				 <main style={{width:'100%'}}>		
 					<section className="sell-nfts-area mb-50 mt-120">
 					  <div className="container">
 					   <div className="row">
 						 <div className="row">
-                           <div className="col col-6 col-xs-6 col-sm-6">
+               <div className="col col-6 col-xs-6 col-sm-6">
 							   <h3 className="page-title">Buy Ads</h3>
 							</div>
 							<div className="col col-6 col-xs-6 col-sm-6 text-end">
@@ -201,24 +233,30 @@ const fetchMethods = useCallback(async() => {
 									  <li><Link className="dropdown-item" to="/ad/list">Ad list</Link></li>
 									</ul>
 							</div>
-                        </div>   
+            </div>   
 					</div>
 					
 					
-                   <form>
-					   <div className="row mt-30 mb-20">
-						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
-						   <Link to="/ad/sell" className="btn-dex btn-dex-default p-10">Buy</Link> 
-						   &nbsp;&nbsp;
-						   <Link to="/ad/buy" className="btn-dex btn-dex-primary p-10">Sell</Link>
+          <form>
+					 <div className="row mt-30 mb-20">
+						<div className="col col-6 col-xs-12 col-sm-6 mb-10">
+
+            <div class="btn-dex-group d-flex" data-grouptype="or">
+               <Link class="button active" to="/ad/sell">Buy</Link> 
+						   <Link class="button" to="/ad/buy">Sell</Link>
+            </div>
+						  
 						</div>
 
-						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
+						<div className="col col-6 col-xs-12 col-sm-6 mb-10">
 							
 						</div>
 
 						<div className="col col-6 col-xs-6 col-sm-2 mb-10">
-							<select className="form-control no-radius" value={asset} onChange={(e)=>setAsset(e.target.value)}>
+							<select className="form-control no-radius" value={asset} onChange={(e)=>{
+                 setAsset(e.target.value);
+                 localStorage.setItem("asset",e.target.value);
+              }}>
 							<option value="">All Assets</option>
 								{
 								  assets && assets.map((asset)=>(
@@ -231,8 +269,11 @@ const fetchMethods = useCallback(async() => {
 						</div>
 
 						<div className="col col-6 col-xs-6 col-sm-2">
-							<select className="form-control no-radius" value={currency} onChange={(e)=>setCurrency(e.target.value)}>
-							<option value="">All Currencies</option>
+							<select className="form-control no-radius" value={currency} onChange={(e)=>{
+                   setCurrency(e.target.value);
+                   localStorage.setItem("currency",e.target.value);
+                  }}>
+						  	<option value="">All Currencies</option>
 								{
 								  currencies && currencies.map((currency)=>(
 									<>
@@ -249,6 +290,7 @@ const fetchMethods = useCallback(async() => {
 								methods.filter(method => method._id === e.target.value)
 								.map(method =>{ 
 								  setMethodName(method.name);
+                  localStorage.setItem("method",method.name);
 								 }) 
 							   }}>
 								<option value="">All Payment Methods</option>
@@ -264,8 +306,8 @@ const fetchMethods = useCallback(async() => {
 
 						<div className="col col-6 col-xs-6 col-sm-2 mb-10 pt-10">
 						  <span className="submit" onClick={(e)=>{
-							e.preventDefault();
-							runQuery();
+							 e.preventDefault();
+							 getRecords();
 						  }} >Filter</span>
 						   &nbsp;&nbsp; &nbsp;&nbsp;
 						  <span className="submit" onClick={(e)=>{
@@ -289,10 +331,10 @@ const fetchMethods = useCallback(async() => {
                             <>
                             <div className="trade-record-card pt-10 pb-20 mb-10">
                             <div className="row">
-                              <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-10">
+                              <div className="col col-12 col-xs-12 col-sm-12 col-md-3 pt-10">
                                 <div className="row">
                                   <div className="col col-2 col-xs-2">
-                                    <img src={Avatar} style={{width:"30px", height:"30px"}} />
+                                    <img src={Avatar} style={{width:"30px", height:"auto"}} />
                                   </div>
                                   <div className="col col-10 col-xs-10 text-start"> 
                                     <div className="row">
@@ -300,53 +342,54 @@ const fetchMethods = useCallback(async() => {
                                             <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
                                         </div>
                                         <div className="col col-12 col-xs-12 p-10 d-flex mb-0 pb-0">
-                                            <span className="label">Orders</span>  &nbsp;
-                                            <span className="value">{ad.unit["$numberDecimal"]}</span>
+                                            <span className="label">Orders</span>&nbsp;
+                                            <span className="value">{ad.owner.completedTrades}</span>
                                         </div>
 
                                         <div className="col col-12 col-xs-12 p-10 d-flex mt-0 pt-0">
                                            <span className="label">Completion</span>&nbsp;
-                                            <span className="value">92%</span>
+                                           <span className="value">{isNaN((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))? "0":  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))}%</span>
                                         </div>
                                     </div>
                                  </div>
                                </div>
                              </div>
 
+                          <div className="col col-12 col-xs-12 col-sm-12 col-md-9 mb-20 pt-20">
+                            <div className="row">
 
-                            <div className="col col-12 col-xs-12 col-sm-3 mb-20 pt-20">
-                              <div className="row">
-                                <div className="col col-6 col-xs-6">
-                                    <span className="value number p-0">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100)) } {ad.currency.symbol}</span><br/>
-                                    <span className="label p-0">Price</span>
-                                </div>
+                             <div className="col-4 col-md-3 col-sm-4 col-xs-4">
+                                <span className="value number p-0">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(ad.currency.rateToDollar["$numberDecimal"] * ad.asset.rateToDollar["$numberDecimal"] * (ad.factor["$numberDecimal"]/100))} {ad.currency.symbol}</span><br/>
+                                <span className="label p-0">Price</span>
+                             </div>
 
-                                <div className="col col-6 col-xs-6">
-                                    <span className="value number p-0">{ad.unit["$numberDecimal"]} {ad.asset.symbol}</span><br/>
-                                    <span className="label p-0">Amount</span>
-                                </div>
-                             </div> 
-                            </div>
-
-                            <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20">
-                              <span className="value number p-0">{ad.lowerLimit} - {ad.upperLimit} {ad.currency.symbol}</span><br/>
+                             <div className="col-4 col-md-2 col-sm-4 col-xs-4">
+                                <span className="value number p-0">{ad.unit["$numberDecimal"]} {ad.asset.symbol}</span><br/>
+                                <span className="label p-0">Amount</span>
+                             </div>
+                
+                             <div className="col-4 col-md-3 col-sm-4 col-xs-4">
+                              <span className="value number p-0">{new Intl.NumberFormat('en-US', {style: 'decimal'}).format(ad.lowerLimit)} - {new Intl.NumberFormat('en-US', {style: 'decimal'}).format(ad.upperLimit)} {ad.currency.symbol} </span><br/>
                               <span className="label p-0">Limit</span>
-                            </div>
+                             </div>
 
-                           <div className="col col-12 col-xs-12 col-sm-2 mb-20 pt-20"> 
-                              <span className="value p-0"> {methodName}  </span><br/>
+                            <div className="col-6 col-md-2 col-sm-6 col-xs-4"> 
+                              <span className="value p-0"> {methodName} </span><br/>
                               <span className="label p-0">Payment Method</span>
-                          </div>
+                           </div>
                           
-                          <div className="col col-12 col-xs-12 col-sm-2 text-end p-20">
+                          <div className="col-6 col-md-2 col-sm-6 col-xs-4 d-flex justify-content-end">
                             <Link className="btn-dex-small btn-dex-primary" type="button"
                               to={{ pathname:'/ad/sellad/'+ad._id, state:{adId:ad._id}}}> 
                                 Buy
                             </Link>
                            </div> 
-                           </div>
-                           </div>
-                           </>
+
+                          </div>
+                         </div>
+                        </div>
+                        </div>
+                       </>
                           )
                          }):
                         <div className="trade-record-card pt-10 pb-20 mb-10">
@@ -357,6 +400,11 @@ const fetchMethods = useCallback(async() => {
                         </div>
                        </div>
                      }
+                     {
+                        ads.length>0 && <div className="col col-12 col-xs-12 text-center mt-20"> 
+                            <Paginate pageCount={pageCount} setFrom={setFrom} getRecords={getRecords} />
+                        </div>	 
+                      }
                   </div>
 				
 				

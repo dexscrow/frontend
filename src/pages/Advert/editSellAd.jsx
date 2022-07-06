@@ -49,6 +49,7 @@ const EditBuyAd = () => {
     const [deadline,setDeadline] = useState(0);
     const [notes,setNotes] = useState("");
     const [registered,setRegistered] = useState("");
+    const [loading,setLoading] = useState(false);
     const {id} = useParams();
 
     const navigate = useNavigate();
@@ -90,13 +91,11 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
@@ -109,7 +108,6 @@ const EditBuyAd = () => {
                    window.location.reload(); 
                 }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -131,13 +129,16 @@ const EditBuyAd = () => {
               })
         
               if(response.error){
-                setError(response.error);
+                toast.error(response.error, {
+                    position: 'middle-center',
+                });
               }
           
               if(!response.success){
-                setError(response.message);
-              }
-
+                toast.error(response.message, {
+                    position: 'middle-center',
+                });
+              }else{
               setAd(response.data);
               setPrice(Number(response.data.currency.rateToDollar["$numberDecimal"] * response.data.asset.rateToDollar["$numberDecimal"] * (response.data.factor["$numberDecimal"]/100)).toFixed(2));
               setAsset(response.data.asset.symbol);
@@ -154,9 +155,12 @@ const EditBuyAd = () => {
               setAutoReply(response.data.autoreply);
               setRegistered(response.data.conditions.registered);
               setOnline(response.data.conditions.status);
+            }
 
             }catch(error){
-              setError(error.message)
+              toast.error(error.message, {
+                    position: 'middle-center',
+              });
             }
         }
 
@@ -168,20 +172,18 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error);
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                } else{
                 setCurrencies(response.data);
+              }
             }catch(error){
-                setError(error.message);
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -196,20 +198,18 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
-                setAssets(response.data);                
+                }else{
+                setAssets(response.data);  
+              }              
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -226,20 +226,18 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setPaymentMethods(response.data);
+              }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -254,21 +252,18 @@ const EditBuyAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
-                  
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setMethods(response.data);
+              }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -285,6 +280,13 @@ const EditBuyAd = () => {
     return (
         <>
         <PaymentModal />
+
+        <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
         <Toaster containerStyle={{ position: 'absolute' }} />
         <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog">

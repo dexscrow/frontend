@@ -1,5 +1,5 @@
-import{useState,useEffect,useContext} from "react";
-import AccountContext from "../../contexts/account";
+//import{useState,useEffect,useContext} from "react";
+/*import AccountContext from "../../contexts/account";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
@@ -12,7 +12,7 @@ import Mobile2 from "../../assets/mobile2.png";
 import Partner1 from "../../assets/fungie.jpg";
 import Yahoo from "../../assets/yahoo.png";
 import Partner2 from "../../assets/cryptogem.jpg";
-import About from "../../assets/about2.png";
+import About from "../../assets/footer-bg.png";
 import Footer from "../../assets/footer-bg.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {Link} from "react-router-dom";
@@ -20,14 +20,15 @@ import '../../landing.css';
 import '../../globe.css';
 import '../../mainmenu.css';
 import '../../responsive.css';
-am4core.useTheme(am4themes_animated);
+am4core.useTheme(am4themes_animated); */
 
 export default function Home(){
-    const [account,_] = useContext(AccountContext);
+    //const [account,_] = useContext(AccountContext);
     
 
+    /*
     useEffect(()=>{
-        var chart = am4core.create("chartdiv", am4charts.PieChart);
+       var chart = am4core.create("chartdiv", am4charts.PieChart);
         chart.data = [{
             "Tokenomics": "Seed",
             "Percentage": 10
@@ -87,11 +88,11 @@ export default function Home(){
         }
         return color;
         });
-    },[])
+    },[]) */
 
     return(
     <>
-     <body data-new-gr-c-s-check-loaded="14.1028.0" data-gr-ext-installed="">
+     {/* <body data-new-gr-c-s-check-loaded="14.1028.0" data-gr-ext-installed="">
 
        <div className="page-wrapper">
 
@@ -159,7 +160,7 @@ export default function Home(){
                 <div className="col-md-6 d-md-flex align-items-center order-1 order-md-2">
                 <div className="about-content">
                 <div className="section-title">
-                {/*<h4 className="left-bar">About</h4> */}
+                <h4 className="left-bar">About</h4> 
                 <h3 style={{textAlign:'left'}}>About Dexscrow</h3>
                 <p style={{textAlign:"justify"}}>
                 <a name="about"> </a>
@@ -547,7 +548,7 @@ export default function Home(){
                     <ul>
                     <li><a href="http://twitter.com/@dexscrow1"><FontAwesomeIcon icon={['fab', 'twitter']}  /> </a></li>
                     <li><a href="mailto:support@dexscrow.com"> <FontAwesomeIcon icon="envelope" /> </a></li>
-                    { /*<li><a href="#"><i className="flaticon-facebook"></i></a></li> */}
+                    *<li><a href="#"><i className="flaticon-facebook"></i></a></li> 
                     <li><a href="http://t.me/dexscrow"><FontAwesomeIcon icon={['fab', 'telegram']}  /> </a></li>
                     </ul>
                     </div>
@@ -571,7 +572,7 @@ export default function Home(){
 
         </div>
         
-     </body>
+    </body> */ }
     
     </>
     )

@@ -6,7 +6,7 @@ import useFetch from "../../../hooks/useFetch";
 const END_POINT = process.env.REACT_APP_SERVER_URL+'/assets';
 const TRADE_FEE = process.env.TRADE_FEE;
 const BuyTab = memo(({
-    step,setStep,priceType,factor,setFactor,assets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,notes,setNotes,registered,setRegistered,registerChecked,setRegisterChecked,prefferedMethod,online,setOnline,autoreply,setAutoReply
+    step,setStep,priceType,factor,setFactor,assets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,notes,setNotes,registered,setRegistered,registerChecked,setRegisterChecked,prefferedMethod,online,setOnline,autoreply,setAutoReply,ePaymentMethodModalHandleShow,confirmModalHandleShow
 }) =>{
     return (
         <>
@@ -222,8 +222,8 @@ const BuyTab = memo(({
                                            <small> Select a payment method </small> 
                                         </div>
                                         <div className="col col-6 col-xs-6 col-sm-6">
-                                        {prefferedMethod && <span className="btn-dex-small btn-dex-default">{prefferedMethod}</span>} &nbsp;
-                                            <button className="btn-dex-small btn-dex-primary" data-bs-toggle="modal" data-bs-target="#epaymentMethodModal" type="button">+ ADD</button>
+                                        {prefferedMethod && <span className="btn-dex-small btn-dex-default text-black">{prefferedMethod}</span>} &nbsp;
+                                            <button className="btn-dex-small btn-dex-primary" onClick={ePaymentMethodModalHandleShow} type="button">+ ADD</button>
                                         </div>
                                     </div>
                             </div>  
@@ -238,7 +238,7 @@ const BuyTab = memo(({
                                         e.preventDefault();
                                        step ===3 ? setStep(3) : setStep(step+1)}
                                     }>Next</button>
-                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} data-bs-toggle="modal"data-bs-target="#confirmPostModal" disabled={step === 3 ? false:true} onClick={(e)=>{e.preventDefault();
+                                    <button className={`btn-dex ${step === 3 ? "" :"d-none"} btn-dex-default`} disabled={step === 3 ? false:true} onClick={(e)=>{e.preventDefault(); confirmModalHandleShow(true);
                                     }}>Submit</button>
                                 </div>
                             </div> 

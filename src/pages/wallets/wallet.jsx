@@ -3,21 +3,58 @@ import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Sidebar from "../Landing/components/sidebar";
 import {Link} from "react-router-dom";
+import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 import Nav from "../Landing/components/nav";
 import AccountContext from "../../contexts/account";
 const token = localStorage.getItem("authToken");
-
 const URL = process.env.REACT_APP_SERVER_URL+'/methods/payment/';
-
+const DELETE_URL = process.env.REACT_APP_SERVER_URL+'/methods/payment/delete'; 
 
 export default function Wallet() {
     const [account,setAccount] = useContext(AccountContext);
     const [paymentMethods,setPaymentMethods] = useState([]);
-    const [error,setError] = useState("");
+    const [loading,setLoading] = useState(false);
+    const [methodId,setMethodId] = useState("");
 
+    const [deleteModalShow, setDeleteModalShow] = useState(false);
+    const deleteModalHandleClose = () => setDeleteModalShow(false);
+    const deleteModalHandleShow = () => setDeleteModalShow(true);
+
+    const deleteMethod = (async() => {
+        try{
+            const {data:response} = await axios.delete(DELETE_URL+"/"+methodId,{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(response.error){
+              toast.error(response.error, {
+                position: 'middle-center'
+              });
+            }
+            if(!response.success){
+              toast.error(response.message, {
+                position: 'middle-center'
+              });
+            }
+            if(response.success){
+                toast.success("Payment method deleted successfully", {
+                    position: 'middle-center'
+                  });
+              deleteModalHandleClose();
+            }
+        }catch(err){
+            toast.error(err.message, {
+              position: 'middle-center'
+            });
+         }
+      });
+  
+      
     useEffect(()=>{
         const run = async()=>{
+            setLoading(true);
             try{
                 if(token==='null' || token===null || token==='undefined'){
                     toast.error("Please connect wallet first", {
@@ -31,16 +68,24 @@ export default function Wallet() {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
+                    toast.error(response.error, {
+                        position: 'middle-center'
+                    });
                 }
                 if(!response.success){
-                    setError(response.message)
-                }
+                    toast.error(response.message, {
+                        position: 'middle-center'
+                    });
+                }else{
                 setPaymentMethods(response.data);
+                }
+                setLoading(false);
             }catch(err){
-                setError(err.message)
+                setLoading(false);
+                toast.error(err.message, {
+                    position: 'middle-center'
+                });
             }
-            
         }
        run();
     },[])
@@ -48,8 +93,69 @@ export default function Wallet() {
             
     <>
 	 <Toaster containerStyle={{ position: 'absolute' }} />
+     <div class="overlay" style={{display:loading?'block':'none'}}>
+        <div class="spinner"></div>
+        <br/>
+        Loading...
+     </div>
+
 	  <Sidebar account={account}/>
 		 <div className="offcanvas-overly"></div>
+
+
+     <Modal show={deleteModalShow} onHide={deleteModalHandleClose}>
+          <Modal.Header closeButton>
+          <Modal.Title>Confirm Ad Closing</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+             <div className="row">
+                  <div className="col-xs-12 col-sm-12">
+                     Are you sure you want to delete? Click on the Proceed Button below 
+                  </div>
+
+                  <div className="col-xs-12 col-sm-12 text-center mt-20">
+                     <button className="btn-dex btn-success btn-dex-primary"
+                     onClick={(e)=>{
+                      e.preventDefault();
+                      deleteMethod();
+                    }}
+                    >Proceed</button>
+                  </div>
+                </div>
+          </Modal.Body>
+          <Modal.Footer>
+          </Modal.Footer>
+      </Modal>
+
+
+
+         <div className="modal fade" id="deleteModal" tabIndex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div className="modal-dialog modal-sm">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Confirm Asset Release</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-xs-12 col-sm-12">
+                     Are you sure you want to delete? Click on the Proceed Button below 
+                  </div>
+
+                  <div className="col-xs-12 col-sm-12 text-center mt-20">
+                     <button className="btn-dex btn-success btn-dex-primary"
+                     onClick={(e)=>{
+                      e.preventDefault();
+                      deleteMethod();
+                    }}
+                    >Proceed</button>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
 		 
 		  <div className="main-content">
 		  
@@ -96,9 +202,9 @@ export default function Wallet() {
 
                     <div className="row p-10">
 					  
-					   <div class="col col-12 col-sm-12 col-lg-12 text-end">
-                           <Link to="/methods/payment/new" style={{textDecoration:"none", color:'#fff'}}>
-                               Add Payment Method +
+					   <div class="col col-12 col-sm-12 col-lg-12 mb-20 mt-20 text-end">
+                           <Link to="/methods/payment/new" style={{textDecoration:"none", color:'#000'}} className="btn-small btn-dex-default p-10">
+                               Create New +
                             </Link>
                         </div>
                         
@@ -106,10 +212,16 @@ export default function Wallet() {
 							 paymentMethods.length>0 ? paymentMethods.map((method)=>{
 							   let det = JSON.parse(method.details);
 							   return (<>
-								<div className="trade-record-card pt-10 pb-20">
+								<div className="trade-record-card pt-10 pb-20 mb-10">
 								<div className="row">
 								<div className="col col-6 col-xs-6 text-start">
 									<button className="btn-dex-small btn-dex-primary"type="button"> {method.paymentMethod?.name}</button>
+								</div>
+                                <div className="col col-6 col-xs-6 text-end">
+									<span className="badge badge-primary"  onClick={(e)=>{
+                                        setMethodId(method._id);
+                                        deleteModalHandleShow();
+                                        }}>X</span>
 								</div>
 								</div>
                                 {

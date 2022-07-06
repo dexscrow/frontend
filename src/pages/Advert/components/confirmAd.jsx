@@ -1,17 +1,16 @@
 import React from 'react';
+import Modal from 'react-bootstrap/Modal';
 
-export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,currency,price,factor,priceType,assetPrice,currencyRate,lowerLimit,upperLimit,deadline,totalAsset,createBuyAd,createSellAd}) {
-    return (
+export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,currency,price,factor,priceType,assetPrice,currencyRate,lowerLimit,upperLimit,deadline,totalAsset,createBuyAd,createSellAd,confirmModalShow,confirmModalHandleClose}) {
+    
+   return (
         <>
-        <div className="modal fade" id="confirmPostModal" tabIndex="-1" aria-labelledby="confirmPostModalLabel" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Confirm to Post</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              <div className="row mb-20">
+        <Modal show={confirmModalShow} onHide={confirmModalHandleClose}>
+          <Modal.Header closeButton>
+          <Modal.Title>Select Payment Method</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+            <div className="row mb-20">
                 <div className="col col-4 col-xs-4">
                  <span className="label">Type</span>
                  <h4 className="value">{type}</h4>
@@ -48,7 +47,7 @@ export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,cur
                 </div>
                 <div className="col col-4 col-xs-4">
                   <span className="label">Total Trading Asset</span>
-                  <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((totalAsset))} USDT</h4>
+                  <h4 className="value">{new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((totalAsset))} {asset}</h4>
                 </div>
                 <div className="col col-4 col-xs-4">
                     <span className="label">Estimated Fee</span>
@@ -78,7 +77,7 @@ export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,cur
               <div className="row form-row mb-20">     
                 <div className="col col-xs-12 text-end">
                 <button className="btn-dex-small btn-dex-danger" data-bs-dismiss="modal" style={{color:'#fff'}}>Cancel</button> &nbsp;
-                <button className="btn-dex-small btn-dex-default" type='submit' onClick={(e)=>{
+                <button className="btn-dex-small btn-dex-default text-black" style={{color:"#000000"}} type='submit' onClick={(e)=>{
                    e.preventDefault();
                    if(type==='buy'){
                      createBuyAd();
@@ -87,12 +86,11 @@ export default function ConfirmAd({type,asset,prefferedMethod,selectedMethod,cur
                     }
                    }}>Create</button>
                 </div>
-            </div> 
-
-            </div>
-          </div>
-        </div>
-    </div>
+              </div> 
+            </Modal.Body>
+            <Modal.Footer>
+            </Modal.Footer>
+          </Modal>
         </>
     )
 }

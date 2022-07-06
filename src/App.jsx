@@ -38,37 +38,46 @@ library.add(fab,faUser,faEnvelope, faFile);
    const [account,setAccount] = useState(null);
    const [token,setAuthToken] = useState("");
    
-   if((jwtToken==='null' || jwtToken===null || jwtToken==='undefined') && walletAddress!=null) {
-    const run = async ()=>{
-    try{
-        const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
-        if(response.data.error){
+
+   const login = async ()=>{
+        try{
+            const response = await axios.post(`${SERVER_URL}/auth/login`,{walletAddress});
+            if(response.data.error){
+                setAuthToken(null);
+                localStorage.setItem("authToken",null);
+                // setError(response.error);
+            }
+            if(!response.data.success){
+                setAuthToken(null);
+                localStorage.setItem("authToken",null);
+                // setError(response.message);
+            }
+            if(response.data.success){
+                setAuthToken(response.data.toen);
+                localStorage.setItem("authToken",response.data.token);
+                window.location.reload();
+            }
+            //setError(null)
+        }catch(error){
             setAuthToken(null);
-            localStorage.setItem("authToken",null);
-            // setError(response.error);
+            // setError(error.message);
         }
-        if(!response.data.success){
-            setAuthToken(null);
-            localStorage.setItem("authToken",null);
-            // setError(response.message);
-        }
-        if(response.data.success){
-            setAuthToken(response.data.token);
-            localStorage.setItem("authToken",response.data.token);
-            window.location.reload();
-        }
-        //setError(null)
-    }catch(error){
-        setAuthToken(null);
-        // setError(error.message);
     }
+
+   if((jwtToken==='null' || jwtToken===null || jwtToken==='undefined') && walletAddress!=null) {
+     login();
    }
-  run();
-  }
 
    useEffect(() => {
     walletAddress && setAccount(walletAddress);
     jwtToken && setAuthToken(jwtToken);
+
+    window.ethereum && window.ethereum.on("accountsChanged",()=>{
+        setAccount(window.ethereum.selectedAddress);
+        localStorage.setItem("account",window.ethereum.selectedAddress);
+        login();
+    });
+
    }, []);
    
   return (

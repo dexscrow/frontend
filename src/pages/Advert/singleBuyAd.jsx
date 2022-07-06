@@ -1,17 +1,18 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
-import socketIOClient from "socket.io-client";
+import socketClient from "socket.io-client";
 import {Link,useNavigate,useParams} from "react-router-dom";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
 import Avatar from "../../assets/avatar.png";
 import Nav from "../Landing/components/nav";
-import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
+import {createSellTrade} from '../../helpers/selltrade';
 const token = localStorage.getItem("authToken");
 
-const SOCKET_ENDPOINT = process.env.SOCKET_ENDPOINT;
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
+const initTrade = socketClient(SOCKET_ENDPOINT+"/initTrade");
 const BUY_AD_URL = process.env.REACT_APP_SERVER_URL+"/buy/singleadvert";
 const SELL_TRADE_URL = process.env.REACT_APP_SERVER_URL+"/sell/trade";
 const MY_PAYMENT_METHODS_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
@@ -25,40 +26,105 @@ export default function SingleBuyAd(){
     const [amount,setAmount]= useState(0);
     const [unit,setUnit] = useState(0);
     const [paymentMethods,setPaymentMethods]= useState([]);
-    const [selectedMethod,setSelectedMethod] = useState({})
+    const [selectedMethod,setSelectedMethod] = useState({});
+    const [loading,setLoading] = useState(false);
     const navigate = useNavigate();
     const {id} = useParams();
+   
+    const  sellTrade = useCallback(async(a,tradeID) => {
+      try{
+              initTrade.emit('inittraderoom',tradeID);
+              initTrade.on('tradeinitialized', (data) => {
+                navigate("/trade/"+tradeID);
+                setLoading(false);
+              });
+              await createSellTrade(tradeID,ad.owner.address,ad.asset.address,a);
+              toast.success("Waiting for confirmation", {
+                  position: 'middle-center',
+               });
+              return;
+               //window.location.reload();
+       }catch(error){
+             toast.error(error.message, {
+               position: 'middle-center',
+             });
+             setLoading(false);
+       }
+  });
 
+  
     const initSellTrade = ()=>{
-
       const run = async ()=>{
         try{
-          const {data:response} = await axios.post(SELL_TRADE_URL+"/"+id,{
-            unit,
-            paymentMethod:selectedMethod
-          },{
-              headers:{
-                  "Authorization":`Bearer ${token}`
-              }
-          });
+           setLoading(true); 
+           var {data:response} = await axios.get(BUY_AD_URL+"/"+id,{
+            headers:{
+              "Authorization":`Bearer ${token}`
+            }
+          })
+  
           if(response.error){
-              setError(response.error)
+            toast.error(response.error, {
+              position: 'middle-center',
+            });
+            setLoading(false);
           }
           if(!response.success){
-              setError(response.message)
+            toast.error(response.message, {
+              position: 'middle-center',
+            });
+            setLoading(false);
           }
-          console.log(response);
-          
-          //subscribe to Initialize trade, waiting for blockchain transaction to process
-          const initTrade = socketIOClient(SOCKET_ENDPOINT+"/initTrade");
-          initTrade.on("connect", function(){
-            initTrade.emit('joinInitTrade',response.result._id);
-          });
+          if(response.success){
+            setAd(response.data);
+             if(unit > ad.balance){
+              toast.error("Ad require less amount than you specified", {
+                position: 'middle-center',
+              });
+              setLoading(false);
+              return;
+             }
+             if(ad.status!="active"){
+              toast.error("Ad is not active", {
+                position: 'middle-center',
+              });
+              setLoading(false);
+              return;
+             }
 
-          //navigate("/trade/"+response.result._id);
+             var {data:response} = await axios.post(SELL_TRADE_URL+"/"+id,{
+              unit,
+              paymentMethod:selectedMethod,
+              buyer:ad.owner._id
+            },{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            });
+            if(response.error){
+              toast.error(response.error, {
+                position: 'middle-center',
+              });
+              setLoading(false);
+            }
+            if(!response.success){
+              toast.error(response.message, {
+                position: 'middle-center',
+              });
+              setLoading(false);
+            }
+            
+            if(response.success){
+            //subscribe to Initialize trade, waiting for blockchain transaction to process
+            sellTrade(response.result.amount,response.result._id);  
+           }   
+        }
       }catch(err){
-          setError(err.message)
-      }
+          toast.error(err.message, {
+            position: 'middle-center',
+          });
+          setLoading(false);
+       }
       }
       run();
     }
@@ -72,15 +138,21 @@ export default function SingleBuyAd(){
         })
 
         if(response.error){
-          setError(response.error);
+          toast.error(response.error, {
+            position: 'middle-center',
+          });
         }
     
         if(!response.success){
-          setError(response.message);
+          toast.error(response.message, {
+            position: 'middle-center',
+          });
         }
         setAd(response.data);
       }catch(error){
-        setError(error.message)
+        toast.error(error.message, {
+          position: 'middle-center',
+        });
       }
     })
 
@@ -93,28 +165,40 @@ export default function SingleBuyAd(){
       })
 
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
 
       if(!response.success){
-        setError(response.message);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+        setPaymentMethods(response.data);
       }
-      setPaymentMethods(response.data);
-	  
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
   })
 
-    useEffect(()=>{
-      setAssetBalance(5);
-      fetchAd();
-      fetchMyPaymentMethods();
-    },[token])
+useEffect(()=>{
+  setAssetBalance(5);
+  fetchAd();
+  fetchMyPaymentMethods();
+},[])
 
     return (
-        <>
-         <Toaster containerStyle={{ position: 'absolute' }} />
+     <>
+     <Toaster containerStyle={{ position: 'absolute' }} />
+		 
+      <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Please Wait...
+		 </div>
 		 
 		 <Sidebar account={account}/>
 		 <div className="offcanvas-overly"></div>
@@ -153,11 +237,11 @@ export default function SingleBuyAd(){
                                             <span className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</span>
                                         </div>
                                         <div className="col col-6 col-xs-6 text-end d-flex">
-                                            <span className="value">{ad.unit["$numberDecimal"]}</span> &nbsp;
+                                            <span className="value">{ad.owner.completedTrades}</span> &nbsp;
                                             <span className="label">Orders</span>
                                             &nbsp; &nbsp; 
                                             <span className="value">Completion</span>&nbsp;
-                                            <span className="label">92%</span>
+                                            <span className="label">{isNaN((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))? "0":  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))}% </span>
                                         </div>
                                     </div>
                                   </div>
@@ -270,10 +354,16 @@ export default function SingleBuyAd(){
                                       onClick={(e)=>{
                                         e.preventDefault();
                                         if(amount<ad.lowerLimit){
-                                          setTradeWarning('Amount lesser than lower limit');
+                                          toast.error("Amount lesser than ad lower limit", {
+                                            position: 'middle-center',
+                                         });
+                                          //setTradeWarning('Amount lesser than lower limit');
                                         }
                                         else if(amount>ad.upperLimit){
-                                          setTradeWarning('Amount greater than upper limit');
+                                          toast.error("Amount greater than ad upper limit", {
+                                            position: 'middle-center',
+                                         });
+                                         //setTradeWarning('Amount greater than upper limit');
                                         }
                                         else{
                                         initSellTrade()

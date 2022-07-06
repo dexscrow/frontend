@@ -1,17 +1,21 @@
 import React ,{useContext,useState,memo,useEffect} from 'react';
+import socketClient from "socket.io-client";
 import toast, { Toaster } from 'react-hot-toast';
 import Sidebar from '../Landing/components/sidebar'
 import {Link,Navigate,useNavigate} from "react-router-dom";
+import Modal from 'react-bootstrap/Modal';
 import Header from '../Landing/components/header'
 import Nav from "../Landing/components/nav"
 import AccountContext from '../../contexts/account'
-import PaymentModal from './components/paymentModal'
+//import PaymentModal from './components/paymentModal'
 import Progressbar from './components/progressbar'
 import BuyTab from './components/buyTab'
 import SellTab from './components/sellTab'
 import ConfirmAd from './components/confirmAd'
+import {createAdvert,getAdBalance} from '../../helpers/sellad';
 import axios from 'axios'
 
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
 const COUNTRIES_URL=process.env.REACT_APP_SERVER_URL+"/countries";
 const ASSETS_URL = process.env.REACT_APP_SERVER_URL+"/assets";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment";
@@ -44,9 +48,23 @@ const CreateAd = () => {
     const [methods,setMethods] = useState([]);
     const [prefferedMethod,setPrefferedMethod] = useState("");
     const [selectedMethod,setSelectedMethod] = useState("");
-    const [deadline,setDeadline] = useState(0);
+    const [deadline,setDeadline] = useState(15);
     const [notes,setNotes] = useState("");
     const [registered,setRegistered] = useState("");
+    const [loading,setLoading] = useState(false);
+
+    /*Modal*/
+    const [addPaymentMethodModalShow, setAddPaymentMethodModalShow] = useState(false);
+    const addPaymentMethodModalHandleClose = () => setAddPaymentMethodModalShow(false);
+    const addPaymentMethodModalHandleShow = () => setAddPaymentMethodModalShow(true);
+
+    const [ePaymentMethodModalShow, setEPaymentMethodModalShow] = useState(false);
+    const ePaymentMethodModalHandleClose = () => setEPaymentMethodModalShow(false);
+    const ePaymentMethodModalHandleShow = () => setEPaymentMethodModalShow(true);
+
+    const [confirmModalShow, setConfirmModalShow] = useState(false);
+    const confirmModalHandleClose = () => setConfirmModalShow(false);
+    const confirmModalHandleShow = () => setConfirmModalShow(true);
 
     const navigate = useNavigate();
 
@@ -59,6 +77,14 @@ const CreateAd = () => {
                     });
                     return
                 }
+
+                if(selectedMethod._id==null){
+                    toast.error("Please select a payment method", {
+                        position: 'middle-center',
+                    });
+                  return
+                }
+                setLoading(true);
                 const {data:response} = await axios.post(CREATE_SELL_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset))._id,
                     paymentMethod:selectedMethod._id,
@@ -69,7 +95,7 @@ const CreateAd = () => {
                     lowerLimit,
                     upperLimit,
                     deadline,
-                    balance:price,
+                    balance:totalAsset,
                     unit:totalAsset,
                     status: "active",
                     notes,
@@ -91,22 +117,33 @@ const CreateAd = () => {
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
                    }
               else{
-                    toast.success("Ad has been created successfully", {
-                        position: 'middle-center',
+                    let assetAddress = (assets.find((a)=>a.symbol == asset)).address;
+                    let initAd = socketClient(SOCKET_ENDPOINT+"/initAd");
+                    initAd.on("connect", function(){
+                        initAd.emit('initadroom',response.result._id);
+                    });
+            
+                    initAd.on('adfunded', (data) => {
+                     toast.success("Ad has been created successfully", {
+                            position: 'middle-center',
+                     });
+
+                     setLoading(false);
+                     setConfirmModalShow(false);
+                     navigate("/ad/list");    
                     });
 
-                   navigate("/ad/fundad/"+response.result._id);
-                   window.location.reload(); 
+                    createAdvert(response.result._id,response.result.unit['$numberDecimal'],assetAddress);
+                   //navigate("/ad/fundad/"+response.result._id);
+                  // window.location.reload(); 
 
                 }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -125,6 +162,16 @@ const CreateAd = () => {
                     });
                     return
                 }
+                
+               // var methodSelected = (methods.find((m)=>m.name == prefferedMethod))._id;
+                if(prefferedMethod===null || prefferedMethod===""){
+                    toast.error("Please select a payment method", {
+                        position: 'middle-center',
+                    });
+                    setLoading(false);
+                  return
+                }
+                setLoading(true);
                 const {data:response} = await axios.post(CREATE_BUY_AD_URL,{
                     asset:(assets.find((a)=>a.symbol == asset))._id,
                     paymentMethod:(methods.find((m)=>m.name == prefferedMethod))._id,
@@ -135,7 +182,7 @@ const CreateAd = () => {
                     lowerLimit,
                     upperLimit,
                     deadline,
-                    balance:price,
+                    balance:totalAsset,
                     unit:totalAsset,
                     status: "active",
                     notes,
@@ -152,13 +199,11 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
@@ -168,10 +213,10 @@ const CreateAd = () => {
                         position: 'middle-center',
                     });
                 }
-              navigate("/ad/list");
-              window.location.reload(); 
+              setLoading(false);
+              setConfirmModalShow(false);
+              navigate("/ad/list");  
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -181,10 +226,10 @@ const CreateAd = () => {
     }
 
 
-    const confirmDetails = {type,asset,prefferedMethod,selectedMethod,currency,price,factor,priceType,assetPrice,currencyRate,lowerLimit,upperLimit,deadline,totalAsset,createSellAd,createBuyAd}
+    const confirmDetails = {type,asset,prefferedMethod,selectedMethod,currency,price,factor,priceType,assetPrice,currencyRate,lowerLimit,upperLimit,deadline,totalAsset,createSellAd,createBuyAd,confirmModalShow,confirmModalHandleClose}
 
     const advertDetails = {
-        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createBuyAd,createSellAd,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,registerChecked,setRegisterChecked,prefferedMethod,online,setOnline,autoreply,setAutoReply
+        step,setStep,priceType,setPriceType,factor,setFactor,assets,setAssets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,createBuyAd,createSellAd,selectedMethod,setSelectedMethod,notes,setNotes,registered,setRegistered,registerChecked,setRegisterChecked,prefferedMethod,online,setOnline,autoreply,setAutoReply,addPaymentMethodModalHandleShow,ePaymentMethodModalHandleShow,confirmModalHandleShow
     }
     
     useEffect(()=>{
@@ -196,24 +241,21 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error);
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setCurrencies(response.data);
                 setCurrency(response.data[0]);
                 setPrice(Number(response.data[0].rateToDollar["$numberDecimal"] * assetPrice).toFixed(2));
                 setCurrencyRate(response.data[0].rateToDollar["$numberDecimal"]);
-
+              }
             }catch(error){
-                setError(error.message);
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -221,30 +263,26 @@ const CreateAd = () => {
         }
         const fetchAssets = async ()=>{
             try{
-              
                 const {data:response} = await axios.get(ASSETS_URL,{
                     headers:{
                         "Authorization":`Bearer ${authToken}`
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setAssets(response.data);
                 setAsset(response.data[0].symbol);
                 setAssetPrice(response.data[0].rateToDollar["$numberDecimal"]);
-                
+                }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -261,20 +299,18 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setPaymentMethods(response.data);
+                }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
@@ -289,105 +325,113 @@ const CreateAd = () => {
                     }
                 });
                 if(response.error){
-                    setError(response.error)
                     toast.error(response.error, {
                         position: 'middle-center',
                     });
                   
                 }
                 if(!response.success){
-                    setError(response.message);
                     toast.error(response.message, {
                         position: 'middle-center',
                     });
-                }
+                }else{
                 setMethods(response.data);
+                }
             }catch(error){
-                setError(error.message)
                 toast.error(error.message, {
                     position: 'middle-center',
                 });
             }
         }
 
+        const getAdOwner= async ()=>{
+            var bal = await getAdBalance("625d7bd72e757099d143ef5d");
+            alert(bal);
+        }
+
         fetchAssets();
         fetchCountries();
         fetchPaymentMethods();
         fetchMethods();
+        //getAdOwner();
     },[authToken]);
     
     return (
         <>
-        <PaymentModal />
+
+        {/*<PaymentModal paymentMethodModalShow={paymentMethodModalShow} paymentMethodModalHandleClose={paymentMethodModalHandleClose}/>*/}
         <Toaster containerStyle={{ position: 'absolute' }} />
-          <div className="modal fade" id="addedPaymentMethodModal" aria-labelledby="addedPaymentMethodModalLabel" tabIndex="-1" aria-hidden="true">
-          <div className="modal-dialog">
-                 <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="exampleModalLabel">Select Payment Method</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body">
-                        <div className="row">
-                            <div className="col col-12 col-xs-12 text-end">
-                                <Link to="/methods/payment/new" className="btn-dex btn-dex-default p-10">+ Add New</Link>
-                            </div>
-                        </div>
-                        <div className="row p-20">
-                            <div className="card payment-method-card">
-                                {
-                                    paymentMethods && paymentMethods.map((method)=>{
+          <div class="overlay" style={{display:loading?'block':'none'}}>
+            <div class="spinner"></div>
+            <br/>
+            Loading...
+		  </div>
 
-                                        let det = JSON.parse(method.details);
-                                       return (<>
-                                        <div className="row">
-                                    <div className="col col-6 col-xs-6 text-start">
-                                        <button className="btn-dex-small btn-dex-primary" onClick={(e)=>{setSelectedMethod(method)
-                                        }} type="button"> {method.paymentMethod?.name}</button>
-                                    </div>
-                                    <div className="col col-6 col-xs-6 text-end">
-                                        X
-                                    </div>
-                                </div>
-                                {
-                                    
-                                    Object.entries(det).map(([name,index])=>(
-                                        <>
-                                             <div className="row" key={index}>
-                                    <div className="col col-6 col-xs-6 label dim text-end">
-                                        <b>{name} </b> :
-                                    </div>
-                                    <div className="col col-6 col-xs-6 value">
-                                       <b> {det[name]}</b>
-                                    </div>
-                                </div>
-                                        </>
-                                    ))
-                                }
-                                        </>)
-                                    })
-                                }
-                            </div>
-                        </div>
 
-                    </div>
+         <Modal show={addPaymentMethodModalShow} onHide={addPaymentMethodModalHandleClose}>
+            <Modal.Header closeButton>
+            <Modal.Title>Select Payment Method</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+             <div className="row">
+                <div className="col col-12 col-xs-12 text-end">
+                    <Link to="/methods/payment/new" className="btn-dex btn-dex-default p-10">+ Add New</Link>
                 </div>
             </div>
-        </div>
-      <div className="modal fade" id="epaymentMethodModal" tabIndex="-1" aria-labelledby="epaymentMethodModalLabel" aria-hidden="true">
-      <div className="modal-dialog">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLabel">Select Payment Method</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div className="modal-body">
-          <div className="row">
+            <div className="row p-20">
+                <div className="card payment-method-card">
+                    {
+                        paymentMethods && paymentMethods.map((method)=>{
+
+                            let det = JSON.parse(method.details);
+                            return (<>
+                            <div className="row">
+                        <div className="col col-6 col-xs-6 text-start">
+                            <button className="btn-dex-small btn-dex-primary" onClick={(e)=>{setSelectedMethod(method);  setAddPaymentMethodModalShow(false);
+                            }} type="button"> {method.paymentMethod?.name}</button>
+                        </div>
+                        <div className="col col-6 col-xs-6 text-end">
+                            X
+                        </div>
+                    </div>
+                    {
+                        
+                        Object.entries(det).map(([name,index])=>(
+                            <>
+                                    <div className="row" key={index}>
+                        <div className="col col-6 col-xs-6 label dim text-end">
+                            <b>{name} </b> :
+                        </div>
+                        <div className="col col-6 col-xs-6 value">
+                            <b> {det[name]}</b>
+                        </div>
+                    </div>
+                            </>
+                        ))
+                    }
+                            </>)
+                        })
+                    }
+                </div>
+            </div>
+            </Modal.Body>
+            <Modal.Footer>
+            </Modal.Footer>
+      </Modal>
+
+
+      <Modal show={ePaymentMethodModalShow} onHide={ePaymentMethodModalHandleClose}>
+        <Modal.Header closeButton>
+        <Modal.Title>Select Payment Method</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+           <div className="row">
             <div className="col-xs-12 col-sm-12">
               <div className="col-xs-12 payment-method">
                   <select className="form-control" value={prefferedMethod} onChange={(e)=>{
-                      console.log(e.target.value)
-                      setPrefferedMethod(e.target.value)}}>
+                      setPrefferedMethod(e.target.value);
+                      setEPaymentMethodModalShow(false);
+                      }}>
                     <option value="">--Select an Option--</option>
                     {
                         methods && methods.map((m)=>(
@@ -398,12 +442,12 @@ const CreateAd = () => {
               </div>
             </div>
            </div>
-         </div>
-        </div>
-      </div>
-    </div>
-		<ConfirmAd {...confirmDetails}/>
-		
+        </Modal.Body>
+        <Modal.Footer>
+       </Modal.Footer>
+      </Modal>
+
+	  <ConfirmAd {...confirmDetails}/>
 		
 		<Sidebar account={account}/>
 		 <div className="offcanvas-overly"></div>
@@ -437,10 +481,10 @@ const CreateAd = () => {
 					<div className="col col-12 mt-20">
 						<ul className="nav nav-tabs" id="myTab" role="tablist">
 							<li className="nav-item" role="presentation" style={{ width: "50%" }}>
-								<button className="nav-link active" id="buy-tab" data-bs-toggle="tab" data-bs-target="#buy" type="button" role="tab" aria-controls="buy" aria-selected="true" onClick={()=>setType("buy")}>I WANT TO BUY</button>
+								<button className={`nav-link ${type==="buy" ? "active" : ""}`} id="buy-tab" data-bs-toggle="tab" data-bs-target="#buy" type="button" role="tab" aria-controls="buy" aria-selected="true" onClick={()=>setType("buy")}>I WANT TO BUY</button>
 							</li>
 							<li className="nav-item" role="presentation" style={{ width: "50%" }}>
-								<button className="nav-link" id="sell-tab" data-bs-toggle="tab" data-bs-target="#sell" type="button" role="tab" aria-controls="sell" aria-selected="false" onClick={()=>setType("sell")}>I WANT TO SELL</button>
+								<button className={`nav-link ${type==="sell" ? "active" : ""}`} id="sell-tab" data-bs-toggle="tab" data-bs-target="#sell" type="button" role="tab" aria-controls="sell" aria-selected="false" onClick={()=>setType("sell")}>I WANT TO SELL</button>
 							</li>
 						</ul>
 						<div className="tab-content" id="myTabContent">

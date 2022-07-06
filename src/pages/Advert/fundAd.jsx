@@ -1,4 +1,5 @@
 import React,{useContext,useState,useEffect,useCallback} from "react";
+import socketClient from "socket.io-client";
 import {Link,useNavigate,useParams} from "react-router-dom";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "../Landing/components/header";
@@ -8,28 +9,27 @@ import NavSocial from "../Landing/components/navsocial";
 import axios from "axios";
 import Sidebar from "../Landing/components/sidebar";
 import AccountContext from "../../contexts/account";
+import {deposit} from '../../helpers/sellad';
 const token = localStorage.getItem("authToken");
 
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
+const initAd = socketClient(SOCKET_ENDPOINT+"/initAd");
 const SELL_AD_URL= process.env.REACT_APP_SERVER_URL+"/sell/singleadvert";
 const PAYMENT_METHOD_URL = process.env.REACT_APP_SERVER_URL+"/methods/payment/all";
 
 export default function FundAd(){
   const [account,_]= useContext(AccountContext);
   const [ad,setAd] = useState(null);
-  const [tradeWarning,setTradeWarning] = useState('');
-  const [currentAd,setCurrentAd] = useState({});
+  const [amount,setAmount] = useState(0);
   const [error,setError] = useState("");
-  const [currency,setCurrency] = useState("");
-  const [amount,setAmount]= useState(0);
-  const [asset,setAsset] = useState("");
   const [methods,setMethods] = useState([]);
-  const [method,setMethod] = useState("");
-  const [unit,setUnit] = useState(0);
   const navigate = useNavigate();
   const {id} = useParams();
+  const [loading,setLoading] = useState(false);
 
   const fetchAd = useCallback(async() => {
     try{
+      setLoading(true);
       const {data:response} = await axios.get(SELL_AD_URL+"/"+id,{
         headers:{
           "Authorization":`Bearer ${token}`
@@ -37,15 +37,23 @@ export default function FundAd(){
       })
 
       if(response.error){
-        setError(response.error);
+        toast.error(response.error, {
+          position: 'middle-center',
+        });
       }
   
       if(!response.success){
-        setError(response.message);
+        toast.error(response.message, {
+          position: 'middle-center',
+        });
+      }else{
+        setAd(response.data);
+        setLoading(false);
       }
-      setAd(response.data);
     }catch(error){
-      setError(error.message)
+      toast.error(error.message, {
+        position: 'middle-center',
+      });
     }
   })
 
@@ -58,6 +66,7 @@ const fetchMethods = useCallback(async() => {
     })
 
     if(response.error){
+      
       setError(response.error);
     }
 
@@ -70,9 +79,30 @@ const fetchMethods = useCallback(async() => {
   }
 })
 
-const fundAd = useCallback(async() => {
+const initDeposit = useCallback(async() => {
+  try{
+          setLoading(true);
+          initAd.emit('initadroom',ad._id);
  
-})
+          initAd.on('adfunded', (data) => {
+            toast.success("Ad funded", {
+              position: 'middle-center',
+           });
+
+           setLoading(false);
+           window.location.reload();
+            
+          });
+          
+          deposit(ad._id,amount,ad.asset.address);
+          
+   }catch(error){
+         toast.error(error.message, {
+           position: 'middle-center',
+         });
+         setLoading(false);
+   }
+});
 
 useEffect(()=>{
     fetchAd();
@@ -81,9 +111,16 @@ useEffect(()=>{
     return (
         <>
    <Toaster containerStyle={{ position: 'absolute' }} />
+
+    <div class="overlay" style={{display:loading?'block':'none'}}>
+				<div class="spinner"></div>
+				<br/>
+				Loading...
+		 </div>
+
     <div className="modal fade" id="confirmPublishModal" tabIndex="-1" aria-labelledby="confirmPublishModalLabel" aria-hidden="true">
      <div className="modal-dialog modal-sm">
-      <div className="modal-content" style={{background:"#ccc"}}>
+      <div className="modal-content">
         <div className="modal-header">
           <h5 className="modal-title" id="exampleModalLabel">Confirm to take Ad offline</h5>
           <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -106,6 +143,39 @@ useEffect(()=>{
       </div>
     </div>
   </div>
+
+  {
+   ad!=null?  
+  <div className="modal fade" id="depositModal" tabIndex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+      <div className="modal-dialog modal-sm">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title" id="exampleModalLabel">Deposit {ad.asset.symbol}</h5>
+          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div className="modal-body">
+          <div className="row">
+          <form>
+            <div className="col-xs-12 col-sm-12"> 
+              <label class="text-white">Enter {ad.asset.symbol} Amount</label>
+              <input type="text" class="form-control" aria-label="" value={amount} onChange={(e)=>setAmount(e.target.value)} /> 
+            </div>
+            <div className="col-xs-12 col-sm-12 text-center mt-20">
+                <button className="btn-dex btn-success btn-dex-primary"
+                onClick={(e)=>{
+                e.preventDefault();
+                initDeposit();
+              }}
+              >Deposit {ad.asset.symbol}</button>
+            </div>
+            </form>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>:
+    ""
+    }
 
 
   <Sidebar account={account}/>
@@ -150,21 +220,18 @@ useEffect(()=>{
                                         <h4 className="username">{ad.owner.username ? ad.owner.username : "annonymous"}</h4>
                                     </div>
                                     <div className="col col-6 col-xs-6 text-end d-flex">
-                                        <span className="value">{ad.unit["$numberDecimal"]}</span>
+                                        <span className="value">{ad.owner.completedTrades}</span>
                                         <span className="label">Orders</span>
                                         &nbsp; &nbsp; 
                                         <span className="value">Completion</span>
-                                        <span className="label">92%</span>
+                                        <span className="label">{isNaN((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))? "0":  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format((ad.owner.completedTrades * 100)/(ad.owner.completedTrades + ad.owner.incompleteTrades))}% </span>
                                     </div>
                                 </div>
                               </div>
                             
                               <div class="col col-12 col-xs-12 text-start"> 
                                     <span class="label"> Payment Method</span> <br/><br/>
-                                        { 
-                                          methods.filter(method => method._id === ad.paymentMethod.paymentMethod)
-                                          .map(method =>  <span class="btn-dex-small btn-dex-danger text-white">{method.name}</span>) 
-                                        }
+                                      <span class="btn-dex-small btn-dex-danger text-white">{ad.paymentMethod.paymentMethod.name}</span>
                               </div>
 
                               <div className="col col-12 col-xs-12 col-sm-12 mb-20 pt-20">
@@ -199,23 +266,20 @@ useEffect(()=>{
                           </div>
 
                           <div class="col col-12 col-xs-12 col-sm-4 mb-20 pt-20">
-                              {ad.funded? <h1>Coin in escrow</h1> :  <h1>No coins in escrow</h1> }
+                              {ad.funded? <h5>{ad.balance} {ad.asset.symbol} in escrow</h5> : <p> <h5>{ad.balance} {ad.asset.symbol} </h5>  <span className="label">Escrow Balance </span> <br/> <h5>No sufficient coins in escrow</h5></p>  }
                               {
-                                ad.funded? "": <button type="button" value="Update" className="btn-dex-small btn-dex-default" onClick={(e)=>{
-                                        e.preventDefault();
-                                        fundAd();
-                                       }}>Fund Ad</button>
-                                }  
+                                <button type="button" value="Update" className="btn-dex-small btn-dex-default" data-bs-toggle="modal"data-bs-target="#depositModal">Deposit</button>
+                              }  
 
                           </div>
                           </div>
                           </div>
                           :
-                        <div className="trade-record-card pt-10 pb-20 mb-10">
-                          <div className="row d-flex justify-content-center align-items-center">
-                          <span className="text-center">
-                            No Advert Available
-                          </span>
+                          <div className="trade-record-card pt-10 pb-20 mb-10">
+                            <div className="row d-flex justify-content-center align-items-center">
+                             <span className="text-center">
+                             No Advert Available
+                            </span>
                           </div>
                         </div>
                      }

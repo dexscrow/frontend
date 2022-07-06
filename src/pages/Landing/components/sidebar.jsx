@@ -1,19 +1,19 @@
-import React, {useState,useEffect,useCallback} from 'react';
-import axios from "axios";
+import React from 'react';
+//import axios from "axios";
 import {Link} from "react-router-dom";
-import Add from "../../../assets/add.svg";
+/*import Add from "../../../assets/add.svg";
 import Avatar from "../../../assets/avatar.png";
 import Logo from "../../../assets/logo-small.png";
 import P2P from "../../../assets/p2p.svg";
-import useLogin from '../../../hooks/useLogin';
-const USER_URL  = process.env.REACT_APP_SERVER_URL+'/user/stat';
-const token = localStorage.getItem("authToken");
+import useLogin from '../../../hooks/useLogin';*/
+//const USER_URL  = process.env.REACT_APP_SERVER_URL+'/user/stat';
+//const token = localStorage.getItem("authToken");
 
 export default function Sidebar({account}) {
-    useLogin(account,token)
-    const [error,setError] = useState("");
-    const [user,setUser] = useState({});
-
+   // useLogin(account,token)
+   // const [error,setError] = useState("");
+   // const [user,setUser] = useState({});
+  /*
     const fetchUser = useCallback(async() => {
         try{
             if(token==='null' || token===null || token==='undefined'){
@@ -39,7 +39,7 @@ export default function Sidebar({account}) {
     useEffect(() => {
         fetchUser();
     }, []);
-
+*/
     return (
 
         <div className="sidebar d-none d-md-block">
@@ -47,8 +47,8 @@ export default function Sidebar({account}) {
 			 { /* <a href=""><img src={Logo} alt="" /></a> */ }
             </div>
             <div className="sidebar-icon">
-                <ul>       
-                    <li className="active"><Link to="/ad/sell" className="nav-link align-middle text-white text-center px-0"><i className="fi-sr-chart-pie"></i></Link></li>
+                <ul className="d-flex flex-column">       
+                    <li className="active"><Link to="/ad/sell" className="nav-link align-middle text-white text-center px-0"><i className="fi-sr-pulse"></i></Link></li>
                     <li><Link to="/staking" className="nav-link align-middle text-center text-white px-0"><i className="fi-sr-diamond"></i></Link></li>
                     <li><Link to="/profile" className="d-flex align-items-center text-white text-decoration-none"><i className="fi-sr-user"></i></Link></li>
                 </ul>

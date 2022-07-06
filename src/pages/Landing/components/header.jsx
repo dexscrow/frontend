@@ -1,15 +1,16 @@
-import React from 'react';
+import React,{useEffect } from 'react';
 import { trimText } from '../../../helpers/utils';
-import useLogin from '../../../hooks/useLogin';
-import {Link,Navigate,useNavigate} from "react-router-dom";
-import Logo from "../../../assets/logo-long.png";
-import { setMetamaskConnection,setBinanceWalletConnection,disconnectWallet} from '../../../helpers/scrow';
-const authToken = localStorage.getItem("authToken")
-
+//import useLogin from '../../../hooks/useLogin';
+import {Link} from "react-router-dom";
+import Logo from "../../../assets/logosmallwhite.png";
+import {setMetamaskConnection,setBinanceWalletConnection,disconnectWallet} from '../../../helpers/scrow';
+const token = localStorage.getItem("authToken");
 export default function Header({account}) {
-    //  useEffect(()=>{
-    //  },[account])
-   
+       useEffect(()=>{
+          if(token==='null' || token===null || token==='undefined') {
+			setMetamaskConnection();
+		}
+      },[])
     return (
         <>
 		
@@ -42,12 +43,12 @@ export default function Header({account}) {
 			<div className="container">
 				<div className="row">
 					<div className="col-12 p-10">
-						<div className="mobile-nav-toggler"><i className="fas fa-bars"></i></div>
-						<div className="menu-wrap">
-							<nav className="menu-nav pt-10 pb-10">
+					<div className="menu-wrap d-flex align-items-center justify-content-between"  style={{background:"#651953"}}>
+                      <nav className="menu-nav d-flex align-items-center justify-content-between p-10">
+						
 								<div className="logo float-start"> 
 								 <Link to="/">
-								  <img src={Logo} alt="" />
+								  <img src={Logo} alt="" style={{width:"40px", height:"auto"}}/>
 								 </Link>
 								</div>
 								
