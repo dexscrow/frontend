@@ -460,7 +460,7 @@ export default function Trade() {
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-4">
                       <div> <span className="label p-0"> Quantity </span></div>
-                      <div className="d-flex"> <h5 className="value">{  new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(trade.unit["$numberDecimal"])}</h5>&nbsp;<h5 className="value dim">{trade.advert.asset.symbol}</h5></div>
+                      <div className="d-flex"> <h5 className="value">{ new Intl.NumberFormat('en-US', {style: 'decimal' ,minimumFractionDigits: 2, maximumFractionDigits: 2}).format(trade.unit["$numberDecimal"])}</h5>&nbsp;<h5 className="value dim">{trade.advert.asset.symbol}</h5></div>
                     </div>
                     <div className="col col-6 col-xs-6 col-sm-4">
                       <div> <span className="label p-0"> Amount </span></div>
@@ -739,6 +739,7 @@ export default function Trade() {
                 {
                  trade!=null ?
                   <div className="col col-12 col-xs-12 col-sm-4 p-10 trade-record-card" style={{minHeight:"100%"}}>      
+                   
                    <div className="box direct-chat direct-chat-success" style={{background: "transparent", minHeight:"100%",overflowY:"scroll"}}>
                     <div className="box-body"  style={{height:"500px"}}>
                       <div className="direct-chat-messages" style={{minHeight:"100%"}}>

@@ -1,9 +1,6 @@
 import {memo} from 'react';
-import { calculateFactor, calculatePrice} from '../../../helpers/utils';
+import {calculateFactor} from '../../../helpers/utils';
 import Misc from './misc';
-import useFetch from "../../../hooks/useFetch";
-
-const END_POINT = process.env.REACT_APP_SERVER_URL+'/assets';
 const TRADE_FEE = process.env.TRADE_FEE;
 const BuyTab = memo(({
     step,setStep,priceType,factor,setFactor,assets,asset,setAsset,currency,setCurrency,currencyRate,setCurrencyRate,assetPrice,setAssetPrice,price,setPrice,currencies,setCurrencies,upperLimit,setUpperLimit,lowerLimit,setLowerLimit,authToken,totalAsset,setTotalAsset,deadline,setDeadline,notes,setNotes,registered,setRegistered,registerChecked,setRegisterChecked,prefferedMethod,online,setOnline,autoreply,setAutoReply,ePaymentMethodModalHandleShow,confirmModalHandleShow

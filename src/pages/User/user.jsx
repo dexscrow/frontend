@@ -1,7 +1,5 @@
 import{useState,useEffect,useContext} from "react";
 import AccountContext from "../../contexts/account";
-import Header from "../Landing/components/header";
-import Sidebar from "../Landing/components/sidebar";
 import axios from "axios";
 
 const USER_URL = "http://localhost:8000/user"

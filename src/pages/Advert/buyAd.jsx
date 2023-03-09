@@ -257,8 +257,8 @@ export default function BuyAd() {
       </div>
 
       <Toaster containerStyle={{ position: "absolute" }} />
-      <div class="overlay" style={{ display: loading ? "block" : "none" }}>
-        <div class="spinner"></div>
+      <div className="overlay" style={{ display: loading ? "block" : "none" }}>
+        <div className="spinner"></div>
         <br />
         Loading...
       </div>
